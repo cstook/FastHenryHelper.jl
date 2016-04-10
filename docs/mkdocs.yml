@@ -1,0 +1,25 @@
+site_name:        FastFieldSolversHelper.jl
+repo_url:         https://github.com/cstook/FastFieldSolversHelper.jl
+site_description: Julia interface to FastFieldSolversHelper.
+site_author:      Chris Stook
+
+theme: readthedocs
+
+extra_css:
+  - assets/Documenter.css
+
+markdown_extensions:
+  - extra
+  - tables
+  - fenced_code
+
+extra_javascript:
+  - https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML
+  - assets/mathjaxhelper.js
+
+docs_dir: 'build'
+
+pages:
+- Home: index.md
+- Installation: install.md
+- API: api.md

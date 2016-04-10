@@ -1,4 +1,6 @@
 """
+Main module
+
 Helps creating input files for FastFieldSolvers.
 
 You must include a submodule, for example:

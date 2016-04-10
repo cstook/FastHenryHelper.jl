@@ -3,16 +3,17 @@ Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
 
-export setdefaults, external, frequency, fastheneryend, via
+export setdefaults, external, frequency, fasthenryend, via
 
 """
     setdefaults(io, <keyword arguments>)
 
 Write commands to set simulation defaults to `io`
 
-# Arguments
+## Arguments
 * `io::IO`: where the FastHenry commands are written
-# Keyword Arguments
+
+## Keyword Arguments
 * `units="mm"`: default units
 * `z=0`: default vertical offset
 * `sigma=5.8e4`: default conductivity, 5.8e4 for copper.
@@ -93,11 +94,11 @@ end
 
 
 """
-    fastheneryend(io::IO)
+    fasthenryend(io::IO)
 
 Write \".end\" to `io` to indicate end of input file.
 """
-function fastheneryend(io::IO)
+function fasthenryend(io::IO)
   println(io,"")
   println(io,".end")
 end
@@ -106,16 +107,17 @@ end
 """
     via(io, radius, wall_thickness, height [,startnode = 1]; <keyword arguments>)
 
-Write commands to create the barrel of a via to 'io' and returns tuple 
+Write commands to create the barrel of a via to `io` and returns tuple 
 `(topnode,bottomnode)`.
 
-# Arguments
+## Arguments
 * `io::IO`: where the FastHenry commands are written
 * `radius`: radius of via
 * `wall_thichness`: thickness of the plating in the barrel
 * `height`: height of via
 * `startnode=1`: where to start numbering nodes
-# Keyword Arguments
+
+## Keyword Arguments
 * `n=8`: number of segments used to create via
 * `description=""`: text to be included as comment in output 
 
