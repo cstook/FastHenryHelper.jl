@@ -4,6 +4,7 @@
 # Index
 
 	{index}
+	Pages = ["api.md"]
 
 # API
 

@@ -4,11 +4,73 @@ Helps creating input files for FastHenry2.
 module FastHenry2Helper
 
 export setdefaults, external, frequency, fasthenryend, via
+export LastUsed
+export node, node!
+
+"""
+Keeps track of the last used node and segment number
+"""
+type LastUsed
+  "last used node number"
+  node :: Int
+  "last used segment number"
+  segment :: Int
+
+  LastUsed() = new(0,0)
+end
+
+
+function node(io::IO, number::Int, x, y, z; comment="")
+  if number<0
+    throw(ArgumentError("node number must be >=0"))
+  end
+  print(io,"N",number," x=",x," y=",y," z=",z)
+  if comment == ""
+    println(io)
+  else
+    println(io," * ",comment)
+  end
+  return number
+end
+
+function node(io::IO, number,x,y,z; comment="")
+  number_int = Int(number)
+  if number_int != number
+    throw(ArgumentError("node number must be integer"))
+  end
+  node(io,number_int, x, y, z, comment=comment)
+end
+
+function node!(io::IO, lu::LastUsed, x,y,z; comment="")
+  lu.node+=1
+  node(io,lu.node,x,y,z,comment=comment)
+end
+
+"""
+    node(io::IO, number, x, y, z, <keyword arguments>)
+    node!(io::IO, lastused::LastUsed, x, y, z, <keyword arguments>)
+
+Write a node definition to io and update `lastused` if applicable.  Returns node number used.
+
+## Arguments
+* `io::IO`: where the FastHenry commands are written
+* `number` or `lastused`: node number, either explicit or next available.
+* `x`,`y`,`z`: cooridnate of node
+
+## Keyword Arguments
+* `comment`: comment to be appended to line
+"""
+node, node!
+
+
+
+
+
 
 """
     setdefaults(io, <keyword arguments>)
 
-Write commands to set simulation defaults to `io`
+Write commands to set simulation defaults to `io`.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
@@ -48,9 +110,13 @@ end
 
 function external(io::IO, node1s::Array{Number,1}, node2s::Array{Number,1}, portnames::Array{AbstractString,1}=[])
   l = length(nodes)
-  @assert length(nodes2) == l "Arrays must have same length"
+  if length(nodes2) != l
+    throw(ArgumentError("arrays must have same length"))
+  end
   if portnames!=[] 
-    @assert length(portnames) == l "Arrays must have same length"
+    if length(portnames) != l
+      throw(ArgumentError("arrays must have same length"))
+    end
   end
   if l>0
     println(io,"")
@@ -105,16 +171,20 @@ end
 
 
 """
-    via(io, radius, wall_thickness, height [,startnode = 1]; <keyword arguments>)
+    via(io, x_offset, y_offset, top, bot, radius, wall_thickness, height 
+        [,startnode = 1]; <keyword arguments>)
 
 Write commands to create the barrel of a via to `io` and returns tuple 
 `(topnode,bottomnode)`.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
+* `x_offset`: x position of via
+* `y_offset`: y position of via
+* `top`: z offset of top of via
+* `bot`: z offset of bottom of via
 * `radius`: radius of via
-* `wall_thichness`: thickness of the plating in the barrel
-* `height`: height of via
+* `wall_thickness`: thickness of the plating in the barrel
 * `startnode=1`: where to start numbering nodes
 
 ## Keyword Arguments
@@ -123,36 +193,42 @@ Write commands to create the barrel of a via to `io` and returns tuple
 
 note: Nodes from `startnode` to `bottomnode` are used.
 """
-function via(io::IO, radius, wall_thickness, height, 
+function via(io::IO, x_offset, y_offset, top, bot,
+             radius, wall_thickness, 
              startnode = 1;
              n=8,
              description = "")
-  @assert n>1 "must have at least 2 segments"
+  if n<2 
+    throw(ArgumentError("must have at least 2 segments"))
+  end
   ts = linspace(0.0, 2.0*pi-(2*pi/n), n)
-  x = radius .* map(cos,ts)
-  y = radius .* map(sin,ts)
+  x = radius .* map(cos,ts) .+ x_offset
+  y = radius .* map(sin,ts) .+ y_offset
   wx = map(cos,ts.+(pi/2))
   wy = map(sin,ts.+(pi/2))
   segment_width = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
   println(io,"* ",description)
   println(io,"* Barrel of a via")
-  println(io,"*    diameter = ",2*radius)
-  println(io,"*    wall thickness = ",wall_thickness)
-  println(io,"*    height = ",height)
+  println(io,"*    diameter = ", 2*radius)
+  println(io,"*    wall thickness = ", wall_thickness)
+  println(io,"*    x_offset = ", x_offset)
+  println(io,"*    y_offset = ", y_offset)
+  println(io,"*    top = ", top)
+  println(io,"*    bot = ", bot)
   println(io,"*    number of segments = ",n)
   println(io,"")
   println(io,"")
   println(io,"* nodes around top and bottom")
   r = startnode:n+startnode-1
   for i in r
-      println(io,"N",i," x=",x[i]," y=",y[i]," z=",0.0)
-      println(io,"N",i+n," x=",x[i]," y=",y[i]," z=",-height)
+      println(io,"N",i," x=",x[i]," y=",y[i]," z=",top)
+      println(io,"N",i+n," x=",x[i]," y=",y[i]," z=",bot)
   end
   println(io,"* center node, top and bottom")
   topnode = 2*n+startnode
   bottomnode = 2*n+startnode+1
-  println(io,"N",topnode ," x=0 y=0 z=0")
-  println(io,"N",bottomnode ," x=0 y=0 z=",height)
+  println(io,"N",topnode ," x=0 y=0 z=",top)
+  println(io,"N",bottomnode ," x=0 y=0 z=",bot)
   println(io,"")
   println(io,"* connect top and bottom together and to the center node")
   for i in r
