@@ -34,7 +34,7 @@ function node(io::IO, number::Int, x, y, z; comment="")
 end
 
 function node(io::IO, number,x,y,z; comment="")
-  number_int = Int(number)
+  number_int = Int(Trunc(number))
   if number_int != number
     throw(ArgumentError("node number must be integer"))
   end
@@ -55,7 +55,7 @@ Write a node definition to io and update `lastused` if applicable.  Returns node
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
 * `number` or `lastused`: node number, either explicit or next available.
-* `x`,`y`,`z`: cooridnate of node
+* `x`,`y`,`z`: coordinate of node
 
 ## Keyword Arguments
 * `comment`: comment to be appended to line
@@ -63,12 +63,155 @@ Write a node definition to io and update `lastused` if applicable.  Returns node
 node, node!
 
 
+function segment(io::IO, segment_number::Integer, node1::Integer, node2::Integer; 
+                 w::Float=NaN,
+                 h::Float=NaN,
+                 sigma::Float = NaN,
+                 rho::Float = NaN,
+                 wx::Float = NaN,
+                 wy::Float = NaN,
+                 wz::Float = NaN,
+                 nhinc::Integer = 0,
+                 nwinc::Integer = 0,
+                 rh::Float = NaN,
+                 rw::Float = NaN,
+                 comment = "")
+  if segment_number<0 || node1<0 || node2<0
+    throw(ArgumentError("segment and node numbers must be >=0"))
+  end
+  if sigma!=NaN && rho!=NaN
+    throw(ArgumentError("cannot specify both sigma (conductivity) and rho (resistivity)"))
+  end
+  print(io,"E",segment_number," N",node1," N",node2)
+  if w!=NaN
+    print(io," w=",w)
+  end
+  if h!=NaN
+    print(io," h=",h)
+  end
+  if sigma!=NaN
+    print(io," sigma=",sigma)
+  end
+  if rho!=NaN
+    print(io," rho=",rho)
+  end
+  if wx!=NaN
+    print(io," wx=",wx)
+  end
+  if wy!=NaN
+    print(io," wy=",wy)
+  end
+  if wz!=NaN
+    print(io," wz=",wz)
+  end
+  if nhinc!=0
+    print(io," nhinc=",nhinc)
+  end
+  if nwinc!=0
+    print(io," nwinc=",nwinc)
+  end
+  if rh!=NaN
+    print(io," rh=",rh)
+  end
+  if rw!=NaN
+    print(io," rw=",rw)
+  end
+  if comment!=""
+    print(io," * ",comment)
+  end
+  println(io)
+  return segment_number
+end
 
+function segment(io::IO, segment_number, node1, node2; 
+                 w::Float=NaN,
+                 h::Float=NaN,
+                 sigma::Float = NaN,
+                 rho::Float = NaN,
+                 wx::Float = NaN,
+                 wy::Float = NaN,
+                 wz::Float = NaN,
+                 nhinc::Integer = 0,
+                 nwinc::Integer = 0,
+                 rh::Float = NaN,
+                 rw::Float = NaN,
+                 comment = "")
+  int_segment_number = Int(Trunc(segment_number))
+  int_node1 = Int(Trunc(node1))
+  int_node2 = Int(Trunc(node2))
+  if int_segment_number!=segment_number || int_node1!=node1 || int_node2!=node2
+    throw(ArgumentError("segment_number, node1, and node2 must be integers"))
+  end
+  segment(int_segment_number, int_node1, int_node2,
+           w = w,
+           h = h,
+           sigma = sigma,
+           rho = rho,
+           wx = wx,
+           wy = wy,
+           wz = wz,
+           nhinc = nhinc,
+           nwinc = nwinc,
+           rh = rh,
+           rw = rw,
+           comment = comment)
+end
 
+function segment!(io::IO, lu::LastUsed, node1, node2; 
+                 w::Float=NaN,
+                 h::Float=NaN,
+                 sigma::Float = NaN,
+                 rho::Float = NaN,
+                 wx::Float = NaN,
+                 wy::Float = NaN,
+                 wz::Float = NaN,
+                 nhinc::Integer = 0,
+                 nwinc::Integer = 0,
+                 rh::Float = NaN,
+                 rw::Float = NaN,
+                 comment = "")
+  lu.segment+=1
+  segment(lu.segment, node1, node2,
+           w = w,
+           h = h,
+           sigma = sigma,
+           rho = rho,
+           wx = wx,
+           wy = wy,
+           wz = wz,
+           nhinc = nhinc,
+           nwinc = nwinc,
+           rh = rh,
+           rw = rw,
+           comment = comment)
+end
 
 
 """
-    setdefaults(io, <keyword arguments>)
+    segment(io, segment_number, node1, node2, <keyword arguments>)
+    segment!(io, lastused::LastUsed, node1, node2, <keyword arguments>)
+
+Write a segment definition to io and update `lastused` if applicable.  Returns segment number used.
+
+## Arguments
+* `io::IO`: where the FastHenry commands are written
+* `segment_number` or `lastused`: segment number, either explicit or next available.
+* `node1`, `node2`: segment will extend from node1 to node2
+
+## Keyword Arguments
+* `w`: segment width
+* `h`: segment height
+* `sigma`: conductivity 
+* `rho`: resistivity 
+* `wx`, `wy`, `wz`: segment orientation.  vector pointing along width of segment's cross section.
+* `nhinc`, `nwinc`: integer number of filaments in height and width
+* `rh`, `rw`: ratio in the height and width
+* `comment`: comment to be appended to line
+"""
+segment, segment!
+
+"""
+    default(io, <keyword arguments>)
 
 Write commands to set simulation defaults to `io`.
 
@@ -76,30 +219,65 @@ Write commands to set simulation defaults to `io`.
 * `io::IO`: where the FastHenry commands are written
 
 ## Keyword Arguments
-* `units="mm"`: default units
-* `z=0`: default vertical offset
-* `sigma=5.8e4`: default conductivity, 5.8e4 for copper.
-* `nhinc=5`: split each segment into `nhinc` vertical segments
-* `nwinc=7`: split each segment into `nwinc` horizontal segments
+* `x`, `y`, `z`: default x,y, and z cooridantes
+* `w`, `h`:  default width and height
+* `sigma` ,`rho`: default conductivity or resistivity (only specify one).  sigma = 5.8e4 for copper.
+* `nhinc`, `nwinc`: default integer number of filaments in height and width
+* `rh`, `rw`: default ratio in the height and width
+* `comment`: comment to be appended to line
 """
-function setdefaults(io::IO;
-                     units="mm",
-                     z = 0,
-                     sigma=5.8e4,
-                     nhinc=5,
-                     nwinc=7)
-  println(io,"")
-  println(io,"* set defaults")
-  println(io,"**************")
-  println(io,"* set units to ",units)
-  println(io,".Units ",units)
-  println(io,"")
-  println(io,"* set defaults to z=0 and copper")
-  println(io,".Default z=",z," sigma=",sigma)
-  println(io,"")
-  println(io,"* by default split each segment into 35 filiments")
-  println(io,".Default nhinc=",nhinc," nwinc=",nwinc)
-  println(io,"")
+function default(io::IO;
+                     x = NaN, y = NaN, z = NaN,
+                     w = NaN, h = NaN,
+                     sigma = NaN, rho = NaN,
+                     nhinc::Integer = 0, nwinc::Integer = 0,
+                     rh = NaN, rw = NaN,
+                     comment = "")
+  if x==NaN && y==NaN && z==NaN && w==NaN && h==NaN &&
+     sigma=NaN && rho==NaN && nhinc==NaN && nhinc==0 && nwinc==0 && rh==NaN && rw==NaN
+    throw(ArgumentError("at least one non comment keyword argument must be specified"))
+  end
+  if sigma!=NaN && rho!=NaN
+    throw(ArgumentError("cannot specify both sigma (conductivity) and rho (resistivity)"))
+  end
+  print(io,".Default")
+  if x!=NaN
+    print(io," x=",x)
+  end
+  if y!=NaN
+    print(io," y=",y)
+  end
+  if z!=NaN
+    print(io," z=",z)
+  end
+  if w!=NaN
+    print(io," w=",w)
+  end
+  if h!=NaN
+    print(io," h=",h)
+  end
+  if sigma!=NaN
+    print(io," sigma=",sigma)
+  end
+  if rho!=NaN
+    print(io," rho=",rho)
+  end
+  if nhinc!=0
+    print(io," nhinc=",nhinc)
+  end
+  if nwinc!=0
+    print(io," nwinc=",nwinc)
+  end
+  if rh!=NaN
+    print(io," rh=",rh)
+  end
+  if rw!=NaN
+    print(io," rw=",rw)
+  end
+  if comment!=""
+    print(io," * ",comment)
+  end
+  println(io)
   return nothing
 end
 
@@ -142,9 +320,11 @@ external
 
 
 """
-    frequrncy(io::IO, fmin, fmax [,ndec])
+    frequency(io::IO, fmin, fmax [,ndec])
 
 Write ".Freq" command to `io`.
+
+If fmin is zero, FastHenry will run only the DC case regardless of the value of fmax.
 """
 function frequency(io::IO, fmin, fmax, ndec=0)
   println(io,"")
@@ -157,6 +337,8 @@ function frequency(io::IO, fmin, fmax, ndec=0)
   end
   return nothing
 end
+
+function equilivalent()
 
 
 """
