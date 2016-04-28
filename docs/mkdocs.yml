@@ -22,4 +22,6 @@ docs_dir: 'build'
 pages:
 - Home: index.md
 - Installation: install.md
-- API: api.md
+- Examples: examples.md
+- Public API: public.md
+- Internal API: internal.md

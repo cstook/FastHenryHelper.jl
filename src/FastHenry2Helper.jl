@@ -3,7 +3,7 @@ Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
 
-export setdefaults, external, frequency, fasthenryend, via
+export external, frequency, fasthenryend, via
 export LastUsed
 export node, node!
 export segment, segment!
@@ -22,7 +22,7 @@ type LastUsed
 end
 
 
-function node(io::IO, number::Int, x, y, z; comment="")
+function node(io::IO, number::Integer, x, y, z; comment="")
   if number<0
     throw(ArgumentError("node number must be >=0"))
   end
@@ -35,7 +35,7 @@ function node(io::IO, number::Int, x, y, z; comment="")
   return number
 end
 
-function node(io::IO, number,x,y,z; comment="")
+function node(io::IO, number, x,y,z; comment="")
   number_int = Int(trunc(number))
   if number_int != number
     throw(ArgumentError("node number must be integer"))
@@ -241,7 +241,7 @@ end
 """
     default(io, <keyword arguments>)
 
-Write commands to set simulation defaults to `io`.
+Write .Default command to `io`.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
@@ -417,7 +417,6 @@ end
 Write \".end\" to `io` to indicate end of input file.
 """
 function fasthenryend(io::IO)
-  println(io,"")
   println(io,".end")
 end
 
