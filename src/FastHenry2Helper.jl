@@ -3,7 +3,7 @@ Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
 
-export external, frequency, fasthenryend, via
+export external, frequency, fasthenryend, via!
 export LastUsed
 export node, node!
 export segment, segment!
@@ -422,31 +422,28 @@ end
 
 
 """
-    via(io, x_offset, y_offset, top, bot, radius, wall_thickness, height 
-        [,startnode = 1]; <keyword arguments>)
+    via!(io, lastused::LastUsed, x_offset, y_offset, top, bot, radius, wall_thickness, height 
+        ; <keyword arguments>)
 
 Write commands to create the barrel of a via to `io` and returns tuple 
 `(topnode,bottomnode)`.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
+* `lastused`: used to keep track of used nodes and segments
 * `x_offset`: x position of via
 * `y_offset`: y position of via
 * `top`: z offset of top of via
 * `bot`: z offset of bottom of via
 * `radius`: radius of via
 * `wall_thickness`: thickness of the plating in the barrel
-* `startnode=1`: where to start numbering nodes
 
 ## Keyword Arguments
 * `n=8`: number of segments used to create via
 * `description=""`: text to be included as comment in output 
-
-note: Nodes from `startnode` to `bottomnode` are used.
 """
-function via(io::IO, x_offset, y_offset, top, bot,
-             radius, wall_thickness, 
-             startnode = 1;
+function via!(io::IO, lu::LastUsed, x_offset, y_offset, top, bot,
+             radius, wall_thickness;
              n=8,
              description = "")
   if n<2 
@@ -458,7 +455,7 @@ function via(io::IO, x_offset, y_offset, top, bot,
   wx = map(cos,ts.+(pi/2))
   wy = map(sin,ts.+(pi/2))
   segment_width = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
-  println(io,"* ",description)
+  println(io,"**** BEGIN ",description)
   println(io,"* Barrel of a via")
   println(io,"*    diameter = ", 2*radius)
   println(io,"*    wall thickness = ", wall_thickness)
@@ -467,33 +464,32 @@ function via(io::IO, x_offset, y_offset, top, bot,
   println(io,"*    top = ", top)
   println(io,"*    bot = ", bot)
   println(io,"*    number of segments = ",n)
-  println(io,"")
-  println(io,"")
+  println(io)
   println(io,"* nodes around top and bottom")
-  r = startnode:n+startnode-1
-  for i in r
-      println(io,"N",i," x=",x[i]," y=",y[i]," z=",top)
-      println(io,"N",i+n," x=",x[i]," y=",y[i]," z=",bot)
+  topnodes = Array(Int,n)
+  botnodes = Array(Int,n)
+  for i in 1:n
+    topnodes[i] = node!(io,lu,x[i],y[i],top)
+    botnodes[i] = node!(io,lu,x[i],y[i],bot)
   end
   println(io,"* center node, top and bottom")
-  topnode = 2*n+startnode
-  bottomnode = 2*n+startnode+1
-  println(io,"N",topnode ," x=0 y=0 z=",top)
-  println(io,"N",bottomnode ," x=0 y=0 z=",bot)
-  println(io,"")
+  centertopnode = node!(io,lu,x_offset,y_offset,top)
+  centerbotnode = node!(io,lu,x_offset,y_offset,bot)
+  println(io)
   println(io,"* connect top and bottom together and to the center node")
-  for i in r
-      println(io,".equiv N",topnode," N",i)
-      println(io,".equiv N",bottomnode," N",i+n)
-  end
-  println(io,"")
+  equivalent(io,topnodes,centertopnode)
+  equivalent(io,botnodes,centerbotnode)
+  println(io)
   println(io,"* segments")
-  for i in r
-      print(io,"E",i," N",i," N",i+n," w=",segment_width," h=",wall_thickness)
-      print(io," wx=",wx[i]," wy=",wy[i]," wz=0")
-      println(io,"nhinc = 5 nwinc = 1")
+  for i in 1:n
+    segment!(io,lu,topnodes[i],botnodes[i],
+              w=segment_width,
+              h=wall_thickness,
+              wx=wx[i], wy=wy[i], wz=0.0,
+              nhinc=5, nwinc=1)
   end
-  return (topnode, bottomnode)
+  println(io,"**** END ",description)
+  return (centertopnode, centerbotnode)
 end
 
 end # module
