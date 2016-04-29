@@ -229,11 +229,15 @@ Writes .Units command to io.
 Species the units to be used for all subsequent coordinates and lengths until the
 end of file or another .Units specication is encountered.
 """
-function units(io::IO, unit::AbstractString="mm")
+function units(io::IO, unit::AbstractString="mm"; comment="")
   if ~issubset(Set([unit]),Set(["km", "m", "cm", "mm", "um", "in", "mils"]))
     throw(ArgumentError("valid units are km, m, cm, mm, um, in, mils"))
   end
-  println(io,".Units ",unit)
+  print(io,".Units ",unit)
+  if comment!=""
+    print(io," * ",comment)
+  end
+  println(io)
   return nothing
 end
 
@@ -308,8 +312,12 @@ function default(io::IO;
   return nothing
 end
 
-function external(io::IO, node1, node2, portname="")
-  println(io,".External N",Int(trunc(node1))," N",Int(trunc(node2))," ",portname)
+function external(io::IO, node1, node2, portname=""; comment="")
+  print(io,".External N",Int(trunc(node1))," N",Int(trunc(node2))," ",portname)
+  if comment!=""
+    print(io," * ",comment)
+  end
+  println(io)
   return nothing
 end
 
@@ -336,30 +344,36 @@ function external(io::IO, node1s::Array{Number,1}, node2s::Array{Number,1}, port
 end
 
 """
-    external(io::IO, node1, node2 [,portname])
+    external(io::IO, node1, node2 [,portname], <keyword arguments>)
     external(io::IO, nodes1::Array{Number,1}, node2s::Array{Number,1} [,portnames::Array{AbstractString,1}=[]])
 
 Write .External command('s) to `io`.
 
-The .External command defines a terminal pair('s) as port(s') with an optional name('s).
+The .External command defines a terminal pair('s) as port(s') with an optional name('s).  A comment
+may be added with the comment keyword.
 """
 external
 
 
 """
-    frequency(io::IO, fmin, fmax [,ndec])
+    frequency(io::IO, fmin, fmax [,ndec], <keyword arguments>)
 
 Write ".Freq" command to `io`.
 
-If fmin is zero, FastHenry will run only the DC case regardless of the value of fmax.
+If fmin is zero, FastHenry will run only the DC case regardless of the value of
+ fmax.  A comment may be added with the  comment keyword.
 """
-function frequency(io::IO, fmin, fmax, ndec=0)
+function frequency(io::IO, fmin, fmax, ndec=0; comment="")
   print(io,".freq fmin=",fmin," fmax=",fmax)
   if ndec!=0
-    println(io," ndec=",ndec)
+    print(io," ndec=",ndec)
   else
-    println(io)
+    print(io)
   end
+  if comment!=""
+    print(io," * ",comment)
+  end
+  println(io)
   return nothing
 end
 
@@ -409,7 +423,13 @@ function comment(io::IO, c="")
   println(io,"* ",c)
 end
 
-
+function comment(io::IO, args...)
+  print(io,"* ")
+  for arg in args
+    print(io,arg)
+  end
+  println(io)
+end
 
 """
     fasthenryend(io::IO)
@@ -422,7 +442,7 @@ end
 
 
 """
-    via!(io, lastused::LastUsed, x_offset, y_offset, top, bot, radius, wall_thickness, height 
+    via!(io, lastused::LastUsed, x, y, top, bot, radius, wall_thickness, height 
         ; <keyword arguments>)
 
 Write commands to create the barrel of a via to `io` and returns tuple 
@@ -431,8 +451,8 @@ Write commands to create the barrel of a via to `io` and returns tuple
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
 * `lastused`: used to keep track of used nodes and segments
-* `x_offset`: x position of via
-* `y_offset`: y position of via
+* `x`: x position of via
+* `y`: y position of via
 * `top`: z offset of top of via
 * `bot`: z offset of bottom of via
 * `radius`: radius of via
@@ -440,55 +460,63 @@ Write commands to create the barrel of a via to `io` and returns tuple
 
 ## Keyword Arguments
 * `n=8`: number of segments used to create via
-* `description=""`: text to be included as comment in output 
+         n=0 will bypass the via
+* `comment=""`: text to be included as comment in output 
 """
-function via!(io::IO, lu::LastUsed, x_offset, y_offset, top, bot,
+function via!(io::IO, lu::LastUsed, x, y, top, bot,
              radius, wall_thickness;
              n=8,
-             description = "")
-  if n<2 
-    throw(ArgumentError("must have at least 2 segments"))
+             comment = "")
+  if n!=0 && n<2 
+    throw(ArgumentError("must have zero or at least 2 segments"))
   end
-  ts = linspace(0.0, 2.0*pi-(2*pi/n), n)
-  x = radius .* map(cos,ts) .+ x_offset
-  y = radius .* map(sin,ts) .+ y_offset
-  wx = map(cos,ts.+(pi/2))
-  wy = map(sin,ts.+(pi/2))
-  segment_width = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
-  println(io,"**** BEGIN ",description)
-  println(io,"* Barrel of a via")
-  println(io,"*    diameter = ", 2*radius)
-  println(io,"*    wall thickness = ", wall_thickness)
-  println(io,"*    x_offset = ", x_offset)
-  println(io,"*    y_offset = ", y_offset)
-  println(io,"*    top = ", top)
-  println(io,"*    bot = ", bot)
-  println(io,"*    number of segments = ",n)
-  println(io)
-  println(io,"* nodes around top and bottom")
-  topnodes = Array(Int,n)
-  botnodes = Array(Int,n)
-  for i in 1:n
-    topnodes[i] = node!(io,lu,x[i],y[i],top)
-    botnodes[i] = node!(io,lu,x[i],y[i],bot)
+  FastHenry2Helper.comment(io,"***** BEGIN ",comment)
+  if n!=0
+    ts = linspace(0.0, 2.0*pi-(2*pi/n), n)
+    x = radius .* map(cos,ts) .+ x
+    y = radius .* map(sin,ts) .+ y
+    wx = map(cos,ts.+(pi/2))
+    wy = map(sin,ts.+(pi/2))
+    segment_width = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
+    FastHenry2Helper.comment(io,"Barrel of a via")
+    FastHenry2Helper.comment(io,"  diameter = ", 2*radius)
+    FastHenry2Helper.comment(io,"  wall thickness = ", wall_thickness)
+    FastHenry2Helper.comment(io,"  x = ", x)
+    FastHenry2Helper.comment(io,"  y = ", y)
+    FastHenry2Helper.comment(io,"  top = ", top)
+    FastHenry2Helper.comment(io,"  bot = ", bot)
+    FastHenry2Helper.comment(io,"  number of segments = ",n)
+    FastHenry2Helper.comment(io)
+    FastHenry2Helper.comment(io,"nodes around top and bottom")
+    topnodes = Array(Int,n)
+    botnodes = Array(Int,n)
+    for i in 1:n
+      topnodes[i] = node!(io,lu,x[i],y[i],top)
+      botnodes[i] = node!(io,lu,x[i],y[i],bot)
+    end
+    FastHenry2Helper.comment(io,"center node, top and bottom")
+    centertopnode = node!(io,lu,x,y,top)
+    centerbotnode = node!(io,lu,x,y,bot)
+    FastHenry2Helper.comment(io)
+    FastHenry2Helper.comment(io,"connect top and bottom together and to the center node")
+    equivalent(io,topnodes,centertopnode)
+    equivalent(io,botnodes,centerbotnode)
+    FastHenry2Helper.comment(io)
+    FastHenry2Helper.comment(io,"segments")
+    for i in 1:n
+      segment!(io,lu,topnodes[i],botnodes[i],
+                w=segment_width,
+                h=wall_thickness,
+                wx=wx[i], wy=wy[i], wz=0.0,
+                nhinc=5, nwinc=1)
+    end
+  else
+    FastHenry2Helper.comment(io,"via bypass")
+    centertopnode = node!(io,lu,x,y,top)
+    centerbotnode = node!(io,lu,x,y,bot)
+    equivalent(io,centertopnode,centerbotnode)
   end
-  println(io,"* center node, top and bottom")
-  centertopnode = node!(io,lu,x_offset,y_offset,top)
-  centerbotnode = node!(io,lu,x_offset,y_offset,bot)
-  println(io)
-  println(io,"* connect top and bottom together and to the center node")
-  equivalent(io,topnodes,centertopnode)
-  equivalent(io,botnodes,centerbotnode)
-  println(io)
-  println(io,"* segments")
-  for i in 1:n
-    segment!(io,lu,topnodes[i],botnodes[i],
-              w=segment_width,
-              h=wall_thickness,
-              wx=wx[i], wy=wy[i], wz=0.0,
-              nhinc=5, nwinc=1)
-  end
-  println(io,"**** END ",description)
+  FastHenry2Helper.comment(io,"***** END ",comment)
   return (centertopnode, centerbotnode)
 end
 
