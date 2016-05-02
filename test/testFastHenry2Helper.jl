@@ -20,6 +20,16 @@ wall_thickness = 0.3
 node!(io, lastused, 1.0,1.1,2.3)
 node!(io, lastused, 2.0,2.1,3.3,comment="comment test")
 segment!(io, lastused, 1.0,2.0,w=0.4,h=0.2)
+referenceplane!(io,lastused,1,1,1,2,2,2,3,3,3,.1,10,10)
+referenceplane!(io,lastused,1,1,1,2,2,2,3,3,3,.1,10,10,
+                segwid1 = .2, segwid2 = .2,
+                sigma = 5.8e4,
+                nhinc = 10, rh = 2,
+                relx = 0, rely = 0, relz = 0,
+                nodes = [(1.1,2.2,3.3),(1.2,1.3,1.4)],
+                holes = [("point",1,2,3),
+                         ("rect",1,2,3,4,5,6),
+                         ("circle",2,3,4,5)])
 
 external(io,1,2,"port1")
 external(io,topnode,bottomnode,"test port")

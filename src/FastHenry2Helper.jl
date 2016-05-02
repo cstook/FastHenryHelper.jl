@@ -8,17 +8,19 @@ export LastUsed
 export node, node!
 export segment, segment!
 export units, default, external, frequency, equivalent, titleline, comment
+export referenceplane!
 
 """
-Keeps track of the last used node and segment number
+Keeps track of the last used node, segment and reference plane number
 """
 type LastUsed
   "last used node number"
   node :: Int
   "last used segment number"
   segment :: Int
-
-  LastUsed() = new(0,0)
+  "last used reference plane number"
+  referenceplane :: Int
+  LastUsed() = new(0,0,0)
 end
 
 
@@ -26,7 +28,8 @@ function node(io::IO, number::Integer, x, y, z; comment="")
   if number<0
     throw(ArgumentError("node number must be >=0"))
   end
-  print(io,"N",number," x=",x," y=",y," z=",z)
+  print(io,"N",number)
+  @printf(io," x=%.6e, y=%.6e, z=%.6e",x,y,z)
   if comment == ""
     println(io)
   else
@@ -94,40 +97,40 @@ function segment(io::IO, segment_number::Integer, node1::Integer, node2::Integer
   checksigmaandrho(sigma,rho)
   print(io,"E",segment_number," N",node1," N",node2)
   if ~isnan(w)
-    print(io," w=",w)
+    f()=@printf(io," w=%.6e",w);f()
   end
   if ~isnan(h)
-    print(io," h=",h)
+    f()=@printf(io," h=%.6e",h);f()
   end
   if ~isnan(sigma)
-    print(io," sigma=",sigma)
+    f()=@printf(io," sigma=%.6e",sigma);f()
   end
   if ~isnan(rho)
-    print(io," rho=",rho)
+    f()=@printf(io," rho=%.6e",rho);f()
   end
   if ~isnan(wx)
-    print(io," wx=",wx)
+    f()=@printf(io," wx=%.6e",wx);f()
   end
   if ~isnan(wy)
-    print(io," wy=",wy)
+    f()=@printf(io," wy=%.6e",wy);f()
   end
   if ~isnan(wz)
-    print(io," wz=",wz)
+    f()=@printf(io," wz=%.6e",wz);f()
   end
   if nhinc!=0
-    print(io," nhinc=",nhinc)
+    f()=@printf(io," nhinc=%.6e",nhinc);f()
   end
   if nwinc!=0
-    print(io," nwinc=",nwinc)
+    f()=@printf(io," nwinc=%.6e",nwinc);f()
   end
   if ~isnan(rh)
-    print(io," rh=",rh)
+    f()=@printf(io," rh=%.6e",rh);f()
   end
   if ~isnan(rw)
-    print(io," rw=",rw)
+    f()=@printf(io," rw=%.6e",rw);f()
   end
   if comment!=""
-    print(io," * ",comment)
+    println(io," * ",comment)
   end
   println(io)
   return segment_number
@@ -273,37 +276,37 @@ function default(io::IO;
   checksigmaandrho(sigma,rho)
   print(io,".Default")
   if ~isnan(x)
-    print(io," x=",x)
+    f()=@printf(io," x=%.6e",x);f()
   end
   if ~isnan(y)
-    print(io," y=",y)
+    f()=@printf(io," y=%.6e",y);f()
   end
   if ~isnan(z)
-    print(io," z=",z)
+    f()=@printf(io," z=%.6e",z);f()
   end
   if ~isnan(w)
-    print(io," w=",w)
+    f()=@printf(io," w=%.6e",w);f()
   end
   if ~isnan(h)
-    print(io," h=",h)
+    f()=@printf(io," h=%.6e",h);f()
   end
   if ~isnan(sigma)
-    print(io," sigma=",sigma)
+    f()=@printf(io," sigma=%.6e",sigma);f()
   end
   if ~isnan(rho)
-    print(io," rho=",rho)
+    f()=@printf(io," rho=%.6e",rho);f()
   end
   if nhinc!=0
-    print(io," nhinc=",nhinc)
+    f()=@printf(io," nhinc=%.6e",nhinc);f()
   end
   if nwinc!=0
-    print(io," nwinc=",nwinc)
+    f()=@printf(io," nwinc=%.6e",nwinc);f()
   end
   if ~isnan(rh)
-    print(io," rh=",rh)
+    f()=@printf(io," rh=%.6e",rh);f()
   end
   if ~isnan(rw)
-    print(io," rw=",rw)
+    f()=@printf(io," rw=%.6e",rw);f()
   end
   if comment!=""
     print(io," * ",comment)
@@ -364,7 +367,7 @@ If fmin is zero, FastHenry will run only the DC case regardless of the value of
  fmax.  A comment may be added with the  comment keyword.
 """
 function frequency(io::IO, fmin, fmax, ndec=0; comment="")
-  print(io,".freq fmin=",fmin," fmax=",fmax)
+  f()=@printf(io,".freq fmin=%.6e fmax=%.6e",fmin,fmax);f()
   if ndec!=0
     print(io," ndec=",ndec)
   else
@@ -440,13 +443,153 @@ function fasthenryend(io::IO)
   println(io,".end")
 end
 
+"""
+    referenceplane!(io::IO,
+                   lastused :: LastUsed,
+                   x1,y1,z1,
+                   x2,y2,z2,
+                   x3,y3,z3,
+                   thick, seg1, seg2,
+                   <keyword arguments>)
+
+Write reference plane command \"G\" to io.
+
+This function creates the command for a uniformly discretized plane.  It
+returns the tuple (referenceplanenumber, [nodenumber1, nodenumber2]) 
+where referenceplanenumber is an integer assigned to the reference plane and
+the node numbers are integers assigned to the requested connection nodes.
+For example, reference plane G4 with connection nodes N2, N3, N4 will return 
+(4,[2,3,4]).  lastused is updated to reflect the reference plane and node
+numbers used.
+
+## Arguments
+* `io::IO`: where the FastHenry commands are written
+* `lastused::Lastused`: keeps track of last used node, segment, and reference plane number
+* `x1`,`y1`,`z1`, `x2`,`y2`,`z2`, `x3`,`y3`,`z3`: three corners of a rectangle defining the plane
+* `thick`: thickness of plane
+* `seg1`, `seg2`: number of segments to divide plane into along each axis
+
+## Keyword Arguments
+* `segwid1`, `segwid2`: override default segment width for a meshed plane
+* `sigma`, `rho`: conductivity or resistivity (only specify one).
+                  sigma = 5.8e4 1/(mm*Ohms) for copper.
+* `nhinc`, `rh`: specify discretization of segments perpendicular to plane.
+                 use `seg1`, `seg2` in plane.
+* `relx`, `rely`, `relz`: offset to be applied to connection nodes.  zero if unspecified.
+* `nodes`: a list of coordinates of connection nodes [(x1,y1,z1),(x2,y2,z2),...] 
+* `holes`: a list of holes
+           [(hole_type_string, val1, val2, val3, ...),
+            .
+            .
+            .]
+            valid hole type are \"point\", \"rect\", and \"circle\". for example:
+            [(\"point\",x,y,z),
+             (\"rect\",x1,y1,z1,x2,y2,z2),
+             (\"circle\",x,y,z,r)]         
+"""
+function referenceplane!(io::IO,
+                        lastused :: LastUsed,
+                        x1,y1,z1,
+                        x2,y2,z2,
+                        x3,y3,z3,
+                        thick, seg1, seg2;
+                        segwid1 = NaN, segwid2 = NaN,
+                        sigma = NaN, rho = NaN,
+                        nhinc = NaN, rh = NaN,
+                        relx = NaN, rely = NaN, relz = NaN,
+                        nodes = [],
+                        holes = [])
+  extendline(io) = println(io,"  +")
+  checksigmaandrho(sigma,rho)
+  lastused.referenceplane += 1
+  print(io,"G",lastused.referenceplane)
+  extendline(io)
+  f()=@printf(io,"    x1=%.6e",x1);f()
+  f()=@printf(io," y1=%.6e",y1);f()
+  f()=@printf(io," z1=%.6e",z1);f()
+  extendline(io)
+  f()=@printf(io,"    x2=%.6e",x2);f()
+  f()=@printf(io," y2=%.6e",y2);f()
+  f()=@printf(io," z2=%.6e",z2);f()
+  extendline(io)
+  f()=@printf(io,"    x3=%.6e",x3);f()
+  f()=@printf(io," y3=%.6e",y3);f()
+  f()=@printf(io," z3=%.6e",z3);f()
+  extendline(io)
+  f()=@printf(io,"    thick=%.6e",thick);f()
+  f()=@printf(io," seg1=%.6e",seg1);f()
+  f()=@printf(io," seg2=%.6e",seg2);f()
+  if ~isnan(segwid1)
+    extendline(io)
+    f()=@printf(io,"    segwid1=%.6e",segwid1);f()
+  end
+  if ~isnan(segwid2)
+    extendline(io)
+    f()=@printf(io,"    segwid2=%.6e",segwid2);f()
+  end
+  if ~isnan(sigma)
+    extendline(io)
+    f()=@printf(io,"    sigma=%.6e",sigma);f()
+  end
+  if ~isnan(rho)
+    extendline(io)
+    f()=@printf(io,"    rho=%.6e",rho);f()
+  end
+  if ~isnan(nhinc)
+    extendline(io)
+    f()=@printf(io,"    nhinc=%.6e",nhinc);f()
+  end
+  if ~isnan(rh)
+    extendline(io)
+    f()=@printf(io,"    rh=%.6e",rh);f()
+  end
+  if ~isnan(relx)
+    extendline(io)
+    f()=@printf(io,"    relx=%.6e",relx);f()
+  end
+  if ~isnan(rely)
+    extendline(io)
+    f()=@printf(io,"    rely=%.6e",rely);f()
+  end
+  if ~isnan(relz)
+    extendline(io)
+    f()=@printf(io,"    relz=%.6e",relz);f()
+  end
+  if nodes!=[]
+    nodenumbers = Array(Int,length(nodes))
+    for i in eachindex(nodes)
+      extendline(io)
+      lastused.node += 1
+      nodenumbers[i] = lastused.node
+      print(io,"    N",lastused.node)
+      x = nodes[i][1]
+      y = nodes[i][2]
+      z = nodes[i][3]
+      f()=@printf(io," (%.6e, %.6e, %.6e)",x,y,z);f()
+    end
+  else
+    nodenumbers = []
+  end
+  for hole in holes
+    extendline(io)
+    holetype = hole[1]
+    print(io,"    hole ",holetype," (")
+    for holearg in hole[2:end-1]
+      f()=@printf(io,"%.6e, ",holearg);f()
+    end
+    f()=@printf(io,"%.6e",hole[end]);f()
+    print(io,")")
+  end
+  println(io)
+  return (lastused.referenceplane, nodenumbers)
+end
 
 """
     via!(io, lastused::LastUsed, x, y, top, bot, radius, wall_thickness, height 
         ; <keyword arguments>)
 
 Write commands to create the barrel of a via to `io` and returns tuple 
-`(topnode,bottomnode)`.
+`(topnode,bottomnode)`.  PCB is assumed to be parallel to the xy plane.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
@@ -473,11 +616,11 @@ function via!(io::IO, lu::LastUsed, x, y, top, bot,
   FastHenry2Helper.comment(io,"***** BEGIN ",comment)
   if n!=0
     ts = linspace(0.0, 2.0*pi-(2*pi/n), n)
-    x = radius .* map(cos,ts) .+ x
-    y = radius .* map(sin,ts) .+ y
+    xarray = radius .* map(cos,ts) .+ x
+    yarray = radius .* map(sin,ts) .+ y
     wx = map(cos,ts.+(pi/2))
     wy = map(sin,ts.+(pi/2))
-    segment_width = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
+    segment_width = sqrt((xarray[1]-xarray[2])^2+(yarray[1]-yarray[2])^2)
     FastHenry2Helper.comment(io,"Barrel of a via")
     FastHenry2Helper.comment(io,"  diameter = ", 2*radius)
     FastHenry2Helper.comment(io,"  wall thickness = ", wall_thickness)
@@ -491,8 +634,8 @@ function via!(io::IO, lu::LastUsed, x, y, top, bot,
     topnodes = Array(Int,n)
     botnodes = Array(Int,n)
     for i in 1:n
-      topnodes[i] = node!(io,lu,x[i],y[i],top)
-      botnodes[i] = node!(io,lu,x[i],y[i],bot)
+      topnodes[i] = node!(io,lu,xarray[i],yarray[i],top)
+      botnodes[i] = node!(io,lu,xarray[i],yarray[i],bot)
     end
     FastHenry2Helper.comment(io,"center node, top and bottom")
     centertopnode = node!(io,lu,x,y,top)
