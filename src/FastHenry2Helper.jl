@@ -29,7 +29,7 @@ function node(io::IO, number::Integer, x, y, z; comment="")
     throw(ArgumentError("node number must be >=0"))
   end
   print(io,"N",number)
-  @printf(io," x=%.6e, y=%.6e, z=%.6e",x,y,z)
+  @printf(io," x=%.6e y=%.6e z=%.6e",x,y,z)
   if comment == ""
     println(io)
   else
@@ -297,10 +297,10 @@ function default(io::IO;
     f()=@printf(io," rho=%.6e",rho);f()
   end
   if nhinc!=0
-    f()=@printf(io," nhinc=%.6e",nhinc);f()
+    print(io," nhinc=",nhinc)
   end
   if nwinc!=0
-    f()=@printf(io," nwinc=%.6e",nwinc);f()
+    print(io," nwinc=",nwinc)
   end
   if ~isnan(rh)
     f()=@printf(io," rh=%.6e",rh);f()
@@ -470,7 +470,7 @@ numbers used.
 * `seg1`, `seg2`: number of segments to divide plane into along each axis
 
 ## Keyword Arguments
-* `segwid1`, `segwid2`: override default segment width for a meshed plane
+* `segwid1`, `segwid2`: override default segment width to create a meshed plane
 * `sigma`, `rho`: conductivity or resistivity (only specify one).
                   sigma = 5.8e4 1/(mm*Ohms) for copper.
 * `nhinc`, `rh`: specify discretization of segments perpendicular to plane.
@@ -492,95 +492,79 @@ function referenceplane!(io::IO,
                         x1,y1,z1,
                         x2,y2,z2,
                         x3,y3,z3,
-                        thick, seg1, seg2;
+                        thick, seg1::Integer, seg2::Integer;
                         segwid1 = NaN, segwid2 = NaN,
                         sigma = NaN, rho = NaN,
-                        nhinc = NaN, rh = NaN,
+                        nhinc::Integer = 0, rh = NaN,
                         relx = NaN, rely = NaN, relz = NaN,
                         nodes = [],
                         holes = [])
-  extendline(io) = println(io,"  +")
+  extendline(io) = print(io,"  +")
   checksigmaandrho(sigma,rho)
   lastused.referenceplane += 1
-  print(io,"G",lastused.referenceplane)
-  extendline(io)
-  f()=@printf(io,"    x1=%.6e",x1);f()
+  println(io,"G",lastused.referenceplane)
+  f()=@printf(io,"+ x1=%.6e",x1);f()
   f()=@printf(io," y1=%.6e",y1);f()
-  f()=@printf(io," z1=%.6e",z1);f()
-  extendline(io)
-  f()=@printf(io,"    x2=%.6e",x2);f()
+  f()=@printf(io," z1=%.6e\n",z1);f()
+  f()=@printf(io,"+ x2=%.6e",x2);f()
   f()=@printf(io," y2=%.6e",y2);f()
-  f()=@printf(io," z2=%.6e",z2);f()
-  extendline(io)
-  f()=@printf(io,"    x3=%.6e",x3);f()
+  f()=@printf(io," z2=%.6e\n",z2);f()
+  f()=@printf(io,"+ x3=%.6e",x3);f()
   f()=@printf(io," y3=%.6e",y3);f()
-  f()=@printf(io," z3=%.6e",z3);f()
-  extendline(io)
-  f()=@printf(io,"    thick=%.6e",thick);f()
-  f()=@printf(io," seg1=%.6e",seg1);f()
-  f()=@printf(io," seg2=%.6e",seg2);f()
+  f()=@printf(io," z3=%.6e\n",z3);f()
+  f()=@printf(io,"+ thick=%.6e",thick);f()
+  print(io," seg1=",seg1)
+  println(io," seg2=",seg2)
   if ~isnan(segwid1)
-    extendline(io)
-    f()=@printf(io,"    segwid1=%.6e",segwid1);f()
+    f()=@printf(io,"+ segwid1=%.6e\n",segwid1);f()
   end
   if ~isnan(segwid2)
-    extendline(io)
-    f()=@printf(io,"    segwid2=%.6e",segwid2);f()
+    f()=@printf(io,"+ segwid2=%.6e\n",segwid2);f()
   end
   if ~isnan(sigma)
-    extendline(io)
-    f()=@printf(io,"    sigma=%.6e",sigma);f()
+    f()=@printf(io,"+ sigma=%.6e\n",sigma);f()
   end
   if ~isnan(rho)
-    extendline(io)
-    f()=@printf(io,"    rho=%.6e",rho);f()
+    f()=@printf(io,"+ rho=%.6e\n",rho);f()
   end
-  if ~isnan(nhinc)
-    extendline(io)
-    f()=@printf(io,"    nhinc=%.6e",nhinc);f()
+  if nhinc!=0
+    println(io,"+ nhinc=",nhinc)
   end
   if ~isnan(rh)
-    extendline(io)
-    f()=@printf(io,"    rh=%.6e",rh);f()
+    f()=@printf(io,"+ rh=%.6e\n",rh);f()
   end
   if ~isnan(relx)
-    extendline(io)
-    f()=@printf(io,"    relx=%.6e",relx);f()
+    f()=@printf(io,"+ relx=%.6e\n",relx);f()
   end
   if ~isnan(rely)
-    extendline(io)
-    f()=@printf(io,"    rely=%.6e",rely);f()
+    f()=@printf(io,"+ rely=%.6e\n",rely);f()
   end
   if ~isnan(relz)
-    extendline(io)
-    f()=@printf(io,"    relz=%.6e",relz);f()
+    f()=@printf(io,"+ relz=%.6e\n",relz);f()
   end
   if nodes!=[]
     nodenumbers = Array(Int,length(nodes))
     for i in eachindex(nodes)
-      extendline(io)
       lastused.node += 1
       nodenumbers[i] = lastused.node
-      print(io,"    N",lastused.node)
+      print(io,"    + N",lastused.node)
       x = nodes[i][1]
       y = nodes[i][2]
       z = nodes[i][3]
-      f()=@printf(io," (%.6e, %.6e, %.6e)",x,y,z);f()
+      f()=@printf(io," (%.6e, %.6e, %.6e)\n",x,y,z);f()
     end
   else
     nodenumbers = []
   end
   for hole in holes
-    extendline(io)
     holetype = hole[1]
-    print(io,"    hole ",holetype," (")
+    print(io,"    + hole ",holetype," (")
     for holearg in hole[2:end-1]
       f()=@printf(io,"%.6e, ",holearg);f()
     end
     f()=@printf(io,"%.6e",hole[end]);f()
-    print(io,")")
+    println(io,")")
   end
-  println(io)
   return (lastused.referenceplane, nodenumbers)
 end
 
