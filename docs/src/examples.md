@@ -122,4 +122,3 @@ fasthenryend(io)
 ```
 
 [Example 3 results matrix from FastHenry](https://github.com/cstook/FastFieldSolversHelper.jl/blob/master/docs/src/example3_Zc.mat)
-
