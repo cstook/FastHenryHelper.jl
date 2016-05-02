@@ -97,37 +97,37 @@ function segment(io::IO, segment_number::Integer, node1::Integer, node2::Integer
   checksigmaandrho(sigma,rho)
   print(io,"E",segment_number," N",node1," N",node2)
   if ~isnan(w)
-    f()=@printf(io," w=%.6e",w);f()
+    @printf(io," w=%.6e",w) 
   end
   if ~isnan(h)
-    f()=@printf(io," h=%.6e",h);f()
+    @printf(io," h=%.6e",h) 
   end
   if ~isnan(sigma)
-    f()=@printf(io," sigma=%.6e",sigma);f()
+    @printf(io," sigma=%.6e",sigma) 
   end
   if ~isnan(rho)
-    f()=@printf(io," rho=%.6e",rho);f()
+    @printf(io," rho=%.6e",rho) 
   end
   if ~isnan(wx)
-    f()=@printf(io," wx=%.6e",wx);f()
+    @printf(io," wx=%.6e",wx) 
   end
   if ~isnan(wy)
-    f()=@printf(io," wy=%.6e",wy);f()
+    @printf(io," wy=%.6e",wy) 
   end
   if ~isnan(wz)
-    f()=@printf(io," wz=%.6e",wz);f()
+    @printf(io," wz=%.6e",wz) 
   end
   if nhinc!=0
-    f()=@printf(io," nhinc=%.6e",nhinc);f()
+    @printf(io," nhinc=%.6e",nhinc) 
   end
   if nwinc!=0
-    f()=@printf(io," nwinc=%.6e",nwinc);f()
+    @printf(io," nwinc=%.6e",nwinc) 
   end
   if ~isnan(rh)
-    f()=@printf(io," rh=%.6e",rh);f()
+    @printf(io," rh=%.6e",rh) 
   end
   if ~isnan(rw)
-    f()=@printf(io," rw=%.6e",rw);f()
+    @printf(io," rw=%.6e",rw) 
   end
   if comment!=""
     println(io," * ",comment)
@@ -276,25 +276,25 @@ function default(io::IO;
   checksigmaandrho(sigma,rho)
   print(io,".Default")
   if ~isnan(x)
-    f()=@printf(io," x=%.6e",x);f()
+    @printf(io," x=%.6e",x) 
   end
   if ~isnan(y)
-    f()=@printf(io," y=%.6e",y);f()
+    @printf(io," y=%.6e",y) 
   end
   if ~isnan(z)
-    f()=@printf(io," z=%.6e",z);f()
+    @printf(io," z=%.6e",z) 
   end
   if ~isnan(w)
-    f()=@printf(io," w=%.6e",w);f()
+    @printf(io," w=%.6e",w) 
   end
   if ~isnan(h)
-    f()=@printf(io," h=%.6e",h);f()
+    @printf(io," h=%.6e",h) 
   end
   if ~isnan(sigma)
-    f()=@printf(io," sigma=%.6e",sigma);f()
+    @printf(io," sigma=%.6e",sigma) 
   end
   if ~isnan(rho)
-    f()=@printf(io," rho=%.6e",rho);f()
+    @printf(io," rho=%.6e",rho) 
   end
   if nhinc!=0
     print(io," nhinc=",nhinc)
@@ -303,10 +303,10 @@ function default(io::IO;
     print(io," nwinc=",nwinc)
   end
   if ~isnan(rh)
-    f()=@printf(io," rh=%.6e",rh);f()
+    @printf(io," rh=%.6e",rh) 
   end
   if ~isnan(rw)
-    f()=@printf(io," rw=%.6e",rw);f()
+    @printf(io," rw=%.6e",rw) 
   end
   if comment!=""
     print(io," * ",comment)
@@ -367,7 +367,7 @@ If fmin is zero, FastHenry will run only the DC case regardless of the value of
  fmax.  A comment may be added with the  comment keyword.
 """
 function frequency(io::IO, fmin, fmax, ndec=0; comment="")
-  f()=@printf(io,".freq fmin=%.6e fmax=%.6e",fmin,fmax);f()
+  @printf(io,".freq fmin=%.6e fmax=%.6e",fmin,fmax) 
   if ndec!=0
     print(io," ndec=",ndec)
   else
@@ -503,44 +503,44 @@ function referenceplane!(io::IO,
   checksigmaandrho(sigma,rho)
   lastused.referenceplane += 1
   println(io,"G",lastused.referenceplane)
-  f()=@printf(io,"+ x1=%.6e",x1);f()
-  f()=@printf(io," y1=%.6e",y1);f()
-  f()=@printf(io," z1=%.6e\n",z1);f()
-  f()=@printf(io,"+ x2=%.6e",x2);f()
-  f()=@printf(io," y2=%.6e",y2);f()
-  f()=@printf(io," z2=%.6e\n",z2);f()
-  f()=@printf(io,"+ x3=%.6e",x3);f()
-  f()=@printf(io," y3=%.6e",y3);f()
-  f()=@printf(io," z3=%.6e\n",z3);f()
-  f()=@printf(io,"+ thick=%.6e",thick);f()
+  @printf(io,"+ x1=%.6e",x1) 
+  @printf(io," y1=%.6e",y1) 
+  @printf(io," z1=%.6e\n",z1) 
+  @printf(io,"+ x2=%.6e",x2) 
+  @printf(io," y2=%.6e",y2) 
+  @printf(io," z2=%.6e\n",z2) 
+  @printf(io,"+ x3=%.6e",x3) 
+  @printf(io," y3=%.6e",y3) 
+  @printf(io," z3=%.6e\n",z3) 
+  @printf(io,"+ thick=%.6e",thick) 
   print(io," seg1=",seg1)
   println(io," seg2=",seg2)
   if ~isnan(segwid1)
-    f()=@printf(io,"+ segwid1=%.6e\n",segwid1);f()
+    @printf(io,"+ segwid1=%.6e\n",segwid1) 
   end
   if ~isnan(segwid2)
-    f()=@printf(io,"+ segwid2=%.6e\n",segwid2);f()
+    @printf(io,"+ segwid2=%.6e\n",segwid2) 
   end
   if ~isnan(sigma)
-    f()=@printf(io,"+ sigma=%.6e\n",sigma);f()
+    @printf(io,"+ sigma=%.6e\n",sigma) 
   end
   if ~isnan(rho)
-    f()=@printf(io,"+ rho=%.6e\n",rho);f()
+    @printf(io,"+ rho=%.6e\n",rho) 
   end
   if nhinc!=0
     println(io,"+ nhinc=",nhinc)
   end
   if ~isnan(rh)
-    f()=@printf(io,"+ rh=%.6e\n",rh);f()
+    @printf(io,"+ rh=%.6e\n",rh) 
   end
   if ~isnan(relx)
-    f()=@printf(io,"+ relx=%.6e\n",relx);f()
+    @printf(io,"+ relx=%.6e\n",relx) 
   end
   if ~isnan(rely)
-    f()=@printf(io,"+ rely=%.6e\n",rely);f()
+    @printf(io,"+ rely=%.6e\n",rely) 
   end
   if ~isnan(relz)
-    f()=@printf(io,"+ relz=%.6e\n",relz);f()
+    @printf(io,"+ relz=%.6e\n",relz) 
   end
   if nodes!=[]
     nodenumbers = Array(Int,length(nodes))
@@ -551,7 +551,7 @@ function referenceplane!(io::IO,
       x = nodes[i][1]
       y = nodes[i][2]
       z = nodes[i][3]
-      f()=@printf(io," (%.6e, %.6e, %.6e)\n",x,y,z);f()
+      @printf(io," (%.6e, %.6e, %.6e)\n",x,y,z) 
     end
   else
     nodenumbers = []
@@ -560,9 +560,9 @@ function referenceplane!(io::IO,
     holetype = hole[1]
     print(io,"    + hole ",holetype," (")
     for holearg in hole[2:end-1]
-      f()=@printf(io,"%.6e, ",holearg);f()
+      @printf(io,"%.6e, ",holearg) 
     end
-    f()=@printf(io,"%.6e",hole[end]);f()
+    @printf(io,"%.6e",hole[end]) 
     println(io,")")
   end
   return (lastused.referenceplane, nodenumbers)
