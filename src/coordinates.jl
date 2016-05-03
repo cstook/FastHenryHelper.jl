@@ -76,7 +76,7 @@ function Base.convert(::Type{Polar}, arg::Spherical)
   convert(Polar,convert(Cartesian,arg))
 end
 
-function Base.convert{T<:Type{Point}}(::T, arg::Array{Point})
+function Base.convert{T<:Point,S<:Point}(::Type{T}, arg::Array{S})
   result = Array(T,size(arg))
   for i in eachindex(arg)
     result[i] = convert(T,arg[i])
@@ -111,7 +111,7 @@ function translate!(point::Point, vector::Point)
   return nothing
 end
 
-function translate!(points::Array{Point}, vector::Point)
+function translate!{T<:Point}(points::Array{T}, vector::Point)
   for i in eachindex(points)
     translate!(points[i],vector)
   end
@@ -152,7 +152,7 @@ function rotate!(point::Point, vector::Point)
   return nothing
 end
 
-function rotate!(points::Array{Point}, vector::Point)
+function rotate!{T<:Point}(points::Array{T}, vector::Point)
   for i in eachindex(points)
     rotate!(points[i],vector)
   end

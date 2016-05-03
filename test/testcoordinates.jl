@@ -24,12 +24,24 @@ function testconversion(c1::Point)
   testequal(c1,c5)
 end
 
+cartesian_array = Array(Cartesian,8)
+i = 0
 for a in [-1,1]
   for b in [-1,1]
     for c in [-1,1]
-      testconversion(Cartesian(a,b,c))
+      i += 1
+      cartesian_array[i] = Cartesian(a,b,c)
+      testconversion(cartesian_array[i])
     end
   end
 end
 
+# test converting an array
+spherical_array = convert(Spherical, cartesian_array)
+
+# test translate
+translate!(spherical_array,Polar(1,1,1))
+
+# test rotate
+rotate!(spherical_array,Polar(1,1,1))
 
