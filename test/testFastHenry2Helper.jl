@@ -1,5 +1,8 @@
 using .FastHenry2Helper
 
+inport("testcoordinates.jl")
+
+
 io = STDOUT
 #io = "/test/testoutput.inp"
 

@@ -3,7 +3,7 @@ Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
 
-export external, frequency, fasthenryend, via!
+export external, frequency, fasthenryend
 export LastUsed
 export node, node!
 export segment, segment!
@@ -568,6 +568,6 @@ function referenceplane!(io::IO,
   return (lastused.referenceplane, nodenumbers)
 end
 
-include("FastHenryHelperExtra.jl")
+include("FastHenryHelperExtra.jl") 
 
 end # module

@@ -74,6 +74,8 @@ function Base.convert{T<:Type{Point}}(::T, arg::Array{Point})
   return result
 end
 
+export translate,translate!
+
 function translate(point::Cartesian, vector::Cartesian)
   x = point.x + vector.x
   y = point.y + vector.y 
@@ -114,6 +116,8 @@ end
 translates `point` or `points` by `vector`
 """
 translate, translate!
+
+export rotate,rotate!
 
 function rotate(point::Spherical, vector::Spherical)
   θ = point.θ + vector.θ
