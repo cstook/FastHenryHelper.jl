@@ -1,9 +1,11 @@
-# cooridnates
+# coordinates
+
+export Point, Spherical, Polar, Cartesian
 
 abstract Point
 
 """
-a point or vector in [Spherical](http://mathworld.wolfram.com/SphericalCoordinates.html) cooridnates
+a point or vector in [Spherical](http://mathworld.wolfram.com/SphericalCoordinates.html) coordinates
 Spherical(r,θ,φ)
 """
 type Spherical <: Point
@@ -16,7 +18,7 @@ type Spherical <: Point
 end
 
 """
-a point or vector in [Cartesian](http://mathworld.wolfram.com/CartesianCoordinates.html) cooridnates
+a point or vector in [Cartesian](http://mathworld.wolfram.com/CartesianCoordinates.html) coordinates
 Polar(r,θ,z)
 """
 type Polar <: Point
@@ -29,7 +31,7 @@ type Polar <: Point
 end
 
 """
-a point or vector in [Cylindrical](http://mathworld.wolfram.com/CylindricalCoordinates.html) cooridnates
+a point or vector in [Cylindrical](http://mathworld.wolfram.com/CylindricalCoordinates.html) coordinates
 Cartesian(x,y,z)
 """
 type Cartesian <: Point
@@ -64,6 +66,14 @@ function Base.convert(::Type{Cartesian}, arg::Polar)
   y = arg.r*sin(arg.θ)
   z = arg.z
   return Cartesian(x,y,z)
+end
+
+function Base.convert(::Type{Spherical}, arg::Polar)
+  convert(Spherical,convert(Cartesian,arg))
+end
+
+function Base.convert(::Type{Polar}, arg::Spherical)
+  convert(Polar,convert(Cartesian,arg))
 end
 
 function Base.convert{T<:Type{Point}}(::T, arg::Array{Point})

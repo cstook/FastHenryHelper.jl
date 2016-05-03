@@ -1,6 +1,6 @@
 using .FastHenry2Helper
 
-inport("testcoordinates.jl")
+include("testcoordinates.jl")
 
 
 io = STDOUT

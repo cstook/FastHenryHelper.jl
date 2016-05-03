@@ -102,7 +102,7 @@ function trace!(io::IO, lastused::LastUsed, nodes;
                 nwinc::Integer = 0,
                 rh::Float64 = NaN,
                 rw::Float64 = NaN,
-                comment = ""))
+                comment = "")
   if length(nodes)<2
     throw(ArgumentError("must have at least two nodes"))
   end
@@ -124,4 +124,4 @@ function trace!(io::IO, lastused::LastUsed, nodes;
   return (nodes[1],nodes[end])
 end
 
-include("cooridnates.jl")
+include("coordinates.jl")
