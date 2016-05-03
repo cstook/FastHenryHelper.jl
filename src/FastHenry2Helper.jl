@@ -2,6 +2,7 @@
 Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
+include("coordinates.jl")
 
 export external, frequency, fasthenryend
 export LastUsed
@@ -51,16 +52,37 @@ function node!(io::IO, lu::LastUsed, x,y,z; comment="")
   node(io,lu.node,x,y,z,comment=comment)
 end
 
+function node!(io::IO, lu::LastUsed, point::Point; comment="")
+  cartesianpoint = convert(Cartesian,point)
+  node!(io,lu,cartesianpoint.x,cartesianpoint.y,cartesianpoint.z,comment=comment)
+end
+
+function node!{T<:Point}(io::IO, lu::LastUsed, points::Array{T}; comment="")
+  start = lu.node+1
+  for i in eachindex(points)
+    node!(io,lu,points[i],comment=comment)
+  end
+  stop = lu.node
+  return start:stop
+end
 """
     node(io::IO, number, x, y, z, <keyword arguments>)
     node!(io::IO, lastused::LastUsed, x, y, z, <keyword arguments>)
+    node!(io::IO, lastused::LastUsed, point::Point, <keyword arguments>)
+    node!{T<:Point}(io::IO, lu::LastUsed, points::Array{T}, <keyword arguments>)
 
-Write a node definition to io and update `lastused` if applicable.  Returns node number used.
+Write node definition(s) to io and update `lastused` if applicable.
+
+Node may be specified as either x,y,z or as a `Point`.  The node number is returned.  If 
+an array of points is passed one node definition will be written for each node.  In this
+case the range startnode:stopnode is returned.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
 * `number` or `lastused`: node number, either explicit or next available.
-* `x`,`y`,`z`: coordinate of node
+* `x`,`y`,`z`: or...
+* `point`: or...
+* `points`: coordinate of node(s)
 
 ## Keyword Arguments
 * `comment`: comment to be appended to line
@@ -569,5 +591,4 @@ function referenceplane!(io::IO,
 end
 
 include("FastHenryHelperExtra.jl") 
-
 end # module

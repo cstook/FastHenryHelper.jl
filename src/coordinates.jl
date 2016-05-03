@@ -5,7 +5,7 @@ export Point, Spherical, Polar, Cartesian
 abstract Point
 
 """
-a point or vector in [Spherical](http://mathworld.wolfram.com/SphericalCoordinates.html) coordinates
+a point or vector in [Spherical](http://mathworld.wolfram.com/SphericalCoordinates.html) coordinates<br>
 Spherical(r,θ,φ)
 """
 type Spherical <: Point
@@ -18,7 +18,7 @@ type Spherical <: Point
 end
 
 """
-a point or vector in [Cartesian](http://mathworld.wolfram.com/CartesianCoordinates.html) coordinates
+a point or vector in [Cartesian](http://mathworld.wolfram.com/CartesianCoordinates.html) coordinates<br>
 Polar(r,θ,z)
 """
 type Polar <: Point
@@ -31,7 +31,7 @@ type Polar <: Point
 end
 
 """
-a point or vector in [Cylindrical](http://mathworld.wolfram.com/CylindricalCoordinates.html) coordinates
+a point or vector in [Cylindrical](http://mathworld.wolfram.com/CylindricalCoordinates.html) coordinates<br>
 Cartesian(x,y,z)
 """
 type Cartesian <: Point

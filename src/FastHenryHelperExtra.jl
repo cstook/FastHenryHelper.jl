@@ -81,15 +81,7 @@ function via!(io::IO, lu::LastUsed, x, y, top, bot,
 end
 
 export trace!
-"""
-    trace!(io::IO, lastused::LastUsed, nodes, <keyword arguments>)
 
-connects list of nodes with segments.
-
-`nodes` is any iterable object which returns integer node numbers.  Segments connecting 
-nodes in order are written to `io`.  `lastused` is updated to reflect the segments 
-added.  Accepts same keyword arguments as `segment()`.  Returns first and last node. 
-"""
 function trace!(io::IO, lastused::LastUsed, nodes;
                 w::Float64=NaN,
                 h::Float64=NaN,
@@ -107,21 +99,67 @@ function trace!(io::IO, lastused::LastUsed, nodes;
     throw(ArgumentError("must have at least two nodes"))
   end
   for i in 1:length(nodes-1)
-    segment!(io, lastused, nodes,
-                w = w,
-                h = h,
-                sigma = sigma,
-                rho = rho,
-                wx = wx,
-                wy = wy,
-                wz = wz,
-                nhinc = nhinc,
-                nwinc = nwinc,
-                rh = rh,
-                rw = rw,
-                comment = comment)
+    segment!( io, lastused, nodes,
+              w = w,
+              h = h,
+              sigma = sigma,
+              rho = rho,
+              wx = wx,
+              wy = wy,
+              wz = wz,
+              nhinc = nhinc,
+              nwinc = nwinc,
+              rh = rh,
+              rw = rw,
+              comment = comment)
   end
-  return (nodes[1],nodes[end])
+  return nodes[1]:nodes[end]
 end
 
-include("coordinates.jl")
+function trace!{T<:Point}(io::IO, lastused::LastUsed, points::Array{T};
+                w::Float64=NaN,
+                h::Float64=NaN,
+                sigma::Float64 = NaN,
+                rho::Float64 = NaN,
+                wx::Float64 = NaN,
+                wy::Float64 = NaN,
+                wz::Float64 = NaN,
+                nhinc::Integer = 0,
+                nwinc::Integer = 0,
+                rh::Float64 = NaN,
+                rw::Float64 = NaN,
+                comment = ""))
+  if length(points)<2
+    throw(ArgumentError("must have at least two points"))
+  end
+  nodes = node!(io,lastused,points,comment=comment)
+  trace!(io,lastused,nodes,
+          w = w,
+          h = h,
+          sigma = sigma,
+          rho = rho,
+          wx = wx,
+          wy = wy,
+          wz = wz,
+          nhinc = nhinc,
+          nwinc = nwinc,
+          rh = rh,
+          rw = rw,
+          comment = comment))
+end
+
+"""
+    trace!(io::IO, lastused::LastUsed, nodes, <keyword arguments>)
+    trace!{T<:Point}(io::IO, lastused::LastUsed, points::Array{T}, <keyword arguments>)
+
+connects list of nodes or points with segments.
+
+`nodes` is any iterable object which returns integer node numbers.  Segments connecting 
+nodes in order are written to `io`.  `lastused` is updated to reflect the segments 
+added.  Accepts same keyword arguments as `segment()`.  Returns range firstnode:lastnode.
+Instead of node numbers, an array of `Points` may be passed.  In this case nodes are created
+before the segments connecting them. 
+"""
+trace!
+
+
