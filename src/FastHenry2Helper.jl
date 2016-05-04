@@ -2,8 +2,9 @@
 Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
+include("coordinates.jl")
 
-export external, frequency, fasthenryend, via!
+export external, frequency, fasthenryend
 export LastUsed
 export node, node!
 export segment, segment!
@@ -51,16 +52,37 @@ function node!(io::IO, lu::LastUsed, x,y,z; comment="")
   node(io,lu.node,x,y,z,comment=comment)
 end
 
+function node!(io::IO, lu::LastUsed, point::Point; comment="")
+  cartesianpoint = convert(Cartesian,point)
+  node!(io,lu,cartesianpoint.x,cartesianpoint.y,cartesianpoint.z,comment=comment)
+end
+
+function node!{T<:Point}(io::IO, lu::LastUsed, points::Array{T}; comment="")
+  start = lu.node+1
+  for i in eachindex(points)
+    node!(io,lu,points[i],comment=comment)
+  end
+  stop = lu.node
+  return start:stop
+end
 """
     node(io::IO, number, x, y, z, <keyword arguments>)
     node!(io::IO, lastused::LastUsed, x, y, z, <keyword arguments>)
+    node!(io::IO, lastused::LastUsed, point::Point, <keyword arguments>)
+    node!{T<:Point}(io::IO, lu::LastUsed, points::Array{T}, <keyword arguments>)
 
-Write a node definition to io and update `lastused` if applicable.  Returns node number used.
+Write node definition(s) to io and update `lastused` if applicable.
+
+Node may be specified as either x,y,z or as a `Point`.  The node number is returned.  If 
+an array of points is passed one node definition will be written for each node.  In this
+case the range startnode:stopnode is returned.
 
 ## Arguments
 * `io::IO`: where the FastHenry commands are written
 * `number` or `lastused`: node number, either explicit or next available.
-* `x`,`y`,`z`: coordinate of node
+* `x`,`y`,`z`: or...
+* `point`: or...
+* `points`: coordinate of node(s)
 
 ## Keyword Arguments
 * `comment`: comment to be appended to line
@@ -547,7 +569,7 @@ function referenceplane!(io::IO,
     for i in eachindex(nodes)
       lastused.node += 1
       nodenumbers[i] = lastused.node
-      print(io,"    + N",lastused.node)
+      print(io,"+ N",lastused.node)
       x = nodes[i][1]
       y = nodes[i][2]
       z = nodes[i][3]
@@ -558,7 +580,7 @@ function referenceplane!(io::IO,
   end
   for hole in holes
     holetype = hole[1]
-    print(io,"    + hole ",holetype," (")
+    print(io,"+ hole ",holetype," (")
     for holearg in hole[2:end-1]
       @printf(io,"%.6e, ",holearg) 
     end
@@ -568,83 +590,5 @@ function referenceplane!(io::IO,
   return (lastused.referenceplane, nodenumbers)
 end
 
-"""
-    via!(io, lastused::LastUsed, x, y, top, bot, radius, wall_thickness, height 
-        ; <keyword arguments>)
-
-Write commands to create the barrel of a via to `io` and returns tuple 
-`(topnode,bottomnode)`.  PCB is assumed to be parallel to the xy plane.
-
-## Arguments
-* `io::IO`: where the FastHenry commands are written
-* `lastused`: used to keep track of used nodes and segments
-* `x`: x position of via
-* `y`: y position of via
-* `top`: z offset of top of via
-* `bot`: z offset of bottom of via
-* `radius`: radius of via
-* `wall_thickness`: thickness of the plating in the barrel
-
-## Keyword Arguments
-* `n=8`: number of segments used to create via
-         n=0 will bypass the via
-* `comment=""`: text to be included as comment in output 
-"""
-function via!(io::IO, lu::LastUsed, x, y, top, bot,
-             radius, wall_thickness;
-             n=8,
-             comment = "")
-  if n!=0 && n<2 
-    throw(ArgumentError("must have zero or at least 2 segments"))
-  end
-  FastHenry2Helper.comment(io,"***** BEGIN ",comment)
-  if n!=0
-    ts = linspace(0.0, 2.0*pi-(2*pi/n), n)
-    xarray = radius .* map(cos,ts) .+ x
-    yarray = radius .* map(sin,ts) .+ y
-    wx = map(cos,ts.+(pi/2))
-    wy = map(sin,ts.+(pi/2))
-    segment_width = sqrt((xarray[1]-xarray[2])^2+(yarray[1]-yarray[2])^2)
-    FastHenry2Helper.comment(io,"Barrel of a via")
-    FastHenry2Helper.comment(io,"  diameter = ", 2*radius)
-    FastHenry2Helper.comment(io,"  wall thickness = ", wall_thickness)
-    FastHenry2Helper.comment(io,"  x = ", x)
-    FastHenry2Helper.comment(io,"  y = ", y)
-    FastHenry2Helper.comment(io,"  top = ", top)
-    FastHenry2Helper.comment(io,"  bot = ", bot)
-    FastHenry2Helper.comment(io,"  number of segments = ",n)
-    FastHenry2Helper.comment(io)
-    FastHenry2Helper.comment(io,"nodes around top and bottom")
-    topnodes = Array(Int,n)
-    botnodes = Array(Int,n)
-    for i in 1:n
-      topnodes[i] = node!(io,lu,xarray[i],yarray[i],top)
-      botnodes[i] = node!(io,lu,xarray[i],yarray[i],bot)
-    end
-    FastHenry2Helper.comment(io,"center node, top and bottom")
-    centertopnode = node!(io,lu,x,y,top)
-    centerbotnode = node!(io,lu,x,y,bot)
-    FastHenry2Helper.comment(io)
-    FastHenry2Helper.comment(io,"connect top and bottom together and to the center node")
-    equivalent(io,topnodes,centertopnode)
-    equivalent(io,botnodes,centerbotnode)
-    FastHenry2Helper.comment(io)
-    FastHenry2Helper.comment(io,"segments")
-    for i in 1:n
-      segment!(io,lu,topnodes[i],botnodes[i],
-                w=segment_width,
-                h=wall_thickness,
-                wx=wx[i], wy=wy[i], wz=0.0,
-                nhinc=5, nwinc=1)
-    end
-  else
-    FastHenry2Helper.comment(io,"via bypass")
-    centertopnode = node!(io,lu,x,y,top)
-    centerbotnode = node!(io,lu,x,y,bot)
-    equivalent(io,centertopnode,centerbotnode)
-  end
-  FastHenry2Helper.comment(io,"***** END ",comment)
-  return (centertopnode, centerbotnode)
-end
-
+include("FastHenryHelperExtra.jl") 
 end # module
