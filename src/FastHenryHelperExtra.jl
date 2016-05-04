@@ -128,7 +128,7 @@ function trace!{T<:Point}(io::IO, lastused::LastUsed, points::Array{T};
                 nwinc::Integer = 0,
                 rh::Float64 = NaN,
                 rw::Float64 = NaN,
-                comment = ""))
+                comment = "")
   if length(points)<2
     throw(ArgumentError("must have at least two points"))
   end
@@ -145,7 +145,7 @@ function trace!{T<:Point}(io::IO, lastused::LastUsed, points::Array{T};
           nwinc = nwinc,
           rh = rh,
           rw = rw,
-          comment = comment))
+          comment = comment)
 end
 
 """

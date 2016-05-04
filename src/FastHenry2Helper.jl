@@ -569,7 +569,7 @@ function referenceplane!(io::IO,
     for i in eachindex(nodes)
       lastused.node += 1
       nodenumbers[i] = lastused.node
-      print(io,"    + N",lastused.node)
+      print(io,"+ N",lastused.node)
       x = nodes[i][1]
       y = nodes[i][2]
       z = nodes[i][3]
@@ -580,7 +580,7 @@ function referenceplane!(io::IO,
   end
   for hole in holes
     holetype = hole[1]
-    print(io,"    + hole ",holetype," (")
+    print(io,"+ hole ",holetype," (")
     for holearg in hole[2:end-1]
       @printf(io,"%.6e, ",holearg) 
     end
