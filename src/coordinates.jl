@@ -41,6 +41,9 @@ type Cartesian <: Point
 end
 
 function Base.convert(::Type{Spherical}, arg::Cartesian)
+  if arg.x==0.0 && arg.y==0.0 && arg.z==0.0
+    return Spherical(0,0,0)
+  end
   r = sqrt(arg.x^2 + arg.y^2 + arg.z^2)
   θ = atan2(arg.y,arg.x)
   φ = acos(arg.z/r)
@@ -48,6 +51,9 @@ function Base.convert(::Type{Spherical}, arg::Cartesian)
 end
 
 function Base.convert(::Type{Cartesian}, arg::Spherical)
+  if arg.r==0.0
+    return Cartesian(0,0,0)
+  end
   x = arg.r*cos(arg.θ)*sin(arg.φ)
   y = arg.r*sin(arg.θ)*sin(arg.φ)
   z = arg.r*cos(arg.φ)
@@ -55,6 +61,9 @@ function Base.convert(::Type{Cartesian}, arg::Spherical)
 end
 
 function Base.convert(::Type{Polar}, arg::Cartesian)
+  if arg.x==0 && arg.y==0
+    return Polar(0,0,arg.z)
+  end
   r = sqrt(arg.x^2 + arg.y^2)
   θ = atan2(arg.y,arg.x)
   z = arg.z
@@ -62,6 +71,9 @@ function Base.convert(::Type{Polar}, arg::Cartesian)
 end
 
 function Base.convert(::Type{Cartesian}, arg::Polar)
+  if arg.r==0
+    return Cartesian(0,0,arg.z)
+  end
   x = arg.r*cos(arg.θ)
   y = arg.r*sin(arg.θ)
   z = arg.z
@@ -107,7 +119,10 @@ function translate{T<:Point}(point::T, vector::Point)
 end
 
 function translate!(point::Point, vector::Point)
-  point = translate(point,vector)
+  newpoint = translate(point,vector)
+  point.(1) = newpoint.(1)
+  point.(2) = newpoint.(2)
+  point.(3) = newpoint.(3)
   return nothing
 end
 
@@ -127,44 +142,84 @@ translates `point` or `points` by `vector`
 """
 translate, translate!
 
+"""
+    rx(α) = [[1 0 0];[0 cos(α) sin(α)];[0 -sin(α) cos(α)]]
+
+[rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle α around x axis.
+"""
+rx(α) = [[1 0 0];[0 cos(α) sin(α)];[0 -sin(α) cos(α)]]
+
+"""
+    ry(β) = [[cos(β) 0 -sin(β)];[0 1 0];[sin(β) 0 cos(β)]]
+
+[rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle β around y axis.
+"""
+ry(β) = [[cos(β) 0 -sin(β)];[0 1 0];[sin(β) 0 cos(β)]]
+
+"""
+    rz(γ) = [[cos(γ) sin(γ) 0];[-sin(γ) cos(γ) 0];[0 0 1]]
+
+[rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle γ around z axis.
+"""
+rz(γ) = [[cos(γ) sin(γ) 0];[-sin(γ) cos(γ) 0];[0 0 1]]
+
 export rotate,rotate!
 
-function rotate(point::Spherical, vector::Spherical)
-  θ = point.θ + vector.θ
-  φ = point.φ + vector.φ
-  return Spherical(point.r,θ,φ)
+function rotate(point::Cartesian, rotationmatrix::Array{Float64,2})
+  newpoint = [point.x point.y point.z]*rotationmatrix
+  Cartesian(newpoint.x, newpoint.y, newpoint.z)
 end
 
-function rotate!(point::Spherical, vector::Spherical)
-  point.θ += vector.θ
-  point.φ += vector.φ
+function rotate!(point::Cartesian, rotationmatrix::Array{Float64,2})
+  newpoint = [point.x point.y point.z]*rotationmatrix
+  point.x = newpoint[1]
+  point.y = newpoint[2]
+  point.z = newpoint[3]
   return nothing
 end
 
-function rotate{T<:Point}(point::T, vector::Point)
-  ps = convert(Spherical,point)
-  vs = convert(Spherical,vector)
-  convert(T,rotate(ps,vs))
+function rotate{T<:Point}(point::T, rotationmatrix::Array{Float64,2})
+  ps = convert(Cartesian,point)
+  convert(T,rotate(ps,rotationmatrix))
 end
 
-function rotate!(point::Point, vector::Point)
-  point = rotate(point,vector)
+function rotate!(point::Point, rotationmatrix::Array{Float64,2})
+  newpoint = rotate(point,rotationmatrix)
+  point.(1) = newpoint.(1)
+  point.(2) = newpoint.(2)
+  point.(3) = newpoint.(3)
   return nothing
 end
 
-function rotate!{T<:Point}(points::Array{T}, vector::Point)
+function rotate!{T<:Point}(points::Array{T}, rotationmatrix::Array{Float64,2})
   for i in eachindex(points)
-    rotate!(points[i],vector)
+    rotate!(points[i],rotationmatrix)
   end
   return nothing
 end
 
-"""
-    rotate(point::Point, vector::Point)
-    rotate!(point::Point, vector::Point)
-    rotate!(points::Array{Point}, vector::Point)
+function rotate{T<:Point}(points::Array{T}, rotationmatrix::Array{Float64,2})
+  result = similar(points)
+  for i in eachindex(points)
+    result[i] = rotate(points[i],rotationmatrix)
+  end
+  return result
+end
 
-rotates `point` or `points` by `vector`
+rotate(p, α::Float64, β::Float64, γ::Float64) = rotate(p,rx(α)*ry(β)*rz(γ))
+rotate!(p, α::Float64, β::Float64, γ::Float64) = rotate!(p,rx(α)*ry(β)*rz(γ))
+
+"""
+    rotate(point::Point, rotationmatrix::Array{Float64,2})
+    rotate!(point::Point, rotationmatrix::Array{Float64,2})
+    rotate!(points::Array{Point}, rotationmatrix::Array{Float64,2})
+    rotate(points, α::Float64, β::Float64, γ::Float64)
+    rotate!(points, α::Float64, β::Float64, γ::Float64)
+
+rotates `point` or `points`
+
+specify rotation by [rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) 
+or α, β, γ angles around x,y,z axis
 """
 rotate, rotate!
 

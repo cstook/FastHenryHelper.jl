@@ -171,19 +171,46 @@ export helixpoints
 returns an array of points along a helical path.
 
 The helix is specified by `radius`, `pitch`, and `radians`.  The spacing of the points along 
-the helix is determined by `radianperpoint`.
+the helix is determined by `radiansperpoint`.
 """
-function helixpoints(radius::Float64, pitch::Float64, radians::Float64, radianperpoint::Float64=π/4)
-  numberofpoints = Int(cld(radians,radianperpoint))
+function helixpoints(radius::Float64, pitch::Float64, radians::Float64, radiansperpoint::Float64=π/4)
+  numberofpoints = Int(cld(radians,radiansperpoint))+1
   points = Array(Cartesian,numberofpoints)
   i = 0
   for angle in 0:radiansperpoint:radians
     i+=1
     points[i] = hexlixpoint(radius,pitch,angle)
   end
-  if i<length(numberofpoints) # end point didn't fall on a multiple of radianperpoint
+  if i<numberofpoints # end point didn't fall on a multiple of radiansperpoint
     i+=1
     points[i] = hexlixpoint(radius,pitch,radians)
   end
   return points
 end
+
+export xyz
+
+function xyz(point::Point)
+  cp = convert(Cartesian,point)
+  return(cp.x,cp.y,cp.z)
+end
+
+function xyz{T<:Point}(points::Array{T})
+  x = similar(points,Float64)
+  y = similar(points,Float64)
+  z = similar(points,Float64)
+  for i in eachindex(points)
+    (x[i],y[i],z[i]) = xyz(points[i])
+  end
+  return (x,y,z)
+end
+
+"""
+    xyz(point::Point)
+    xyz{T<:Point}(points::Array{T})
+
+converts an array of points to a tuple of arrays for the x,y, and z cooridnates.
+
+usefull for plotting points for debug.
+"""
+xyz
