@@ -276,7 +276,7 @@ Write .Default command to `io`.
 * `io::IO`: where the FastHenry commands are written
 
 ## Keyword Arguments
-* `x`, `y`, `z`: default x,y, and z cooridantes
+* `x`, `y`, `z`: default x,y, and z confidantes
 * `w`, `h`:  default width and height
 * `sigma` ,`rho`: default conductivity or resistivity (only specify one).
                   sigma = 5.8e4 1/(mm*Ohms) for copper.
