@@ -43,5 +43,8 @@ spherical_array = convert(Spherical, cartesian_array)
 translate!(spherical_array,Polar(1,1,1))
 
 # test rotate
-rotate!(spherical_array,Polar(1,1,1))
+α = π/4
+β = π/4
+γ = π/4
+rotate!(spherical_array,α,β,γ)
 

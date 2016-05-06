@@ -167,7 +167,7 @@ export rotate,rotate!
 
 function rotate(point::Cartesian, rotationmatrix::Array{Float64,2})
   newpoint = [point.x point.y point.z]*rotationmatrix
-  Cartesian(newpoint.x, newpoint.y, newpoint.z)
+  Cartesian(newpoint[1], newpoint[2], newpoint[3])
 end
 
 function rotate!(point::Cartesian, rotationmatrix::Array{Float64,2})
