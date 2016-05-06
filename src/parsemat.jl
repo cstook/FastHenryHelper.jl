@@ -17,14 +17,6 @@ type ParseFastHenryMapResult
   impeadance :: Array{Complex{Float64},3}
 end
 
-
-"""
-    parsefasthenrymap(io::IO)
-
-parses the .mat output file from FastHenry
-
-returns type `ParseFastHenryResult`
-"""
 function parsefasthenrymap(io::IO)
   line = readline(io)
   m = match(r"Row (\n+):.*port name: (\w)")
@@ -82,3 +74,14 @@ function parsefasthenrymap(io::IO)
     end
     ParseFastHenryMapResult(portnames,frequencymatrix,impeadancematrix)
 end
+
+parsefasthenrymap(filename::AbstractString) = parsefasthenrymap(open(filename,"r"))
+
+"""
+    parsefasthenrymap(io::IO)
+    parsefasthenrymap(filename::AbstractString)
+
+parses the .mat output file from FastHenry
+
+returns type `ParseFastHenryResult`
+"""
