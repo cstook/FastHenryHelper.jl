@@ -1,6 +1,7 @@
 # parsemat.jl
 # 
 # parses impedance matrix output file from FastFieldSolvers
+export parsefasthenrymap
 
 """
 result of parsing FastHenry .mat file

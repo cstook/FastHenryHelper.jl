@@ -3,6 +3,7 @@ Helps creating input files for FastHenry2.
 """
 module FastHenry2Helper
 include("coordinates.jl")
+include("parsemat.jl")
 
 export external, frequency, fasthenryend
 export LastUsed

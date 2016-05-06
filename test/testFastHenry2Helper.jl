@@ -1,7 +1,7 @@
 using .FastHenry2Helper
 
 include("testcoordinates.jl")
-
+result = parsefasthenrymap("example3_Zc.mat")
 
 io = STDOUT
 #io = "/test/testoutput.inp"
@@ -38,5 +38,6 @@ external(io,1,2,"port1")
 external(io,topnode,bottomnode,"test port")
 frequency(io,1e6,10e9,2.5)
 fasthenryend(io)
+
 
 
