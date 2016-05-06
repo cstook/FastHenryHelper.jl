@@ -12,14 +12,15 @@ type ParseFastHenryMapResult
   frequencies :: Array{Float64,1}
   """
   impedance matrix at each frequency.  <br>
-  impedance [frequency : impedance matrix row : impedance matrix column]
+  impedance [impedance matrix row : impedance matrix column : frequency]
   """
   impeadance :: Array{Complex{Float64},3}
 end
 
 function parsefasthenrymap(io::IO)
+  findportname = r"(\d+):.*port name: (\w+)"
   line = readline(io)
-  m = match(r"Row (\n+):.*port name: (\w)")
+  m = match(findportname,line)
   if m==nothing
     throw(ParseError("first line did not start with \"Row\""))
   end
@@ -28,12 +29,12 @@ function parsefasthenrymap(io::IO)
   portnames[numberofrows] = m.captures[2]
   for i in numberofrows-1:-1:1
     line = readline(io)
-    m = match(r"Row (\n+):.*port name: (\w)")
+    m = match(findportname,line)
     if m==nothing
       rowstring = @sprintf("%d",i)
       throw(ParseError("did not find rows line for Row="*rowstring))
     end
-    portnames[numberofrows] = m.captures[2]
+    portnames[i] = m.captures[2]
   end
   frequencies = 0
   buffer = IOBuffer()
@@ -41,7 +42,7 @@ function parsefasthenrymap(io::IO)
   while ~eof(io)
     line = readline(io)
     frequencies+=1
-    m = match(r"Impedance matrix for frequency = ([\n+-eE.]) ")
+    m = match(r"Impedance matrix for frequency = ([\d+-eE.]+) ",line)
     if m==nothing
       throw(ParseError("did not find \"Impedance matrix for frequency = \""))
     end
@@ -52,27 +53,28 @@ function parsefasthenrymap(io::IO)
       line = readline(io)
       position = 1
       for column in 1:numberofrows # impedance matrix is square
-        m = match(r"([\d+-.eE]*) *([\d+-.eE]*)j",line,position)
+        m = match(r"([\d+-.eE]+) *([\d+-.eE]+)j",line,position)
         if m==nothing
           throw(ParseError("error parsing impedance matrix"))
         end
         r = parse(Float64,m.captures[1])
         i = parse(Float64,m.captures[2])
         impeadancematrix[row,column]=Complex64(r,i)
-        write(buffer,impeadancematrix)
         position = m.offset + length(m.match)
       end
     end
-    resultmatrix = Array(Complex{Float64},frequencies,numberofrows,numberofrows)
-    frequencymatrix = Array(Float64,frequencies)
-    seekstart(b)
-    for i in 1:frequencies
-      frequency = read(b,Float64)
-      frequencymatrix[i] = frequency
-      impeadancematrix = read(b,Array(Complex{Float64},numberofrows,numberofrows))
-      resultmatrix[i,:,:] = impeadancematrix
-    end
-    ParseFastHenryMapResult(portnames,frequencymatrix,impeadancematrix)
+    write(buffer,impeadancematrix)
+  end
+  resultmatrix = Array(Complex{Float64},numberofrows,numberofrows,frequencies)
+  frequencymatrix = Array(Float64,frequencies)
+  seekstart(buffer)
+  for i in 1:frequencies
+    frequency = read(buffer,Float64)
+    frequencymatrix[i] = frequency
+    read!(buffer,impeadancematrix)
+    resultmatrix[:,:,i] = impeadancematrix
+  end
+  ParseFastHenryMapResult(portnames,frequencymatrix,resultmatrix)
 end
 
 parsefasthenrymap(filename::AbstractString) = parsefasthenrymap(open(filename,"r"))
@@ -85,3 +87,4 @@ parses the .mat output file from FastHenry
 
 returns type `ParseFastHenryResult`
 """
+parsefasthenrymap
