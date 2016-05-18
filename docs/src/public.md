@@ -1,29 +1,32 @@
 # Public API
 
-	{meta}
-	CurentModule = FastFieldSolversHelper.FastHenry2Helper
+```@meta
+CurentModule = FastFieldSolversHelper.FastHenry2Helper
+```
 
 ## Index
 
-	{index}
-	Pages = ["public.md"]
+```@index
+Pages = ["public.md"]
+```
 
 ## FastHenry2Helper
 
-	{docs}
-	FastHenry2Helper
-	LastUsed
-	titleline
-	comment
-	node
-	node!
-	segment
-	segment!
-	units
-	default
-	external
-	frequency
-	equivalent
-	fasthenryend
-	referenceplane!
-	via!
+```@docs
+FastHenry2Helper
+LastUsed
+titleline
+comment
+node
+node!
+segment
+segment!
+units
+default
+external
+frequency
+equivalent
+fasthenryend
+referenceplane!
+via!
+```

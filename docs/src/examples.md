@@ -3,8 +3,7 @@
 ## Example 1
 This is a duplicate of the simple example in section 1.1 of "FastHenry USER'S GUIDE"
 
-```julia
-{example}
+```@example
 using FastFieldSolversHelper
 using .FastHenry2Helper
 io = STDOUT
@@ -39,8 +38,7 @@ fasthenryend(io)
 ## Example 2
 Same as example 1, except using LastUsed(), node!, and segment! to automatically number the nodes and segments.
 
-```julia
-{example}
+```@example
 using FastFieldSolversHelper
 using .FastHenry2Helper
 io = STDOUT
@@ -75,8 +73,7 @@ fasthenryend(io)
 
 ## Example 3, using a thin ground plane as a shield between two loops
 
-```julia
-{example}
+```@example
 using FastFieldSolversHelper
 using .FastHenry2Helper
 
