@@ -10,11 +10,11 @@ Node(name,x,y,z) = Node(Symbol(name),[x y z 1.0])
 Node(x,y,z) = Node(:null,x,y,z)
 Node(;name = :null, x=0, y=0, z=0) = Node(Symbol(name),x,y,z)
 
-function printfh(io::IO, n::Node; plane = false)
+function printfh(io::IO, n::Node, a::AutoName; plane = false)
   if plane
     print(io,"+ ")
   end
-  print(io,"N",string(n.name))
+  print(io,"N",autoname(a, n.name))
   if plane
     print(io,"(")
   end

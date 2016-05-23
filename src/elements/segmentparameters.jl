@@ -32,7 +32,7 @@ end
 SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(w, h, sigma, rho, wx, wy, wz, nhinc, nwinc, rh, rw)
 
-function printfh(io::IO, x::SegmentParameters)
+function printfh(io::IO, x::SegmentParameters, ::AutoName)
   if ~isnan(x.w)
     @printf(io," w=%.6e",x.w)
   end

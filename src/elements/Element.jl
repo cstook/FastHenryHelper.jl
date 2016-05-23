@@ -1,7 +1,21 @@
 abstract Element
 
-printfh(::IO, ::Element) = nothing
-printfh(x::Element) = printfh(STDOUT,x)
+type AutoName
+  counter :: Int
+end
+
+function autoname(a::AutoName,n::Symbol)
+  if n == :null
+    a.counter += 1
+    return string("_",a.counter)
+  else
+    return string(n)
+  end
+end
+
+printfh(::IO, ::Element, ::AutoName) = nothing
+printfh(io::IO, e::Element) = printfh(io, e, AutoName(0))
+printfh(io::Element) = printfh(STDOUT,io)
 transform(::Element) = nothing
 transform!(::Element) = nothing
 

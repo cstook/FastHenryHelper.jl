@@ -3,7 +3,7 @@ immutable Equiv <: Element
 end
 Equiv(args...) = Equiv([args])
 
-function fhprint(io::IO, x::Equiv)
+function fhprint(io::IO, x::Equiv, ::AutoName)
   print(io,".equiv")
   for node in x.nodes
     println(io," ",string(node.name))

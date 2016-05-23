@@ -9,7 +9,7 @@ immutable Units <: Element
   end
 end
 
-function printfh(io::IO, x::Units)
+function printfh(io::IO, x::Units, ::AutoName)
   println(io,".units ",x.unitname)
   return nothing
 end

@@ -6,7 +6,7 @@ end
 Point(x,y,z) = Point([x y z 1])
 Point(; x=0, y=0, z=0) = Point(x,y,z)
 
-function printfh(io::IO,x::Point)
+function printfh(io::IO, x::Point, ::AutoName)
   print(io,"+ hole point ")
   @printf(io,"(%.6e, %.6e, %.6e)",x.xyz[1],x.xyz[2],x.xyz[3])
   println(io)
@@ -28,7 +28,7 @@ Rect(x1,y1,z1,x2,y2,z2) = Rect([x1 y1 z1 1],[x2 y2 z2 1])
 Rect(; x1=0, y1=0, z1=0, x2=0, y2=0, z2=0) = 
   Rect(x1,y1,z1,x2,y2,z2)
 
-function printfh(io::IO,x::Rect)
+function printfh(io::IO, x::Rect, ::AutoName)
   print(io,"+ hole rect ")
   @printf(io,"(%.6e, %.6e, %.6e, %.6e, %.6e, %.6e)",
           x.corner1[1],x.corner1[2],x.corner1[3],
@@ -54,7 +54,7 @@ Circle(x,y,z,r) = Circle([x y z 1],r)
 Circle(; x=0, y=0, z=0, r=0) =
   Circle(x,y,z,r)
 
-function printfh(io::IO,x::Circle)
+function printfh(io::IO, x::Circle, ::AutoName)
   print(io,"+ hole circle ")
   @printf(io, "(%.6e, %.6e, %.6e, %.6e)",
           x.center[1],x.center[2],x.center[3],
@@ -127,8 +127,8 @@ UniformPlane(;name = :null,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
 
-function printfh(io::IO, x::UniformPlane)
-  println(io,"G",string(x.name))
+function printfh(io::IO, x::UniformPlane, a::AutoName)
+  println(io,"G",autoname(a,x.name))
   @printf(io,"+ x1=%.6e",x.corner1[1]) 
   @printf(io," y1=%.6e",x.corner1[2]) 
   @printf(io," z1=%.6e\n",x.corner1[3]) 
@@ -169,10 +169,10 @@ function printfh(io::IO, x::UniformPlane)
     @printf(io,"+ relz=%.6e\n",x.relz) 
   end
   for node in x.nodes
-    printfh(io,node,plane=true)
+    printfh(io,node,a,plane=true)
   end
   for hole in x.holes
-    printfh(io,hole)
+    printfh(io,hole,a)
   end
   return nothing
 end
