@@ -10,6 +10,6 @@ immutable Units <: Element
 end
 
 function printfh(io::IO, x::Units)
-  print(io,".units ",x.unitname)
+  println(io,".units ",x.unitname)
   return nothing
 end

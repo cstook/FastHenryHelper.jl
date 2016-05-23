@@ -3,15 +3,26 @@
 immutable Node <: Element
   name :: Symbol
   xyz  :: Array{Float64,2}
+  Node(name, xyz::Array{Float64,2}) = new(Symbol(name),xyz)
 end
 Node(xyz::Array{Float64,2}) = Node(:null,xyz)
 Node(name,x,y,z) = Node(name,[x y z 1])
 Node(x,y,z) = Node(:null,x,y,z)
 Node(;name::Symbol = :null, x=0, y=0, z=0) = Node(name,x,y,z)
 
-function printfh(io::IO, n::Node)
-  print(io,"N",string(name))
-  @printf(io," x=%.6e y=%.6e z=%.6e",xyz[1],xyz[2],xyz[3])
+function printfh(io::IO, n::Node; plane = false)
+  if plane
+    print(io,"+ ")
+  end
+  print(io,"N",string(n.name))
+  if plane
+    print(io,"(")
+  end
+  @printf(io," x=%.6e y=%.6e z=%.6e",n.xyz[1],n.xyz[2],n.xyz[3])
+  if plane
+    print(io,")")
+  end
+  println(io)
   return nothing
 end
 

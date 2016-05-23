@@ -3,5 +3,5 @@ immutable Title <: Element
 end
 
 function printfh(io::IO, title::Title)
-  print(io,"* ",title.string)
+  println(io,"* ",title.string)
 end

@@ -5,6 +5,6 @@ immutable External <: Element
 end
 
 function printfh(io::IO, x::External)
-  print(io, ".External ",string(x.node1.name)," ",string(x.node2.name)," ",x.portname)
+  println(io, ".External ",string(x.node1.name)," ",string(x.node2.name)," ",x.portname)
   return nothing
 end

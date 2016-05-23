@@ -35,26 +35,32 @@ function printfh(io::IO, x::SegmentParameters)
   if ~isnan(x.rho)
     @printf(io," rho=%.6e",x.rho) 
   end
-  if ~isnan(x.wx)
-    @printf(io," wx=%.6e",x.wx) 
-  end
-  if ~isnan(x.wy)
-    @printf(io," wy=%.6e",x.wy) 
-  end
-  if ~isnan(x.wz)
-    @printf(io," wz=%.6e",x.wz) 
-  end
-  if ~isnan(x.nhinc)
-    @printf(io," nhinc=%.6e",x.nhinc) 
-  end
-  if ~isnan(x.nwinc)
-    @printf(io," nwinc=%.6e",x.nwinc) 
-  end
-  if ~isnan(x.rh)
-    @printf(io," rh=%.6e",x.rh) 
-  end
-  if ~isnan(x.rw)
-    @printf(io," rw=%.6e",x.rw) 
+  println(io)
+  if ~isnan(x.wx) || ~isnan(x.wy) || ~isnan(x.wz) || ~isnan(x.nhinc) || 
+     ~isnan(x.nwinc) || ~isnan(x.rh) || ~isnan(x.rw)
+     print(io, "+ ")
+    if ~isnan(x.wx)
+      @printf(io," wx=%.6e",x.wx) 
+    end
+    if ~isnan(x.wy)
+      @printf(io," wy=%.6e",x.wy) 
+    end
+    if ~isnan(x.wz)
+      @printf(io," wz=%.6e",x.wz) 
+    end
+    if ~isnan(x.nhinc)
+      @printf(io," nhinc=%.6e",x.nhinc) 
+    end
+    if ~isnan(x.nwinc)
+      @printf(io," nwinc=%.6e",x.nwinc) 
+    end
+    if ~isnan(x.rh)
+      @printf(io," rh=%.6e",x.rh) 
+    end
+    if ~isnan(x.rw)
+      @printf(io," rw=%.6e",x.rw) 
+    end
+    println(io)
   end
   return nothing
 end

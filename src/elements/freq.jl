@@ -24,5 +24,6 @@ function printfh(io::IO, x::Freq)
   if ~isnan(x.ndec)
     @printf(io," ndec=%.6e",x.ndec)
   end
+  println(io)
   return nothing
 end

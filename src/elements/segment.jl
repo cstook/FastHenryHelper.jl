@@ -4,8 +4,9 @@ immutable Segment <: Element
   node1 :: Node 
   node2 :: Node 
   sp :: SegmentParameters
+  Segment(name, node1::Node, node2::Node, sp::SegmentParameters) =
+    Segment(Symbol(name), node1, node2, sp)
 end
-
 Segment(node1::Node, node2::Node, sp::SegmentParameters) =
   Segment(:null, node1, node2, sp)
 
@@ -14,5 +15,3 @@ function printfh(io::IO, s::Segment)
   printfh(io,s.sp)
   return nothing
 end
-
-
