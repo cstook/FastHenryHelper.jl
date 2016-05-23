@@ -1,6 +1,6 @@
 
 
-type Node <: Element
+immutable Node <: Element
   name :: Symbol
   xyz  :: Array{Float64,2}
 end
@@ -30,7 +30,8 @@ transform, transform!
 
 transform(n::Node, tm::Array{Float64,2}) = Node(n.name,n*tm)
 function transform!(n::Node, tm::Array{Float64,2})
-  n.xyz = n*tm
+  xyz = n*tm
+  n.xyz[1:4] = xyz[1:4]
   return nothing
 end
 

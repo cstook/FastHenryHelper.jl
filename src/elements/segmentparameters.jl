@@ -1,6 +1,6 @@
 
 
-type SegmentParameters
+immutable SegmentParameters <: Element
   w :: Float64
   h :: Float64
   sigma :: Float64 
