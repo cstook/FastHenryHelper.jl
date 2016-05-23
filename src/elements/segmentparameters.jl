@@ -24,7 +24,7 @@ SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN, nhi
 
 function printfh(io::IO, x::SegmentParameters)
   if ~isnan(x.w)
-    @printf(io," w=%.6e",x.w) 
+    @printf(io," w=%.6e",x.w)
   end
   if ~isnan(x.h)
     @printf(io," h=%.6e",x.h) 
