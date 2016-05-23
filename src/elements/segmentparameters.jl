@@ -1,5 +1,3 @@
-
-
 immutable SegmentParameters <: Element
   w :: Float64
   h :: Float64
@@ -8,18 +6,30 @@ immutable SegmentParameters <: Element
   wx :: Float64 
   wy :: Float64 
   wz :: Float64 
-  nhinc :: Float64 
-  nwinc :: Float64 
+  nhinc :: Int 
+  nwinc :: Int 
   rh :: Float64 
   rw :: Float64
   function SegmentParameters(w, h, sigma, rho, wx, wy, wz, nhinc, nwinc, rh, rw)
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
     end
+    if nhinc<0
+      throw(ArgumentError("nhinc must be a positive integer"))
+    end
+    if nwinc<0
+      throw(ArgumentError("nwinc must be a positive integer"))
+    end
+    if rh<0
+      throw(ArgumentError("rh must be positive"))
+    end
+    if rw<0
+      throw(ArgumentError("rw must be positive"))
+    end
     return new(w, h, sigma, rho, wx, wy, wz, nhinc, nwinc, rh, rw)
   end
 end
-SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN, nhinc=NaN, nwinc=NaN, rh=NaN, rw=NaN) = 
+SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(w, h, sigma, rho, wx, wy, wz, nhinc, nwinc, rh, rw)
 
 function printfh(io::IO, x::SegmentParameters)
@@ -48,10 +58,10 @@ function printfh(io::IO, x::SegmentParameters)
     if ~isnan(x.wz)
       @printf(io," wz=%.6e",x.wz) 
     end
-    if ~isnan(x.nhinc)
+    if x.nhinc>0
       @printf(io," nhinc=%.6e",x.nhinc) 
     end
-    if ~isnan(x.nwinc)
+    if x.nwinc>0
       @printf(io," nwinc=%.6e",x.nwinc) 
     end
     if ~isnan(x.rh)

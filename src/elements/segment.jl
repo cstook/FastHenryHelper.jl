@@ -4,9 +4,9 @@ immutable Segment <: Element
   node1 :: Node 
   node2 :: Node 
   sp :: SegmentParameters
-  Segment(name, node1::Node, node2::Node, sp::SegmentParameters) =
-    Segment(Symbol(name), node1, node2, sp)
 end
+Segment(name, node1::Node, node2::Node, sp::SegmentParameters) =
+    Segment(Symbol(name), node1, node2, sp)
 Segment(node1::Node, node2::Node, sp::SegmentParameters) =
   Segment(:null, node1, node2, sp)
 

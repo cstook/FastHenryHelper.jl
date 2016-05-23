@@ -3,12 +3,12 @@
 immutable Node <: Element
   name :: Symbol
   xyz  :: Array{Float64,2}
-  Node(name, xyz::Array{Float64,2}) = new(Symbol(name),xyz)
 end
-Node(xyz::Array{Float64,2}) = Node(:null,xyz)
-Node(name,x,y,z) = Node(name,[x y z 1])
+Node(name, xyz::Array{Number,2}) = new(Symbol(name),xyz)
+Node(xyz::Array{Number,2}) = Node(:null,xyz)
+Node(name,x,y,z) = Node(Symbol(name),[x y z 1.0])
 Node(x,y,z) = Node(:null,x,y,z)
-Node(;name::Symbol = :null, x=0, y=0, z=0) = Node(name,x,y,z)
+Node(;name = :null, x=0, y=0, z=0) = Node(Symbol(name),x,y,z)
 
 function printfh(io::IO, n::Node; plane = false)
   if plane

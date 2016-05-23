@@ -46,8 +46,6 @@ function transform!(x::Rect, tm::Array{Float64,2})
   return nothing
 end
 
-end
-
 immutable Circle <: Hole
   center  :: Array{Float64,2}
   radius  :: Float64
@@ -65,7 +63,7 @@ function printfh(io::IO,x::Circle)
   return nothing
 end
 
-transform(x::Circle, tm::Array{Float64,2}) = Circle(x.center*tm,x.r)
+transform(x::Circle, tm::Array{Float64,2}) = Circle(x.center*tm,x.radius)
 function transform!(x::Circle, tm::Array{Float64,2})
   center = x.center*tm
   x.center[1:4] = center[1:4]
@@ -78,14 +76,14 @@ immutable UniformPlane <: Element
   corner2 :: Array{Float64,2}
   corner3 :: Array{Float64,2}
   thick :: Float64
-  seg1 :: Float64 
-  seg2 :: Float64 
+  seg1 :: Int 
+  seg2 :: Int 
   segwid1 :: Float64 
   segwid2 :: Float64 
   sigma :: Float64 
   rho :: Float64 
-  nhinc :: Float64 
-  rh :: Float64 
+  nhinc :: Int 
+  rh :: Float64
   relx :: Float64 
   rely :: Float64 
   relz :: Float64 
@@ -97,11 +95,17 @@ immutable UniformPlane <: Element
     if isnan(thick)
       throw(ArgumentError("Must specify thick for plane"))
     end
-    if isnan(seg1)
-      throw(ArgumentError("Must specify seg1 for plane"))
+    if seg1<1
+      throw(ArgumentError("Must specify seg1>0 for plane"))
     end
-    if isnan(seg2)
-      throw(ArgumentError("Must specify seg2 for plane"))
+    if seg2<1
+      throw(ArgumentError("Must specify seg2>0 for plane"))
+    end
+    if nhinc<0
+      throw(ArgumentError("nhinc must be a positive integer"))
+    end
+    if rh<0
+      throw(ArgumentError("rh must be positive"))
     end
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
@@ -111,21 +115,21 @@ immutable UniformPlane <: Element
                 nodes, holes)
   end
 end
-UniformPlane(;name = :null  
+UniformPlane(;name = :null,  
               x1=0, y1=0, z1=0, x2=0, y2=0, z2=0, x3=0, y3=0, z3=0,
-              thick = NaN, seg1 = NaN, seg2 = NaN,
+              thick = NaN, seg1 = 0, seg2 = 0,
               segwid1 = NaN, segwid2 = NaN,
               sigma = NaN, rho = NaN,
-              hninc = NaN, rh = NaN,
+              nhinc = 0, rh = 0,
               relx = NaN, rely = NaN, relz = NaN,
               nodes = [], holes = []) = 
   UniformPlane(name,[x1 y1 z1 1],[x2 y2 z2 1],[x3 y3 z3 1], thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
 
-function printfh(io::IO, x:UniformPlane)
+function printfh(io::IO, x::UniformPlane)
   println(io,"G",string(x.name))
-  @printf(io,"+ x1=%.6e",x.x.corner1[1]) 
+  @printf(io,"+ x1=%.6e",x.corner1[1]) 
   @printf(io," y1=%.6e",x.corner1[2]) 
   @printf(io," z1=%.6e\n",x.corner1[3]) 
   @printf(io,"+ x2=%.6e",x.corner2[1]) 
@@ -149,7 +153,7 @@ function printfh(io::IO, x:UniformPlane)
   if ~isnan(x.rho)
     @printf(io,"+ rho=%.6e\n",x.rho) 
   end
-  if ~isnan(x.nhinc)
+  if x.nhinc>0
     println(io,"+ nhinc=\n",x.nhinc)
   end
   if ~isnan(x.rh)
@@ -169,6 +173,39 @@ function printfh(io::IO, x:UniformPlane)
   end
   for hole in x.holes
     printfh(io,hole)
+  end
+  return nothing
+end
+
+function transform(x::UniformPlane, tm::Array{Float64,2})
+  corner1 = x.corner1*tm
+  corner2 = x.corner2*tm 
+  corner3 = x.corner3*tm
+  nodes = []
+  for node in x.nodes
+    push!(nodes,transform(node,tm))
+  end
+  holes = []
+  for hole in x.holes
+    push!(holes,transform(hole,tm))
+  end
+  UniformPlane(x.name,corner1 ,corner2 ,corner3 , x.thick, x.seg1, x.seg2,
+                x.segwid1, x.segwid2, x.sigma, x.rho, x.nhinc, x.rh, x.relx, x.rely, x.relz,
+                nodes, holes)
+end
+
+function transform!(x::UniformPlane, tm::Array{Float64,2})
+  corner1 = x.corner1*tm
+  x.corner1[1:4] = corner1[1:4]
+  corner2 = x.corner2*tm
+  x.corner2[1:4] = corner2[1:4]
+  corner3 = x.corner3*tm
+  x.corner3[1:4] = corner3[1:4]
+  for i in eachindex(x.nodes)
+    transform!(x.nodes[i],tm)
+  end
+  for i in eachindex(x.holes)
+    transform!(x.holes[i],tm)
   end
   return nothing
 end
