@@ -1,7 +1,7 @@
 """
 Helps creating input files for FastHenry2.
 """
-module FastHenry2Helper
+module FastHenryHelper
 include("coordinates.jl")
 include("parsemat.jl")
 

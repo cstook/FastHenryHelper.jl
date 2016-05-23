@@ -5,15 +5,15 @@ Helps creating input files for FastFieldSolvers.
 
 You must include a submodule, for example:
 ```julia
-using .FastCap2Helper
-using .FastHenry2Helper
+using .FastCapHelper
+using .FastHenryHelper
 """
 module FastFieldSolversHelper
 
-export FastHenry2Helper, FastCap2Helper
+export FastHenryHelper, FastCapHelper
 
-include("FastHenry2Helper.jl")
-include("FastCap2Helper.jl")
+include("FastHenryHelper.jl")
+include("FastCapHelper.jl")
 
 
 end # module

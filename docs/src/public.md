@@ -1,7 +1,7 @@
 # Public API
 
 ```@meta
-CurentModule = FastFieldSolversHelper.FastHenry2Helper
+CurentModule = FastFieldSolversHelper.FastHenryHelper
 ```
 
 ## Index
@@ -10,10 +10,10 @@ CurentModule = FastFieldSolversHelper.FastHenry2Helper
 Pages = ["public.md"]
 ```
 
-## FastHenry2Helper
+## FastHenryHelper
 
 ```@docs
-FastHenry2Helper
+FastHenryHelper
 LastUsed
 titleline
 comment

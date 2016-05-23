@@ -1,7 +1,7 @@
 """
 Helps creating input files for FastCap2.
 """
-module FastCap2Helper
+module FastCapHelper
 
 # to do 
 

@@ -1,8 +1,8 @@
 using FastFieldSolversHelper
 using Base.Test
 
-include("testFastHenry2Helper.jl")
-# include("testFastCap2Helper.jl")
+include("testFastHenryHelper.jl")
+# include("testFastCapHelper.jl")
 
 
 @test 1 == 1

@@ -1,13 +1,13 @@
 using Documenter
 using FastFieldSolversHelper
-using .FastCap2Helper
-using .FastHenry2Helper
+using .FastCapHelper
+using .FastHenryHelper
 
 # Build docs.
 # ===========
 
 makedocs(
-    modules = FastFieldSolversHelper.FastHenry2Helper,
+    modules = FastFieldSolversHelper.FastHenryHelper,
     clean   = true
 )
 

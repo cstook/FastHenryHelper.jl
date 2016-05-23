@@ -1,4 +1,4 @@
-using .FastHenry2Helper
+using .FastHenryHelper
 
 include("testcoordinates.jl")
 result = parsefasthenrymap("example3_Zc.mat")

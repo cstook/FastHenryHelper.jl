@@ -5,7 +5,7 @@ This is a duplicate of the simple example in section 1.1 of "FastHenry USER'S GU
 
 ```@example
 using FastFieldSolversHelper
-using .FastHenry2Helper
+using .FastHenryHelper
 io = STDOUT
 
 titleline(io,"This is the title line")
@@ -40,7 +40,7 @@ Same as example 1, except using LastUsed(), node!, and segment! to automatically
 
 ```@example
 using FastFieldSolversHelper
-using .FastHenry2Helper
+using .FastHenryHelper
 io = STDOUT
 
 lastused = LastUsed()
@@ -75,7 +75,7 @@ fasthenryend(io)
 
 ```@example
 using FastFieldSolversHelper
-using .FastHenry2Helper
+using .FastHenryHelper
 
 function loop!(io,lastused,r,z)
     n = 16
