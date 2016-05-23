@@ -1,7 +1,7 @@
 immutable Title <: Element
-  string :: String
+  text :: String
 end
 
 function printfh(io::IO, title::Title)
-  println(io,"* ",title.string)
+  println(io,"* ",title.text)
 end
