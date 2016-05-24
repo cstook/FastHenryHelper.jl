@@ -1,23 +1,49 @@
 abstract Element
 
 type AutoName
-  counter :: Int
+  name :: Symbol
+  iname :: Int
+  AutoName(x) = new(Symbol(x),0)
+end
+function reset!(x::AutoName)
+  x.iname =0
+  return nothing
 end
 
-function autoname(a::AutoName,n::Symbol)
-  if n == :null
-    a.counter += 1
-    return string("_",a.counter)
-  else
-    return string(n)
+type PrintFH
+  nextname  :: Int
+  usednames :: Set{String}
+  function PrintFH(e::Element)
+    resetiname!(e)
+    new(1,Set{String}())
   end
 end
 
-printfh(::IO, ::Element, ::AutoName) = nothing
-printfh(io::IO, e::Element) = printfh(io, e, AutoName(0))
+checkduplicatename(pfh::PrintFH, name::String) = nothing
+
+function autoname!(pfh::PrintFH, an::AutoName)
+  if an.iname != 0  # already got an autoname
+    return string("_",an.iname)
+  end
+  if an.name == :null # needs an autoname
+    name = string("_",pfh.nextname)
+    an.iname = pfh.nextname
+    pfh.nextname += 1
+  else  # user specified name
+    name = string(an.name)
+  end
+  checkduplicatename(pfh, name)
+  push!(pfh.usednames, name)
+  return name
+end
+
+
+printfh!(::IO, ::PrintFH, ::Element) = nothing
+printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
 transform(::Element) = nothing
 transform!(::Element) = nothing
+resetiname!(::Element) = nothing
 
 include("title.jl")
 include("node.jl")

@@ -4,7 +4,7 @@ immutable External <: Element
   portname :: String
 end
 
-function printfh(io::IO, x::External, ::AutoName)
-  println(io, ".External ",string(x.node1.name)," ",string(x.node2.name)," ",x.portname)
+function printfh!(io::IO, pfh::PrintFH, x::External)
+  println(io, ".External ",autoname!(pfh,x.node1.name)," ",autoname!(pfh,x.node2.name)," ",x.portname)
   return nothing
 end

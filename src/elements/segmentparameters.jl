@@ -32,7 +32,7 @@ end
 SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(w, h, sigma, rho, wx, wy, wz, nhinc, nwinc, rh, rw)
 
-function printfh(io::IO, x::SegmentParameters, ::AutoName)
+function printfh!(io::IO, ::PrintFH, x::SegmentParameters)
   if ~isnan(x.w)
     @printf(io," w=%.6e",x.w)
   end
@@ -46,8 +46,8 @@ function printfh(io::IO, x::SegmentParameters, ::AutoName)
     @printf(io," rho=%.6e",x.rho) 
   end
   println(io)
-  if ~isnan(x.wx) || ~isnan(x.wy) || ~isnan(x.wz) || ~isnan(x.nhinc) || 
-     ~isnan(x.nwinc) || ~isnan(x.rh) || ~isnan(x.rw)
+  if ~isnan(x.wx) || ~isnan(x.wy) || ~isnan(x.wz) || x.nhinc!=0 || 
+     x.nwinc!=0 || ~isnan(x.rh) || ~isnan(x.rw)
      print(io, "+ ")
     if ~isnan(x.wx)
       @printf(io," wx=%.6e",x.wx) 

@@ -1,20 +1,18 @@
-
-
 immutable Node <: Element
-  name :: Symbol
+  name :: AutoName
   xyz  :: Array{Float64,2}
+  Node(n,xyz::Array{Float64,2}) = new(AutoName(n),xyz) 
 end
-Node(name, xyz::Array{Number,2}) = new(Symbol(name),xyz)
-Node(xyz::Array{Number,2}) = Node(:null,xyz)
-Node(name,x,y,z) = Node(Symbol(name),[x y z 1.0])
+Node(xyz::Array{Float64,2}) = Node(:null,xyz)
+Node(name,x,y,z) = Node(name,[x y z 1.0])
 Node(x,y,z) = Node(:null,x,y,z)
-Node(;name = :null, x=0, y=0, z=0) = Node(Symbol(name),x,y,z)
+Node(;name = :null, x=0, y=0, z=0) = Node(name,x,y,z)
 
-function printfh(io::IO, n::Node, a::AutoName; plane = false)
+function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
   if plane
     print(io,"+ ")
   end
-  print(io,"N",autoname(a, n.name))
+  print(io,"N",autoname!(pfh, n.name))
   if plane
     print(io,"(")
   end
@@ -25,6 +23,8 @@ function printfh(io::IO, n::Node, a::AutoName; plane = false)
   println(io)
   return nothing
 end
+
+resetiname!(n::Node) = reset!(n.name)
 
 import Base.+, Base.*
 
@@ -39,7 +39,7 @@ Multiply the cooridnate of `node` by the transform matrix `tm`.
 """
 transform, transform!
 
-transform(n::Node, tm::Array{Float64,2}) = Node(n.name,n*tm)
+transform(n::Node, tm::Array{Float64,2}) = Node(n.name.name,n*tm)
 function transform!(n::Node, tm::Array{Float64,2})
   xyz = n*tm
   n.xyz[1:4] = xyz[1:4]

@@ -6,7 +6,7 @@ end
 Point(x,y,z) = Point([x y z 1])
 Point(; x=0, y=0, z=0) = Point(x,y,z)
 
-function printfh(io::IO, x::Point, ::AutoName)
+function printfh!(io::IO, ::PrintFH ,x::Point)
   print(io,"+ hole point ")
   @printf(io,"(%.6e, %.6e, %.6e)",x.xyz[1],x.xyz[2],x.xyz[3])
   println(io)
@@ -28,7 +28,7 @@ Rect(x1,y1,z1,x2,y2,z2) = Rect([x1 y1 z1 1],[x2 y2 z2 1])
 Rect(; x1=0, y1=0, z1=0, x2=0, y2=0, z2=0) = 
   Rect(x1,y1,z1,x2,y2,z2)
 
-function printfh(io::IO, x::Rect, ::AutoName)
+function printfh!(io::IO, ::PrintFH ,x::Rect)
   print(io,"+ hole rect ")
   @printf(io,"(%.6e, %.6e, %.6e, %.6e, %.6e, %.6e)",
           x.corner1[1],x.corner1[2],x.corner1[3],
@@ -54,7 +54,7 @@ Circle(x,y,z,r) = Circle([x y z 1],r)
 Circle(; x=0, y=0, z=0, r=0) =
   Circle(x,y,z,r)
 
-function printfh(io::IO, x::Circle, ::AutoName)
+function printfh!(io::IO, ::PrintFH, x::Circle)
   print(io,"+ hole circle ")
   @printf(io, "(%.6e, %.6e, %.6e, %.6e)",
           x.center[1],x.center[2],x.center[3],
@@ -71,7 +71,7 @@ function transform!(x::Circle, tm::Array{Float64,2})
 end
 
 immutable UniformPlane <: Element
-  name :: Symbol
+  name :: AutoName
   corner1 :: Array{Float64,2}
   corner2 :: Array{Float64,2}
   corner3 :: Array{Float64,2}
@@ -110,7 +110,7 @@ immutable UniformPlane <: Element
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
     end
-    new(Symbol(name), corner1, corner2, corner3, thick, seg1, seg2,
+    new(AutoName(name), corner1, corner2, corner3, thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
   end
@@ -127,8 +127,8 @@ UniformPlane(;name = :null,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
 
-function printfh(io::IO, x::UniformPlane, a::AutoName)
-  println(io,"G",autoname(a,x.name))
+function printfh!(io::IO, pfh::PrintFH ,x::UniformPlane)
+  println(io,"G",autoname!(pfh,x.name))
   @printf(io,"+ x1=%.6e",x.corner1[1]) 
   @printf(io," y1=%.6e",x.corner1[2]) 
   @printf(io," z1=%.6e\n",x.corner1[3]) 
@@ -169,13 +169,15 @@ function printfh(io::IO, x::UniformPlane, a::AutoName)
     @printf(io,"+ relz=%.6e\n",x.relz) 
   end
   for node in x.nodes
-    printfh(io,node,a,plane=true)
+    printfh!(io,pfh,node,plane=true)
   end
   for hole in x.holes
-    printfh(io,hole,a)
+    printfh!(io,pfh,hole)
   end
   return nothing
 end
+
+resetiname!(x::UniformPlane) = reset!(x.name)
 
 function transform(x::UniformPlane, tm::Array{Float64,2})
   corner1 = x.corner1*tm
@@ -189,7 +191,7 @@ function transform(x::UniformPlane, tm::Array{Float64,2})
   for hole in x.holes
     push!(holes,transform(hole,tm))
   end
-  UniformPlane(x.name,corner1 ,corner2 ,corner3 , x.thick, x.seg1, x.seg2,
+  UniformPlane(x.name.name,corner1 ,corner2 ,corner3 , x.thick, x.seg1, x.seg2,
                 x.segwid1, x.segwid2, x.sigma, x.rho, x.nhinc, x.rh, x.relx, x.rely, x.relz,
                 nodes, holes)
 end

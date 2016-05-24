@@ -19,7 +19,7 @@ end
 Freq(min,max) = Freq(min,max,NaN)
 Freq(;min=0, max=NaN, ndec=NaN) = Freq(min,max,ndec)
 
-function printfh(io::IO, x::Freq, ::AutoName)
+function printfh!(io::IO, ::PrintFH, x::Freq)
   @printf(io,".freq fmin=%.6e fmax=%.6e",x.min,x.max) 
   if ~isnan(x.ndec)
     @printf(io," ndec=%.6e",x.ndec)

@@ -1,17 +1,18 @@
 
 immutable Segment <: Element
-  name :: Symbol
+  name :: AutoName
   node1 :: Node 
   node2 :: Node 
   sp :: SegmentParameters
+  Segment(n, n1::Node, n2::Node, sp::SegmentParameters) = new(AutoName(n),n1,n2,sp)
 end
-Segment(name, node1::Node, node2::Node, sp::SegmentParameters) =
-    Segment(Symbol(name), node1, node2, sp)
 Segment(node1::Node, node2::Node, sp::SegmentParameters) =
   Segment(:null, node1, node2, sp)
 
-function printfh(io::IO, s::Segment, a::AutoName)
-  print(io,"E",autoname(a,s.name)," ",autoname(a,s.node1.name)," ",autoname(a,s.node2.name)," ")
-  printfh(io,s.sp,a)
+function printfh!(io::IO, pfh::PrintFH, s::Segment)
+  print(io,"E",autoname!(pfh,s.name)," N",autoname!(pfh,s.node1.name)," N",autoname!(pfh,s.node2.name)," ")
+  printfh!(io,pfh,s.sp)
   return nothing
 end
+
+resetiname!(x::Segment) = reset!(x.name)
