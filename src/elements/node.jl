@@ -14,11 +14,11 @@ function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
   if plane
     print(io,"+ ")
   end
-  print(io,"N",autoname!(pfh, n.name))
+  print(io,"N",autoname!(pfh, n.name)," ")
   if plane
     print(io,"(")
   end
-  @printf(io," x=%.6e y=%.6e z=%.6e",n.xyz[1],n.xyz[2],n.xyz[3])
+  @printf(io,"x=%.6e y=%.6e z=%.6e",n.xyz[1],n.xyz[2],n.xyz[3])
   if plane
     print(io,")")
   end

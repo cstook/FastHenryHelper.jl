@@ -205,16 +205,9 @@ function transform!(x::UniformPlane, tm::Array{Float64,2})
   x.corner2[1:4] = corner2[1:4]
   corner3 = x.corner3*tm
   x.corner3[1:4] = corner3[1:4]
-  #=
-  # For now, assume that nodes are transfromed with the 
-  # group including the plane.
-  # TODO: make sure nodes are only transfromed once per call
-  # to transform.
-
-  for i in eachindex(x.nodes)
+    for i in eachindex(x.nodes)
     transform!(x.nodes[i],tm)
   end
-  =#
   for i in eachindex(x.holes)
     transform!(x.holes[i],tm)
   end
