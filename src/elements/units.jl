@@ -1,3 +1,4 @@
+export Units
 
 immutable Units <: Element
   unitname :: String

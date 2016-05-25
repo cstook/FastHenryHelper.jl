@@ -1,3 +1,5 @@
+export Title
+
 immutable Title <: Element
   text :: String
 end

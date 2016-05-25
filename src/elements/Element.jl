@@ -1,3 +1,5 @@
+export transform
+
 abstract Element
 
 type AutoName
@@ -41,8 +43,9 @@ end
 printfh!(::IO, ::PrintFH, ::Element) = nothing
 printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
-transform(::Element) = nothing
-transform!(::Element) = nothing
+Base.show(io::IO, e::Element) = printfh(io,e)
+transform(x::Element, ::Array{Float64,2}) = x
+transform!(::Element, ::Array{Float64,2}) = nothing
 resetiname!(::Element) = nothing
 
 include("title.jl")

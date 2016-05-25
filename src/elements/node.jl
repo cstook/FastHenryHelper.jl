@@ -1,3 +1,5 @@
+export Node, rx, ry, rz, txyz, scalexyz
+
 immutable Node <: Element
   name :: AutoName
   xyz  :: Array{Float64,2}

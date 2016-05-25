@@ -1,3 +1,5 @@
+export External
+
 immutable External <: Element
   node1 :: Node
   node2 :: Node 

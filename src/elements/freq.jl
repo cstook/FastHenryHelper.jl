@@ -1,3 +1,5 @@
+export Freq
+
 immutable Freq <: Element
   min :: Float64
   max :: Float64

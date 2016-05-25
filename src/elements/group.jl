@@ -1,15 +1,21 @@
+export Group
+
 immutable Group <: Element
   elements :: Array{Element,1}
-  ports :: Dict{Symbol,Node}
+  terms :: Dict{Symbol,Node}
 end
 Group() = Group([],Dict{Symbol,Node}())
 Group(e) = Group(e,Dict{Symbol,Node}())
 elements(g::Group) = g.elements
 elements!(g::Group, e::Element) = g.elements = e
-ports(g::Group) = g.ports
-ports!(g::Group, p::Dict{Symbol,Node}) = g.ports = p
+terms(g::Group) = g.terms
+terms!(g::Group, p::Dict{Symbol,Node}) = g.terms = p
 
-Base.push!(group::Group, element::Element) = push!(group.elements, element)
+Base.getindex(g::Group, key::Symbol) = g.terms[key]
+function Base.setindex!(g::Group, n::Node, key::Symbol)
+  g.terms[key] = n
+  return nothing
+end
 
 function printfh!(io::IO, pfh::PrintFH, group::Group)
   for element in group.elements 
@@ -24,17 +30,16 @@ function resetiname!(group::Group)
   end
 end
 
-function transform!(group::Group, tm::Array{Float64,4})
-  for element in group 
+function transform!(group::Group, tm::Array{Float64,2})
+  for element in group.elements 
     transform!(element,tm)
   end
   return nothing
 end
 
-function transform(group::Group, tm::Array{Float64,4})
-  result = Group([])
-  for element in group 
-    push!(group,transform(element,tm))
-  end
-  return result
+function transform(group::Group, tm::Array{Float64,2})
+  newgroup = deepcopy(group)
+  transform!(newgroup,tm)
+  return newgroup
 end
+

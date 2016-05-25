@@ -1,3 +1,4 @@
+export segment
 
 immutable Segment <: Element
   name :: AutoName

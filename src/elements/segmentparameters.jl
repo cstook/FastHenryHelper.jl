@@ -1,3 +1,5 @@
+export SegmentParameters
+
 immutable SegmentParameters <: Element
   w :: Float64
   h :: Float64

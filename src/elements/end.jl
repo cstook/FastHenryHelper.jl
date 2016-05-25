@@ -1,3 +1,5 @@
+export End
+
 type End <: Element
 end
 

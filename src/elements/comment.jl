@@ -1,3 +1,5 @@
+export Comment
+
 immutable Comment <: Element
   text :: String
 end

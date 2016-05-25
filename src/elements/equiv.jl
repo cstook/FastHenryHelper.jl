@@ -1,3 +1,5 @@
+export Equiv
+
 immutable Equiv <: Element
   nodes :: Array{Node,1}
 end
