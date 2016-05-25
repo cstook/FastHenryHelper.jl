@@ -39,7 +39,6 @@ function autoname!(pfh::PrintFH, an::AutoName)
   return name
 end
 
-
 printfh!(::IO, ::PrintFH, ::Element) = nothing
 printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
