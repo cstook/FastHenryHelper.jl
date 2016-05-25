@@ -31,8 +31,8 @@ function resetiname!(group::Group)
 end
 
 function transform!(group::Group, tm::Array{Float64,2})
-  for element in group.elements 
-    transform!(element,tm)
+  for i in eachindex(group.elements)
+    transform!(group.elements[i],tm)
   end
   return nothing
 end

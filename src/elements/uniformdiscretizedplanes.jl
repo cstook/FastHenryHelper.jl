@@ -3,9 +3,9 @@ export UniformPlane, Point, Rect, Circle
 abstract Hole <: Element
 
 immutable Point <: Hole
-  xyz  :: Array{Float64,2}
+  xyz  :: Array{Float64,1}
 end
-Point(x,y,z) = Point([x y z 1])
+Point(x,y,z) = Point([x,y,z,1])
 Point(; x=0, y=0, z=0) = Point(x,y,z)
 
 function printfh!(io::IO, ::PrintFH ,x::Point)
@@ -15,18 +15,18 @@ function printfh!(io::IO, ::PrintFH ,x::Point)
   return nothing
 end
 
-transform(x::Point, tm::Array{Float64,2}) = Point(x.xyz*tm)
+transform(x::Point, tm::Array{Float64,2}) = Point(tm*x.xyz)
 function transform!(x::Point, tm::Array{Float64,2})
-  xyz = x.xyz*tm
+  xyz = tm*x.xyz
   x.xyz[1:4] = xyz[1:4]
   return nothing
 end
 
 immutable Rect <: Hole
-  corner1  :: Array{Float64,2}
-  corner2  :: Array{Float64,2}
+  corner1  :: Array{Float64,1}
+  corner2  :: Array{Float64,1}
 end
-Rect(x1,y1,z1,x2,y2,z2) = Rect([x1 y1 z1 1],[x2 y2 z2 1])
+Rect(x1,y1,z1,x2,y2,z2) = Rect([x1,y1,z1,1],[x2,y2,z2,1])
 Rect(; x1=0, y1=0, z1=0, x2=0, y2=0, z2=0) = 
   Rect(x1,y1,z1,x2,y2,z2)
 
@@ -39,20 +39,20 @@ function printfh!(io::IO, ::PrintFH ,x::Rect)
   return nothing
 end
 
-transform(x::Rect, tm::Array{Float64,2}) = Rect(x.corner1*tm,x.corner2*tm)
+transform(x::Rect, tm::Array{Float64,2}) = Rect(tm*x.corner1,tm*x.corner2)
 function transform!(x::Rect, tm::Array{Float64,2})
-  corner1 = x.corner1*tm
-  corner2 = x.corner2*tm
+  corner1 = tm*x.corner1
+  corner2 = tm*x.corner2
   x.corner1[1:4] = corner1[1:4]
   x.corner2[1:4] = corner2[1:4]
   return nothing
 end
 
 immutable Circle <: Hole
-  center  :: Array{Float64,2}
+  center  :: Array{Float64,1}
   radius  :: Float64
 end
-Circle(x,y,z,r) = Circle([x y z 1],r)
+Circle(x,y,z,r) = Circle([x,y,z,1],r)
 Circle(; x=0, y=0, z=0, r=0) =
   Circle(x,y,z,r)
 
@@ -65,18 +65,18 @@ function printfh!(io::IO, ::PrintFH, x::Circle)
   return nothing
 end
 
-transform(x::Circle, tm::Array{Float64,2}) = Circle(x.center*tm,x.radius)
+transform(x::Circle, tm::Array{Float64,2}) = Circle(tm*x.center,x.radius)
 function transform!(x::Circle, tm::Array{Float64,2})
-  center = x.center*tm
+  center = tm*x.center
   x.center[1:4] = center[1:4]
   return nothing
 end
 
 immutable UniformPlane <: Element
   name :: AutoName
-  corner1 :: Array{Float64,2}
-  corner2 :: Array{Float64,2}
-  corner3 :: Array{Float64,2}
+  corner1 :: Array{Float64,1}
+  corner2 :: Array{Float64,1}
+  corner3 :: Array{Float64,1}
   thick :: Float64
   seg1 :: Int 
   seg2 :: Int 
@@ -85,7 +85,7 @@ immutable UniformPlane <: Element
   sigma :: Float64 
   rho :: Float64 
   nhinc :: Int 
-  rh :: Float64
+  rh :: Int
   relx :: Float64 
   rely :: Float64 
   relz :: Float64 
@@ -107,7 +107,7 @@ immutable UniformPlane <: Element
       throw(ArgumentError("nhinc must be a positive integer"))
     end
     if rh<0
-      throw(ArgumentError("rh must be positive"))
+      throw(ArgumentError("rh must be positive integer"))
     end
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
@@ -125,7 +125,7 @@ UniformPlane(;name = :null,
               nhinc = 0, rh = 0,
               relx = NaN, rely = NaN, relz = NaN,
               nodes = [], holes = []) = 
-  UniformPlane(name,[x1 y1 z1 1],[x2 y2 z2 1],[x3 y3 z3 1], thick, seg1, seg2,
+  UniformPlane(name,[x1,y1,z1,1],[x2,y2,z2,1],[x3,y3,z3,1], thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
 
@@ -156,10 +156,10 @@ function printfh!(io::IO, pfh::PrintFH ,x::UniformPlane)
     @printf(io,"+ rho=%.6e\n",x.rho) 
   end
   if x.nhinc>0
-    println(io,"+ nhinc=\n",x.nhinc)
+    println(io,"+ nhinc=",x.nhinc)
   end
-  if ~isnan(x.rh)
-    @printf(io,"+ rh=%.6e\n",x.rh) 
+  if x.rh>0
+    println(io,"+ rh=",x.rh) 
   end
   if ~isnan(x.relx)
     @printf(io,"+ relx=%.6e\n",x.relx) 
@@ -182,28 +182,17 @@ end
 resetiname!(x::UniformPlane) = reset!(x.name)
 
 function transform(x::UniformPlane, tm::Array{Float64,2})
-  corner1 = x.corner1*tm
-  corner2 = x.corner2*tm 
-  corner3 = x.corner3*tm
-  nodes = []
-  for node in x.nodes
-    push!(nodes,transform(node,tm))
-  end
-  holes = []
-  for hole in x.holes
-    push!(holes,transform(hole,tm))
-  end
-  UniformPlane(x.name.name,corner1 ,corner2 ,corner3 , x.thick, x.seg1, x.seg2,
-                x.segwid1, x.segwid2, x.sigma, x.rho, x.nhinc, x.rh, x.relx, x.rely, x.relz,
-                nodes, holes)
+  newplane = deepcopy(x)
+  transform!(newplane,tm)
+  return newplane
 end
 
 function transform!(x::UniformPlane, tm::Array{Float64,2})
-  corner1 = x.corner1*tm
+  corner1 = tm*x.corner1
   x.corner1[1:4] = corner1[1:4]
-  corner2 = x.corner2*tm
+  corner2 = tm*x.corner2
   x.corner2[1:4] = corner2[1:4]
-  corner3 = x.corner3*tm
+  corner3 = tm*x.corner3
   x.corner3[1:4] = corner3[1:4]
     for i in eachindex(x.nodes)
     transform!(x.nodes[i],tm)

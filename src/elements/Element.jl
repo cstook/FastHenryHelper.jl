@@ -1,4 +1,4 @@
-export transform
+export transform, transform!
 
 abstract Element
 
@@ -43,8 +43,8 @@ printfh!(::IO, ::PrintFH, ::Element) = nothing
 printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
 Base.show(io::IO, e::Element) = printfh(io,e)
-transform(x::Element, ::Array{Float64,2}) = x
-transform!(::Element, ::Array{Float64,2}) = nothing
+transform(x::Element, ::Any) = x
+transform!(::Element, ::Any) = nothing
 resetiname!(::Element) = nothing
 
 include("title.jl")

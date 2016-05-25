@@ -61,10 +61,10 @@ function printfh!(io::IO, ::PrintFH, x::SegmentParameters)
       @printf(io," wz=%.6e",x.wz) 
     end
     if x.nhinc>0
-      @printf(io," nhinc=%.6e",x.nhinc) 
+      print(io," nhinc=",x.nhinc) 
     end
     if x.nwinc>0
-      @printf(io," nwinc=%.6e",x.nwinc) 
+      print(io," nwinc=",x.nwinc) 
     end
     if ~isnan(x.rh)
       @printf(io," rh=%.6e",x.rh) 
