@@ -8,7 +8,7 @@ result of parsing FastHenry .mat file
 """
 type ParseFastHenryMapResult
   "array of port names, index is row number in impedance matrix"
-  portnames :: Array{ASCIIString,1}
+  portnames :: Array{String,1}
   "list of frequencies at which impedance matrix is computed"
   frequencies :: Array{Float64,1}
   """
@@ -26,7 +26,7 @@ function parsefasthenrymap(io::IO)
     throw(ParseError("first line did not start with \"Row\""))
   end
   numberofrows = parse(Int,m.captures[1])
-  portnames = Array(ASCIIString,numberofrows)
+  portnames = Array(String,numberofrows)
   portnames[numberofrows] = m.captures[2]
   for i in numberofrows-1:-1:1
     line = readline(io)
