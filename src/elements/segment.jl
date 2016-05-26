@@ -29,12 +29,11 @@ end
 type WxWyWz
   xyz :: Array{Float64,1}
   isdefault :: Bool
-  end
 end
-WxWyWz(;wx=0.0, wy=0.0, wx=0.0) = 
-  WxWyWz([wx,wy,wz,1.0],wx!=0.0 && wy!=0.0 && wz!=0.0)
-WxWyWz(wx, wy, wx) = 
-  WxWyWz([wx,wy,wz,1.0],wx!=0.0 && wy!=0.0 && wz!=0.0)
+WxWyWz(;wx=0.0, wy=0.0, wz=0.0) = 
+  WxWyWz([wx,wy,wz,1.0],wx==0.0 && wy==0.0 && wz==0.0)
+WxWyWz(wx, wy, wz) = 
+  WxWyWz([wx,wy,wz,1.0],wx==0.0 && wy==0.0 && wz==0.0)
 function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
     print(io,"+ ")
@@ -61,7 +60,7 @@ end
 immutable WH
   w :: Float64
   h :: Float64 
-  hninc :: Int 
+  nhinc :: Int 
   nwinc :: Int 
   rh :: Float64 
   rw :: Float64
@@ -107,7 +106,6 @@ function printfh!(io::IO, ::PrintFH, x::WH)
     @printf(io," rw=%.6e",x.rw) 
   end
   println(io)
-end
   return nothing
 end
 
@@ -132,7 +130,7 @@ Segment(name, n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
             Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))        
 
 function printfh!(io::IO, pfh::PrintFH, s::Segment)
-  print(io,"E",autoname!(pfh,s.name)," N",autoname!(pfh,s.node1.name)," N",autoname!(pfh,s.node2.name)," ")
+  println(io,"E",autoname!(pfh,s.name)," N",autoname!(pfh,s.node1.name)," N",autoname!(pfh,s.node2.name)," ")
   printfh!(io,pfh,s.wh)
   printfh!(io,pfh,s.sigmarho)
   printfh!(io,pfh,s.wxwywz)
@@ -143,31 +141,23 @@ resetiname!(x::Segment) = reset!(x.name)
 
 
 function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
-  if isdefault
+  if wxwywz.isdefault
     v1 = n2.xyz[1:3] - n1.xyz[1:3]
     v2 = [0.0, 0.0, 1.0]
-    w = cross(v1,v2/norm(v2,3))
+    w = cross(v1,v2)
     if norm(w) < 1e-10  # close to 0
+      warn("norm(w) < 1e-10")
       v2 = [0.0, 1.0, 0.0]
-      w = cross(v1,v2/norm(v2,3))
+      w = cross(v1,v2)
     end
-    wxwywz[1:3] = w[1:3]
-    wxwywz[4] = 1.0
+    wxwywz.xyz[1:3] = (w/norm(w,3))[1:3]
+    wxwywz.xyz[4] = 1.0
   end
   return nothing
 end
 
 function transform!(s::Segment, tm::Array{Float64,2})
-  preparesegment!(s)
-  transform!(node1,tm)
-  transform!(node2,tm)
-  wx = s.sp.wx
-  wy = s.sp.wy
-  wz = s.sp.wz
-  x = tm*[wx, wy, wz, 1.0]
-  wx = x[1]
-  wy = x[2]
-  wz = x[3]
+  transform!(s.wxwywz,tm)  #  assume nodes are transformed as part of a group
   return nothing
 end
 

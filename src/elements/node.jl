@@ -3,7 +3,7 @@ export Node, rx, ry, rz, txyz, scalexyz
 immutable Node <: Element
   name :: AutoName
   xyz  :: Array{Float64,1}
-  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz,false) 
+  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz) 
 end
 Node(xyz::Array{Float64,1}) = Node(:null,xyz)
 Node(name,x,y,z) = Node(name,[x,y,z,1.0])
