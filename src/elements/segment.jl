@@ -19,7 +19,19 @@ end
 resetiname!(x::Segment) = reset!(x.name)
 
 function preparesegment!(s::Segment)
-  if isnan(s.sp.wx) && isnan(s.sp.wy) && isnan(s.sp.wz)
+  wx = s.sp.wx
+  wy = s.sp.wy
+  wz = s.sp.wz
+  if isnan(wx)
+    wx = 0.0
+  end
+  if isnan(wy)
+    wy = 0.0
+  end
+  if isnan(wz)
+    wz = 0.0
+  end
+  if wx==0.0 && wy==0.0 && wz==0.0
     n1 = s.node1.xyz[1:3]
     n2 = s.node2.xyz[1:3]
     v1 = n2-n1
@@ -29,9 +41,9 @@ function preparesegment!(s::Segment)
       v2 = [0,1,0]
       w = cross(v1,v2/norm(v2,3))
     end
-    s.sp.wx = w[1]
-    s.sp.wy = w[2]
-    s.sp.wz = w[3]
+    wx = w[1]
+    wy = w[2]
+    wz = w[3]
   end
   return nothing
 end
