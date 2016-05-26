@@ -6,9 +6,10 @@ immutable Default <: Element
 end
 Default(;w=NaN, h=NaN, sigma=NaN, rho=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
     Default(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho))
+Default(sp::SegmentParameters) = Default(sp.wh, sp.sigmarho)
 
 function printfh!(io::IO, pfh::PrintFH, x::Default)
-  print(io,".default ")
+  println(io,".default ")
   printfh!(io, pfh, x.wh)
   printfh!(io, pfh, x.sigmarho)
 end

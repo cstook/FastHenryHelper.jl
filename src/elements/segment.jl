@@ -1,4 +1,4 @@
-export Segment
+export Segment, SegmentParameters
 
 immutable SigmaRho
   sigma :: Float64
@@ -109,6 +109,15 @@ function printfh!(io::IO, ::PrintFH, x::WH)
   return nothing
 end
 
+immutable SegmentParameters
+  wh        :: WH
+  sigmarho  :: SigmaRho
+  wxwywz    :: WxWyWz
+end
+SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
+                  nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
+  SegmentParameters(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
+
 immutable Segment <: Element
   name      :: AutoName
   node1     :: Node 
@@ -127,7 +136,11 @@ Segment(n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
             Segment(:null, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 Segment(name, n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
         wx=0.0, wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
-            Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))        
+            Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
+Segment(n1::Node, n2::Node, sp::SegmentParameters) = 
+            Segment(:null, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
+Segment(name, n1::Node, n2::Node, sp::SegmentParameters) = 
+            Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)     
 
 function printfh!(io::IO, pfh::PrintFH, s::Segment)
   println(io,"E",autoname!(pfh,s.name)," N",autoname!(pfh,s.node1.name)," N",autoname!(pfh,s.node2.name)," ")
@@ -146,7 +159,6 @@ function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
     v2 = [0.0, 0.0, 1.0]
     w = cross(v1,v2)
     if norm(w) < 1e-10  # close to 0
-      warn("norm(w) < 1e-10")
       v2 = [0.0, 1.0, 0.0]
       w = cross(v1,v2)
     end
