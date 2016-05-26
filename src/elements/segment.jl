@@ -12,12 +12,17 @@ immutable SigmaRho
 end
 SigmaRho(;sigma = NaN, Rho=NaN) = SigmaRho(sigma,rho)
 function printfh!(io::IO, ::PrintFH, x::SigmaRho)
+  if isnan(x.sigma) && isnan(x.rho)
+    return nothing
+  end
+  print(io,"+ ")
   if ~isnan(x.sigma)
     @printf(io," sigma=%.6e",x.sigma) 
   end
   if ~isnan(x.rho)
     @printf(io," rho=%.6e",x.rho) 
   end
+  println(io)
   return nothing
 end
 
@@ -32,6 +37,7 @@ WxWyWz(wx, wy, wx) =
   WxWyWz([wx,wy,wz,1.0],wx!=0.0 && wy!=0.0 && wz!=0.0)
 function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
+    print(io,"+ ")
     if ~isnan(x.xyz[1])
       @printf(io," wx=%.6e",x.xyz[1]) 
     end
@@ -41,6 +47,7 @@ function printfh!(io::IO, ::PrintFH, x::WxWyWz)
     if ~isnan(x.xyz[3])
       @printf(io," wz=%.6e",x.xyz[3]) 
     end
+    println(io)
   end
   return nothing
 end
@@ -77,6 +84,10 @@ end
 WH(;w=NaN, h=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   WH(w, h, nhinc, nwinc, rh, rw)
 function printfh!(io::IO, ::PrintFH, x::WH)
+  if isnan(x.w) && isnan(x.h) && x.nhinc==0 && x.nwinc==0 && isnan(x.rh) && isnan(x.rw)
+    return nothing
+  end
+  print(io,"+ ")
   if ~isnan(x.w)
     @printf(io," w=%.6e",x.w)
   end
@@ -95,6 +106,7 @@ function printfh!(io::IO, ::PrintFH, x::WH)
   if ~isnan(x.rw)
     @printf(io," rw=%.6e",x.rw) 
   end
+  println(io)
 end
   return nothing
 end
