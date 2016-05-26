@@ -51,7 +51,6 @@ resetist!(n::Element) = nothing
 
 include("title.jl")
 include("node.jl")
-include("segmentparameters.jl")
 include("segment.jl")
 include("units.jl")
 include("default.jl")

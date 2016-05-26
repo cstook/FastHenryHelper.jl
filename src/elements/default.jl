@@ -1,22 +1,14 @@
 export Default
 
 immutable Default <: Element
-  sp :: SegmentParameters
-  function Default(sp)
-    if ~isnan(sp.wx)
-      throw(ArgumentError("cannot specify default wx"))
-    end
-    if ~isnan(sp.wy)
-      throw(ArgumentError("cannot specify default wy"))
-    end
-    if ~isnan(sp.wz)
-      throw(ArgumentError("cannot specify default wz"))
-    end
-    new(deepcopy(sp))
-  end
+  wh        :: WH
+  sigmarho  :: SigmaRho
 end
+Default(;w=NaN, h=NaN, sigma=NaN, rho=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
+    Default(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho))
 
 function printfh!(io::IO, pfh::PrintFH, x::Default)
   print(io,".default ")
-  printfh!(io, pfh, x.sp)
+  printfh!(io, pfh, x.wh)
+  printfh!(io, pfh, x.sigmarho)
 end

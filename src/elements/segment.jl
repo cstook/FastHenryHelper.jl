@@ -119,14 +119,15 @@ immutable Segment <: Element
   sigmarho  :: SigmaRho
   wxwywz    :: WxWyWz
   function Segment(n, n1::Node, n2::Node, wh::WH, sigmarho::SigmaRho, wxwywz::WxWyWz)
-    initialixe_wxwywz!(n1,n2,wxwywz)
-    new(AutoName(n), n1, n2, wh, sigmarho, wxwywz)
+    new_wxwywz = deepcopy(wxwywz)
+    initialixe_wxwywz!(n1,n2,new_wxwywz)
+    new(AutoName(n), n1, n2, wh, sigmarho, new_wxwywz)
   end
 end
-Segment(n1::Node, n2::Node, w=NaN, h=NaN, sigma=NaN, rho=NaN,
+Segment(n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
         wx=0.0, wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
             Segment(:null, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
-Segment(name, n1::Node, n2::Node, w=NaN, h=NaN, sigma=NaN, rho=NaN,
+Segment(name, n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
         wx=0.0, wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
             Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))        
 
