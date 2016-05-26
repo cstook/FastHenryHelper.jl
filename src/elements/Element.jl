@@ -43,9 +43,28 @@ printfh!(::IO, ::PrintFH, ::Element) = nothing
 printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
 Base.show(io::IO, e::Element) = printfh(io,e)
+#=
 transform(x::Element, ::Any) = x
 transform!(::Element, ::Any) = nothing
+=#
 resetiname!(::Element) = nothing
+resetist!(n::Element) = nothing
+
+tsegment!(::Element, ::Array{Float64,2}) = nothing
+tgroup!(::Element, ::Array{Float64,2}) = nothing
+tother!(::Element, ::Array{Float64,2}) = nothing
+function transform!(e::Element, tm::Array{Float64,2})
+  resetist!(e)
+  tsegment!(e,tm)
+  tgroup!(e,tm)
+  tother!(e,tm)
+  return nothing
+end
+function transform(e::Element, tm::Array{Float64,2})
+  newe = deepcopy(e)
+  transform!(newe)
+  return nothing
+end
 
 include("title.jl")
 include("node.jl")

@@ -1,6 +1,6 @@
 export SegmentParameters
 
-immutable SegmentParameters <: Element
+type SegmentParameters <: Element
   w :: Float64
   h :: Float64
   sigma :: Float64 

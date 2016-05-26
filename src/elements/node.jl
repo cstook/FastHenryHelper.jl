@@ -1,9 +1,10 @@
 export Node, rx, ry, rz, txyz, scalexyz
 
-immutable Node <: Element
+type Node <: Element
   name :: AutoName
   xyz  :: Array{Float64,1}
-  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz) 
+  ist  :: Bool # true if node has been transfromed
+  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz,false) 
 end
 Node(xyz::Array{Float64,1}) = Node(:null,xyz)
 Node(name,x,y,z) = Node(name,[x,y,z,1.0])
@@ -25,20 +26,22 @@ function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
 end
 
 resetiname!(n::Node) = reset!(n.name)
-
-"""
-    transform(node::Node, tm::Array{Float64,2})
-    transform!(node::Node, tm::Array{Float64,2})
-
-Multiply the cooridnate of `node` by the transform matrix `tm`.
-"""
-transform, transform!
-
-transform(n::Node, tm::Array{Float64,2}) = Node(n.name.name,tm*n.xyz)
-function transform!(n::Node, tm::Array{Float64,2})
-  xyz = tm*n.xyz
-  n.xyz[1:4] = xyz[1:4]
+function resetist!(n::Node)
+  n.ist = false
   return nothing
+end
+
+function transform!(n::Node, tm::Array{Float64,2})
+  if ~n.ist
+    xyz = tm*n.xyz
+    n.xyz[1:4] = xyz[1:4]
+    n.ist = true
+  end
+  return nothing
+end
+function transform(n::Node, tm::Array{Float64,2})
+  newn = deepcopy(n)
+  transform!(newn)
 end
 
 """
