@@ -31,9 +31,9 @@ type WxWyWz
   isdefault :: Bool
 end
 WxWyWz(;wx=0.0, wy=0.0, wz=0.0) = 
-  WxWyWz([wx,wy,wz,1.0],wx==0.0 && wy==0.0 && wz==0.0)
+  WxWyWz([wx,wy,wz],wx==0.0 && wy==0.0 && wz==0.0)
 WxWyWz(wx, wy, wz) = 
-  WxWyWz([wx,wy,wz,1.0],wx==0.0 && wy==0.0 && wz==0.0)
+  WxWyWz([wx,wy,wz],wx==0.0 && wy==0.0 && wz==0.0)
 function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
     print(io,"+ ")
@@ -51,7 +51,7 @@ function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   return nothing
 end
 function transform!(x::WxWyWz, tm::Array{Float64,2})
-  newxyz = tm*x.xyz
+  newxyz = tm[1:3,1:3]*x.xyz
   x.xyz = newxyz
   x.isdefault = false
   return nothing
@@ -142,7 +142,7 @@ resetiname!(x::Segment) = reset!(x.name)
 
 function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   if wxwywz.isdefault
-    v1 = n2.xyz[1:3] - n1.xyz[1:3]
+    v1 = n2.xyz - n1.xyz
     v2 = [0.0, 0.0, 1.0]
     w = cross(v1,v2)
     if norm(w) < 1e-10  # close to 0
@@ -150,8 +150,7 @@ function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
       v2 = [0.0, 1.0, 0.0]
       w = cross(v1,v2)
     end
-    wxwywz.xyz[1:3] = (w/norm(w,3))[1:3]
-    wxwywz.xyz[4] = 1.0
+    wxwywz.xyz = (w/norm(w,3))
   end
   return nothing
 end
