@@ -1,9 +1,8 @@
 export Node, rx, ry, rz, txyz, scalexyz
 
-type Node <: Element
+immutable Node <: Element
   name :: AutoName
   xyz  :: Array{Float64,1}
-  ist  :: Bool # true if node has been transfromed
   Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz,false) 
 end
 Node(xyz::Array{Float64,1}) = Node(:null,xyz)
@@ -26,17 +25,10 @@ function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
 end
 
 resetiname!(n::Node) = reset!(n.name)
-function resetist!(n::Node)
-  n.ist = false
-  return nothing
-end
 
 function transform!(n::Node, tm::Array{Float64,2})
-  if ~n.ist
-    xyz = tm*n.xyz
-    n.xyz[1:4] = xyz[1:4]
-    n.ist = true
-  end
+  xyz = tm*n.xyz
+  n.xyz[1:4] = xyz[1:4]
   return nothing
 end
 function transform(n::Node, tm::Array{Float64,2})
