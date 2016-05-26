@@ -10,7 +10,7 @@ Point(; x=0, y=0, z=0) = Point(x,y,z)
 
 function printfh!(io::IO, ::PrintFH ,x::Point)
   print(io,"+ hole point ")
-  @printf(io,"(%.6e, %.6e, %.6e)",x.xyz[1],x.xyz[2],x.xyz[3])
+  @printf(io,"(%.9e, %.9e, %.9e)",x.xyz[1],x.xyz[2],x.xyz[3])
   println(io)
   return nothing
 end
@@ -32,7 +32,7 @@ Rect(; x1=0, y1=0, z1=0, x2=0, y2=0, z2=0) =
 
 function printfh!(io::IO, ::PrintFH ,x::Rect)
   print(io,"+ hole rect ")
-  @printf(io,"(%.6e, %.6e, %.6e, %.6e, %.6e, %.6e)",
+  @printf(io,"(%.9e, %.9e, %.9e, %.9e, %.9e, %.9e)",
           x.corner1[1],x.corner1[2],x.corner1[3],
           x.corner2[1],x.corner2[2],x.corner2[3])
   println(io)
@@ -58,7 +58,7 @@ Circle(; x=0, y=0, z=0, r=0) =
 
 function printfh!(io::IO, ::PrintFH, x::Circle)
   print(io,"+ hole circle ")
-  @printf(io, "(%.6e, %.6e, %.6e, %.6e)",
+  @printf(io, "(%.9e, %.9e, %.9e, %.9e)",
           x.center[1],x.center[2],x.center[3],
           x.radius)
   println(io)
@@ -131,29 +131,29 @@ UniformPlane(;name = :null,
 
 function printfh!(io::IO, pfh::PrintFH ,x::UniformPlane)
   println(io,"G",autoname!(pfh,x.name))
-  @printf(io,"+ x1=%.6e",x.corner1[1]) 
-  @printf(io," y1=%.6e",x.corner1[2]) 
-  @printf(io," z1=%.6e\n",x.corner1[3]) 
-  @printf(io,"+ x2=%.6e",x.corner2[1]) 
-  @printf(io," y2=%.6e",x.corner2[2]) 
-  @printf(io," z2=%.6e\n",x.corner2[3]) 
-  @printf(io,"+ x3=%.6e",x.corner3[1]) 
-  @printf(io," y3=%.6e",x.corner3[2]) 
-  @printf(io," z3=%.6e\n",x.corner3[3]) 
-  @printf(io,"+ thick=%.6e",x.thick) 
+  @printf(io,"+ x1=%.9e",x.corner1[1]) 
+  @printf(io," y1=%.9e",x.corner1[2]) 
+  @printf(io," z1=%.9e\n",x.corner1[3]) 
+  @printf(io,"+ x2=%.9e",x.corner2[1]) 
+  @printf(io," y2=%.9e",x.corner2[2]) 
+  @printf(io," z2=%.9e\n",x.corner2[3]) 
+  @printf(io,"+ x3=%.9e",x.corner3[1]) 
+  @printf(io," y3=%.9e",x.corner3[2]) 
+  @printf(io," z3=%.9e\n",x.corner3[3]) 
+  @printf(io,"+ thick=%.9e",x.thick) 
   print(io," seg1=",x.seg1)
   println(io," seg2=",x.seg2)
   if ~isnan(x.segwid1)
-    @printf(io,"+ segwid1=%.6e\n",x.segwid1) 
+    @printf(io,"+ segwid1=%.9e\n",x.segwid1) 
   end
   if ~isnan(x.segwid2)
-    @printf(io,"+ segwid2=%.6e\n",x.segwid2) 
+    @printf(io,"+ segwid2=%.9e\n",x.segwid2) 
   end
   if ~isnan(x.sigma)
-    @printf(io,"+ sigma=%.6e\n",x.sigma) 
+    @printf(io,"+ sigma=%.9e\n",x.sigma) 
   end
   if ~isnan(x.rho)
-    @printf(io,"+ rho=%.6e\n",x.rho) 
+    @printf(io,"+ rho=%.9e\n",x.rho) 
   end
   if x.nhinc>0
     println(io,"+ nhinc=",x.nhinc)
@@ -162,13 +162,13 @@ function printfh!(io::IO, pfh::PrintFH ,x::UniformPlane)
     println(io,"+ rh=",x.rh) 
   end
   if ~isnan(x.relx)
-    @printf(io,"+ relx=%.6e\n",x.relx) 
+    @printf(io,"+ relx=%.9e\n",x.relx) 
   end
   if ~isnan(x.rely)
-    @printf(io,"+ rely=%.6e\n",x.rely) 
+    @printf(io,"+ rely=%.9e\n",x.rely) 
   end
   if ~isnan(x.relz)
-    @printf(io,"+ relz=%.6e\n",x.relz) 
+    @printf(io,"+ relz=%.9e\n",x.relz) 
   end
   for node in x.nodes
     printfh!(io,pfh,node,plane=true)

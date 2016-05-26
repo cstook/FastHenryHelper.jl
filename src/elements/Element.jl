@@ -45,6 +45,12 @@ printfh(io::Element) = printfh(STDOUT,io)
 Base.show(io::IO, e::Element) = printfh(io,e)
 transform(x::Element, ::Any) = x
 transform!(::Element, ::Any) = nothing
+function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
+  for i in eachindex(x)
+    transform!(x[i],tm)
+  end
+  return nothing
+end
 resetiname!(::Element) = nothing
 resetist!(n::Element) = nothing
 

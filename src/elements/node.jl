@@ -16,9 +16,9 @@ function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
   end
   print(io,"N",autoname!(pfh, n.name)," ")
   if plane
-    @printf(io,"(%.6e,%.6e,%.6e)",n.xyz[1],n.xyz[2],n.xyz[3])
+    @printf(io,"(%.9e,%.9e,%.9e)",n.xyz[1],n.xyz[2],n.xyz[3])
   else
-    @printf(io,"x=%.6e y=%.6e z=%.6e",n.xyz[1],n.xyz[2],n.xyz[3])
+    @printf(io,"x=%.9e y=%.9e z=%.9e",n.xyz[1],n.xyz[2],n.xyz[3])
   end
   println(io)
   return nothing
@@ -35,6 +35,8 @@ function transform(n::Node, tm::Array{Float64,2})
   newn = deepcopy(n)
   transform!(newn)
 end
+
+xyz(n::Node) = n.xyz[1:3]
 
 """
     rx(α) = [1      0       0     0;

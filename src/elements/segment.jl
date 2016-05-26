@@ -17,10 +17,10 @@ function printfh!(io::IO, ::PrintFH, x::SigmaRho)
   end
   print(io,"+ ")
   if ~isnan(x.sigma)
-    @printf(io," sigma=%.6e",x.sigma) 
+    @printf(io," sigma=%.9e",x.sigma) 
   end
   if ~isnan(x.rho)
-    @printf(io," rho=%.6e",x.rho) 
+    @printf(io," rho=%.9e",x.rho) 
   end
   println(io)
   return nothing
@@ -38,13 +38,13 @@ function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
     print(io,"+ ")
     if ~isnan(x.xyz[1])
-      @printf(io," wx=%.6e",x.xyz[1]) 
+      @printf(io," wx=%.9e",x.xyz[1]) 
     end
     if ~isnan(x.xyz[2])
-      @printf(io," wy=%.6e",x.xyz[2]) 
+      @printf(io," wy=%.9e",x.xyz[2]) 
     end
     if ~isnan(x.xyz[3])
-      @printf(io," wz=%.6e",x.xyz[3]) 
+      @printf(io," wz=%.9e",x.xyz[3]) 
     end
     println(io)
   end
@@ -88,10 +88,10 @@ function printfh!(io::IO, ::PrintFH, x::WH)
   end
   print(io,"+ ")
   if ~isnan(x.w)
-    @printf(io," w=%.6e",x.w)
+    @printf(io," w=%.9e",x.w)
   end
   if ~isnan(x.h)
-    @printf(io," h=%.6e",x.h) 
+    @printf(io," h=%.9e",x.h) 
   end
   if x.nhinc>0
     print(io," nhinc=",x.nhinc) 
@@ -100,10 +100,10 @@ function printfh!(io::IO, ::PrintFH, x::WH)
     print(io," nwinc=",x.nwinc) 
   end
   if ~isnan(x.rh)
-    @printf(io," rh=%.6e",x.rh) 
+    @printf(io," rh=%.9e",x.rh) 
   end
   if ~isnan(x.rw)
-    @printf(io," rw=%.6e",x.rw) 
+    @printf(io," rw=%.9e",x.rw) 
   end
   println(io)
   return nothing

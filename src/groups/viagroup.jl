@@ -1,6 +1,6 @@
 export viagroup
 
-viagroup(;radius=NaN, height=NaN, wallthickness=NaN, n=8, nhinc=5) = 
+viagroup(;radius=NaN, height=NaN, wallthickness=NaN, n=8, nhinc=5, rh=NaN) = 
   viagroup(radius, height, wallthickness, n, nhinc)
 function viagroup(r, h, t, n=8, nhinc=5)
   if isnan(r)
@@ -37,7 +37,7 @@ function viagroup(r, h, t, n=8, nhinc=5)
     segments = Array(Segment,n)
     for i in 1:n
       segments[i] = Segment(topnodes[i],botnodes[i],
-                      w=w, h=t, wx=wx[i], wy=wy[i], nhinc=nhinc, nwinc=1)
+                      w=w, h=t, wx=wx[i], wy=wy[i], nhinc=nhinc, rh=rh, nwinc=1)
     end
     group = Group([topnodes;botnodes;eqtop;eqbot;segments],terminals)
   else # n=0 for bypass
