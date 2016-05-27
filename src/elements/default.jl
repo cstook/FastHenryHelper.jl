@@ -1,5 +1,11 @@
 export Default
 
+"""
+    Default(;w=NaN, h=NaN, sigma=NaN, rho=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN)
+    Default(sp::SegmentParameters)
+
+`Default` objects `show` a .default FastHenry command.
+"""
 immutable Default <: Element
   wh        :: WH
   sigmarho  :: SigmaRho

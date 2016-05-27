@@ -2,6 +2,12 @@ export UniformPlane, Point, Rect, Circle
 
 abstract Hole <: Element
 
+"""
+    Point(x,y,z)
+    Point(; x=0, y=0, z=0)
+
+`Point` objects are used for point holes in a `UniformPlane`.
+"""
 immutable Point <: Hole
   xyz  :: Array{Float64,1}
 end
@@ -22,6 +28,13 @@ function transform!(x::Point, tm::Array{Float64,2})
   return nothing
 end
 
+
+"""
+    Rect(x1,y1,z1,x2,y2,z2)
+    Rect(; x1=0, y1=0, z1=0, x2=0, y2=0, z2=0)
+
+`Rect` objects are used for rectangular holes in a `UniformPlane`.
+"""
 immutable Rect <: Hole
   corner1  :: Array{Float64,1}
   corner2  :: Array{Float64,1}
@@ -48,6 +61,12 @@ function transform!(x::Rect, tm::Array{Float64,2})
   return nothing
 end
 
+"""
+    Circle(x,y,z,r)
+    Circle(; x=0, y=0, z=0, r=0)
+
+`Circle` objects are used for circular holes in a `UniformPlane`.
+"""
 immutable Circle <: Hole
   center  :: Array{Float64,1}
   radius  :: Float64
@@ -72,6 +91,14 @@ function transform!(x::Circle, tm::Array{Float64,2})
   return nothing
 end
 
+
+"""
+    UniformPlane(name, corner1, corner2, corner3, thick, seg1, seg2,
+              segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
+              nodes, holes)
+
+`UniformPlane` objects `show` a FastHenry uniform discretized plane command.
+"""
 immutable UniformPlane <: Element
   name :: AutoName
   corner1 :: Array{Float64,1}

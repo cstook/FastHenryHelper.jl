@@ -1,5 +1,11 @@
 export Freq
 
+"""
+    Freq(min,max,ndec=NaN)
+    Freq(;min=0, max=NaN, ndec=NaN)
+
+`Freq` objects `show` a FastHenry .freq command.
+"""
 immutable Freq <: Element
   min :: Float64
   max :: Float64

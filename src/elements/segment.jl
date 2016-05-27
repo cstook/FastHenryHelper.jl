@@ -109,6 +109,12 @@ function printfh!(io::IO, ::PrintFH, x::WH)
   return nothing
 end
 
+"""
+    SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
+                  nhinc=0, nwinc=0, rh=NaN, rw=NaN)
+
+Object to hold parameters for `Segment` and `Default`
+"""
 immutable SegmentParameters
   wh        :: WH
   sigmarho  :: SigmaRho
@@ -118,6 +124,16 @@ SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
                   nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 
+
+"""
+    Segment([name], node1, node2, [segmentparameters])
+
+`Segment` objects `show` a FastHenry segment command.
+
+note: When rotating segments, the vector [wx,wy,wz] will be rotated.  Default 
+values will be used if not specified.  wx, wy, wz will show after `transform[!]` is 
+called on a `Segment`.
+"""
 immutable Segment <: Element
   name      :: AutoName
   node1     :: Node 

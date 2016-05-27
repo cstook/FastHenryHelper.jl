@@ -1,6 +1,6 @@
 using Documenter
 using FastFieldSolversHelper
-using .FastCapHelper
+#using .FastCapHelper
 using .FastHenryHelper
 
 # Build docs.

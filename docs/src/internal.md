@@ -13,5 +13,4 @@ Pages = ["internal.md"]
 ## FastHenryHelper
 
 ```@docs
-FastHenryHelper.checksigmaandrho
 ```

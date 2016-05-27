@@ -1,5 +1,10 @@
 export Units
 
+"""
+    Units(unitname::String)
+
+`Units` objects `show` a FastHenry .units command.
+"""
 immutable Units <: Element
   unitname :: String
   function Units(x)

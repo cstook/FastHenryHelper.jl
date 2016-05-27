@@ -1,5 +1,11 @@
 export Node, rx, ry, rz, txyz, scalexyz
 
+"""
+    Node([name],x,y,z)
+    Node(xyz::Array{Float64,1})
+
+`Node` objects `show` a FastHenry node command.
+"""
 immutable Node <: Element
   name :: AutoName
   xyz  :: Array{Float64,1}
@@ -36,6 +42,11 @@ function transform(n::Node, tm::Array{Float64,2})
   transform!(newn)
 end
 
+"""
+    xyz(n::Node)
+
+Return the cooridinate on a node.
+"""
 xyz(n::Node) = n.xyz[1:3]
 
 """
@@ -44,7 +55,7 @@ xyz(n::Node) = n.xyz[1:3]
              0   -sin(α)  cos(α)  0;
              0      0       0     1]
 
-[rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle α around x axis.
+[Rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle α around x axis.
 """
 rx(α) = [1.0      0.0       0.0     0.0;
          0.0     cos(α)    sin(α)   0.0;
@@ -58,7 +69,7 @@ rx(α) = [1.0      0.0       0.0     0.0;
                0      0       0     1]
 
 
-[rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle β around y axis.
+[Rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle β around y axis.
 """
 ry(β) = [cos(β)   0.0    -sin(β)    0.0;
           0.0     1.0      0.0      0.0;
@@ -71,20 +82,38 @@ ry(β) = [cos(β)   0.0    -sin(β)    0.0;
               0       0    1  0;
               0       0    0  1]
 
-[rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle γ around z axis.
+[Rotation matrix](http://mathworld.wolfram.com/RotationMatrix.html) for angle γ around z axis.
 """
 rz(γ) = [cos(γ) sin(γ) 0.0  0.0;
         -sin(γ) cos(γ) 0.0  0.0;
           0.0    0.0   1.0  0.0;
           0.0    0.0   0.0  1.0]
 
-txyz(x,y,z) = [1.0 0.0 0.0  x;
-               0.0 1.0 0.0  y;
-               0.0 0.0 1.0  z;
+
+"""
+    txyz(p,q,r) = [1.0 0.0 0.0  p;
+                   0.0 1.0 0.0  q;
+                   0.0 0.0 1.0  r;
+                   0.0 0.0 0.0 1.0]
+
+Translation matrix.  Translate a cooridnate by adding [p,q,r]
+"""
+txyz(p,q,r) = [1.0 0.0 0.0  p;
+               0.0 1.0 0.0  q;
+               0.0 0.0 1.0  r;
                0.0 0.0 0.0 1.0]
 
-scalexyz(x,y,z) = [ x  0.0 0.0 0.0;
-                   0.0  y  0.0 0.0;
-                   0.0 0.0  z  0.0;
+
+"""
+    scalexyz(p,q,r) = [ p  0.0 0.0 0.0;
+                       0.0  q  0.0 0.0;
+                       0.0 0.0  r  0.0;
+                       0.0 0.0 0.0 1.0]
+
+Scale matrix.  Scale a cooridnate [x, y, z] by [p, q, r].
+"""
+scalexyz(p,q,r) = [ p  0.0 0.0 0.0;
+                   0.0  q  0.0 0.0;
+                   0.0 0.0  r  0.0;
                    0.0 0.0 0.0 1.0] 
 # http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html

@@ -1,5 +1,5 @@
 """
-Helps creating input files for FastHenry2.
+Helps creating input files for FastHenry.
 """
 module FastHenryHelper
 
