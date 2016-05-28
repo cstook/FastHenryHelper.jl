@@ -1,5 +1,19 @@
 export viagroup
 
+"""
+    viagroup(<keyword arguments>)
+
+Returns a `Group` of `Segment`s for the barrel of a via.
+
+**Keyword Arguments**
+
+- radius          -- radius of via 
+- height          -- height of via 
+- wallthickness   -- thickness of copper plating
+- n               -- number of segment around via 
+- hninc           -- number of filaments per segment 
+- rh              -- ratio of filament width
+"""
 viagroup(;radius=NaN, height=NaN, wallthickness=NaN, n=8, nhinc=5, rh=NaN) = 
   viagroup(radius, height, wallthickness, n, nhinc, rh)
 function viagroup(r, h, t, n=8, nhinc=5, rh = NaN)

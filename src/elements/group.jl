@@ -9,6 +9,7 @@ export Group
 elements.
 
 **Fields**
+
 - `elements`    -- Array of `Element`'s
 - `terms`       -- Dict{Symbol,Node} # connections to the Group
 

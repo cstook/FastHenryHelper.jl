@@ -1,4 +1,4 @@
-# Public API
+# FastHenryHelper Public API
 
 ```@meta
 CurrentModule = FastHenryHelper
@@ -10,7 +10,7 @@ CurrentModule = FastHenryHelper
 Pages = ["public.md"]
 ```
 
-## FastHenryHelper
+## Elements
 
 ```@docs
 Element
@@ -30,10 +30,22 @@ End
 Equiv
 Freq
 Group
+elements
+terms
+Comment
 Title
 Units
 UniformPlane
+Hole
 Point
 Rect
 Circle
+```
+
+## Groups and Arrays
+```@docs
+connectnodes
+coilcraft1010vsgroup
+helixnodes
+viagroup
 ```

@@ -2,8 +2,8 @@ export transform, transform!, Element
 """
 Subtypes of `Element` `show` FastHenry commands.
 
-Geometric transformations can be preformed on elements.  Elements
-which require a name will automatically generate unique names if 
+Geometric transformations can be preformed on elements with `transform`.
+Elements which require a name will automatically generate unique names if 
 no name is provided.  Gropus of elements are elements.
 """
 abstract Element
@@ -56,6 +56,12 @@ Base.show(io::IO, e::Element) = printfh(io,e)
 Transform (rotate, translate, scale, etc...) a element by 4x4 
 [transform matrix](# http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html)
  `tm`.
+
+Transform will modify the coordinates of `Element`s and the `wx`, `wy`, and `wz` 
+parameters of `Segment`.  `transform` of a `Segment` will not modify its `Node`s.  
+`transform` a `Group` containing the `Node`s and `Segment` instead.
+
+Typically `transform` would only be applied to `Group` objects.
 """
 transform, transform!
 transform{T<:Number}(x::Element, ::Array{T,2}) = x

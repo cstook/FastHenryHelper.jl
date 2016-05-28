@@ -1,7 +1,7 @@
 export External
 
 """
-    External(n1::Node, n2::Node, portname::String = "")
+    External(n1::Node, n2::Node, [portname::String])
 
 `External` objects `show` a FastHenry .external command.
 """

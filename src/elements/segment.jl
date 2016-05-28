@@ -114,7 +114,8 @@ end
 
 Object to hold parameters for `Segment` and `Default`
 
-** Keyword Arguments **
+**Keyword Arguments**
+
 - `w`               -- segment width
 - `h`               -- segment height
 - `sigma`           -- conductivity 
@@ -141,7 +142,7 @@ SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
 
 Keyword arguments are the same as for `SegmentParameters`.
 
-note: When rotating segments, the vector [wx,wy,wz] will be rotated.  Default 
+note: When rotating segments, the vector [wx, wy, wz] will be rotated.  Default 
 values will be used if not specified.  wx, wy, wz will show after `transform[!]` is 
 called on a `Segment`.
 """

@@ -1,3 +1,3 @@
-# FastFieldSolversHelper.jl
+# FastHenryHelper.jl
 
-*FastFieldSolversHelper.jl* assists creating input files for [FastFieldSolvers](http://www.fastfieldsolvers.com).
+*FastHenryHelper.jl* assists creating input files for [FastFieldSolvers](http://www.fastfieldsolvers.com).

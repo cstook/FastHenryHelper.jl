@@ -1,10 +1,20 @@
 export UniformPlane, Point, Rect, Circle, Hole
 
+
+"""
+Subtypes of `Hole` are holes in a plane.
+
+**Subtypes**
+
+- Point
+- Rect 
+- Circle 
+"""
 abstract Hole <: Element
 
 """
     Point(x, y, z)
-    Point(; x=0, y=0, z=0)
+    Point(<keyword arguments>)
 
 `Point` objects are used for point holes in a `UniformPlane`.
 
@@ -67,7 +77,7 @@ end
 
 """
     Circle(x, y, z, r)
-    Circle(; x=0, y=0, z=0, r=0)
+    Circle(<keyword arguments>)
 
 `Circle` objects are used for circular holes in a `UniformPlane`.
 
@@ -103,7 +113,8 @@ end
 
 `UniformPlane` objects `show` a FastHenry uniform discretized plane command.
 
-** Keyword Arguments **
+**Keyword Arguments**
+
 - `name`              -- plane name
 - `x1`,`y1`,`z1`      -- coordinate of first corner
 - `x2`,`y2`,`z2`      -- coordinate of second corner
@@ -116,7 +127,7 @@ end
 - `rh`                -- filament ratio
 - `relx`,`rely`,`relz`-- see FastHenry documentation
 - `nodes`             -- Array of `Node` connection points to plane
-- `holes`             -- Array of `Holes` (`Point`, `Rect`, or `Circle`)
+- `holes`             -- Array of `Hole` (`Point`, `Rect`, or `Circle`)
 """
 immutable UniformPlane <: Element
   name :: AutoName

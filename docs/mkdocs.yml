@@ -1,6 +1,6 @@
-site_name:        FastFieldSolversHelper.jl
-repo_url:         https://github.com/cstook/FastFieldSolversHelper.jl
-site_description: Julia interface to FastFieldSolversHelper.
+site_name:        FastHenryHelper.jl
+repo_url:         https://github.com/cstook/FastHenryHelper.jl
+site_description: Use Julia to create FastHenryHelper input files.
 site_author:      Chris Stook
 
 theme: readthedocs
@@ -24,4 +24,4 @@ pages:
 - Installation: install.md
 - Examples: examples.md
 - Public API: public.md
-- Internal API: internal.md
+#- Internal API: internal.md
