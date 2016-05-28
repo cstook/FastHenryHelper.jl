@@ -1,30 +1,36 @@
 export viagroup
 
 """
+    viagroup(radius, height, n, [parameters::SegmentParameters])
     viagroup(<keyword arguments>)
 
 Returns a `Group` of `Segment`s for the barrel of a via.
 
 **Keyword Arguments**
 
-- radius          -- radius of via 
-- height          -- height of via 
-- wallthickness   -- thickness of copper plating
-- n               -- number of segment around via 
-- hninc           -- number of filaments per segment 
-- rh              -- ratio of filament width
+- `radius`          -- radius of via 
+- `height`          -- height of via 
+- `h`               -- thickness of copper plating
+- `n`               -- number of segment around via
+- `sigma`,`rho`     -- specify conductivity or resitivity
+- `hninc`           -- number of filaments per segment 
+- `rh`              -- ratio of filament width
+
+Terminals are in the center labeled :top and :bot.  Only `SegmentParameters` 
+which match keyword arguments are used.  Specify n=0 to bypass via (.equiv top bot).
 """
-viagroup(;radius=NaN, height=NaN, wallthickness=NaN, n=8, nhinc=5, rh=NaN) = 
-  viagroup(radius, height, wallthickness, n, nhinc, rh)
-function viagroup(r, h, t, n=8, nhinc=5, rh = NaN)
+viagroup(;radius=NaN, height=NaN, n=8, h=NaN, sigma=NaN, rho=NaN,
+          nhinc=5, rh=NaN) = 
+  viagroup(radius, height, n, SegmentParameters(h=h,sigma=sigma,rho=rho,nhinc=nhinc,rh=rh))
+function viagroup(r, h, n=8, sp::SegmentParameters=SegmentParameters())
   if isnan(r)
     throw(ArgumentError("radius must be specified"))
   end
   if isnan(h)
     throw(ArgumentError("height must be specified"))
   end
-  if isnan(t)
-    throw(ArgumentError("wallthickness must be specified"))
+  if isnan(sp.wh.h)
+    throw(ArgumentError("wall thickness (height of segemnt) must be specified"))
   end
   if n!=0 && n<2 
     throw(ArgumentError("must have zero or at least 2 segments"))
@@ -39,7 +45,6 @@ function viagroup(r, h, t, n=8, nhinc=5, rh = NaN)
     wx = map(cos,angle.+(pi/2))
     wy = map(sin,angle.+(pi/2))
     w = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
-    sp = SegmentParameters(w=w,h=t,nhinc=nhinc,nwinc=1)
     topnodes = Array(Node,n)
     botnodes = Array(Node,n)
     for i in 1:n
@@ -51,7 +56,9 @@ function viagroup(r, h, t, n=8, nhinc=5, rh = NaN)
     segments = Array(Segment,n)
     for i in 1:n
       segments[i] = Segment(topnodes[i],botnodes[i],
-                      w=w, h=t, wx=wx[i], wy=wy[i], nhinc=nhinc, rh=rh, nwinc=1)
+                      w=sp.wh.w, h=sp.wh.h, wx=wx[i], wy=wy[i], 
+                      nhinc=sp.wh.nhinc, rh=sp.wh.rh, sigma=sp.sigmarho.sigma,
+                      rho=sp.sigmarho.rho, nwinc=1)
     end
     group = Group([topnodes;botnodes;eqtop;eqbot;segments],terminals)
   else # n=0 for bypass

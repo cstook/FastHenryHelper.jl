@@ -19,9 +19,11 @@ when `show` is called.  Generated names start with an
 underscore (_1, _2, _3, ...).  Do not use these names for manual 
 named elements.
 
-Connection points to the group are in the `terms` dictionary.  The Group
-is a dictionary of its terms.  In other words, you may write group[key]
-instead of group.terms[key].
+Connection points (terminals) to the group are in the `terms` dictionary.
+ The Group is a dictionary of its terms.  In other words, you may write 
+ group[key] instead of group.terms[key].
+
+Elements may be added to a group with push!(group, element).
 """
 immutable Group <: Element
   elements :: Array{Element,1}
@@ -53,6 +55,10 @@ terms!(g::Group, p::Dict{Symbol,Node}) = g.terms = p
 Base.getindex(g::Group, key::Symbol) = g.terms[key]
 function Base.setindex!(g::Group, n::Node, key::Symbol)
   g.terms[key] = n
+  return nothing
+end
+function Base.push!(g::Group, n::Node)
+  push!(g.elements,n)
   return nothing
 end
 

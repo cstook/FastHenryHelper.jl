@@ -1,7 +1,7 @@
 export coilcraft1010vsgroup
 
 """
-    coilcraft1010vsgroup(partnumber, <keywork parameters>)
+    coilcraft1010vsgroup(partnumber, <keywork arguments>)
 
 Returns a `Group` for a Coilcraft 
 [1010VS](http://www.coilcraft.com/1010vs.cfm) series inductor.
@@ -14,10 +14,12 @@ Returns a `Group` for a Coilcraft
 - 1010VS-111ME
 - 1010VS-141ME
 
-**Keyword Parameters**
+**Keyword Arguments**
 
 - `nhinc`, `nwinc`  -- integer number of filaments in height and width
 - `rh`, `rw`        -- ratio in the height and width
+
+Terminals are :a and :b.
 
 note: Assumes units are mm.
 """
