@@ -13,8 +13,6 @@ Pages = ["public.md"]
 ## FastHenryHelper
 
 ```@docs
-FastFieldSolversHelper
-FastHenryHelper
 Element
 transform
 rx

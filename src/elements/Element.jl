@@ -58,8 +58,8 @@ Transform (rotate, translate, scale, etc...) a element by 4x4
  `tm`.
 """
 transfrom, transform!
-transform{T<Number}(x::Element, ::Array{T,2}) = x
-transform!{T<Number}(::Element, ::Array{T,2}) = nothing
+transform{T<:Number}(x::Element, ::Array{T,2}) = x
+transform!{T<:Number}(::Element, ::Array{T,2}) = nothing
 function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
   for i in eachindex(x)
     transform!(x[i],tm)
