@@ -1,6 +1,6 @@
 export transform, transform!
 """
-Objects of type `Element` are objects which `show` FastHenry commands.
+Subtypes of `Element` `show` FastHenry commands.
 
 Geometric transformations can be preformed on elements.  Elements
 which require a name will automatically generate unique names if 
