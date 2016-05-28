@@ -1,6 +1,6 @@
 site_name:        FastHenryHelper.jl
 repo_url:         https://github.com/cstook/FastHenryHelper.jl
-site_description: Use Julia to create FastHenryHelper input files.
+site_description: Use Julia to create FastHenry input files.
 site_author:      Chris Stook
 
 theme: readthedocs
