@@ -110,10 +110,18 @@ function printfh!(io::IO, ::PrintFH, x::WH)
 end
 
 """
-    SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
-                  nhinc=0, nwinc=0, rh=NaN, rw=NaN)
+    SegmentParameters(<keyword arguments>)
 
 Object to hold parameters for `Segment` and `Default`
+
+** Keyword Arguments **
+- `w`               -- segment width
+- `h`               -- segment height
+- `sigma`           -- conductivity 
+- `rho`             -- resistivity 
+- `wx`, `wy`, `wz`  -- segment orientation.  vector pointing along width of segment's cross section.
+- `nhinc`, `nwinc`  -- integer number of filaments in height and width
+- `rh`, `rw`        -- ratio in the height and width
 """
 immutable SegmentParameters
   wh        :: WH
@@ -126,9 +134,12 @@ SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
 
 
 """
-    Segment([name], node1, node2, [segmentparameters])
+    Segment([name], n1::Node, n2::Node, [parameters::SegmentParameters])
+    Segment([name], n1::Node, n2::Node, <keyword arguments>)
 
 `Segment` objects `show` a FastHenry segment command.
+
+Keyword arguments are the same as for `SegmentParameters`.
 
 note: When rotating segments, the vector [wx,wy,wz] will be rotated.  Default 
 values will be used if not specified.  wx, wy, wz will show after `transform[!]` is 

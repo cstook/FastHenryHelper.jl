@@ -1,7 +1,7 @@
 # Public API
 
 ```@meta
-CurentModule = FastHenryHelper
+CurrentModule = FastHenryHelper
 ```
 
 ## Index

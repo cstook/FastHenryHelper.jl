@@ -1,4 +1,4 @@
-export Node, rx, ry, rz, txyz, scalexyz
+export Node, rx, ry, rz, xyz, txyz, scalexyz
 
 """
     Node([name],x,y,z)
@@ -96,7 +96,7 @@ rz(γ) = [cos(γ) sin(γ) 0.0  0.0;
                    0.0 0.0 1.0  r;
                    0.0 0.0 0.0 1.0]
 
-Translation matrix.  Translate a cooridnate by adding [p,q,r]
+[Translation matrix](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html).  Translate a cooridnate by adding [p,q,r]
 """
 txyz(p,q,r) = [1.0 0.0 0.0  p;
                0.0 1.0 0.0  q;
@@ -110,10 +110,9 @@ txyz(p,q,r) = [1.0 0.0 0.0  p;
                        0.0 0.0  r  0.0;
                        0.0 0.0 0.0 1.0]
 
-Scale matrix.  Scale a cooridnate [x, y, z] by [p, q, r].
+[Scale matrix](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html).  Scale a cooridnate [x, y, z] by [p, q, r].
 """
 scalexyz(p,q,r) = [ p  0.0 0.0 0.0;
                    0.0  q  0.0 0.0;
                    0.0 0.0  r  0.0;
                    0.0 0.0 0.0 1.0] 
-# http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html

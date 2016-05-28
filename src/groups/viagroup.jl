@@ -1,8 +1,8 @@
 export viagroup
 
 viagroup(;radius=NaN, height=NaN, wallthickness=NaN, n=8, nhinc=5, rh=NaN) = 
-  viagroup(radius, height, wallthickness, n, nhinc)
-function viagroup(r, h, t, n=8, nhinc=5)
+  viagroup(radius, height, wallthickness, n, nhinc, rh)
+function viagroup(r, h, t, n=8, nhinc=5, rh = NaN)
   if isnan(r)
     throw(ArgumentError("radius must be specified"))
   end

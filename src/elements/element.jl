@@ -1,4 +1,4 @@
-export transform, transform!
+export transform, transform!, Element
 """
 Subtypes of `Element` `show` FastHenry commands.
 

@@ -1,12 +1,14 @@
-export UniformPlane, Point, Rect, Circle
+export UniformPlane, Point, Rect, Circle, Hole
 
 abstract Hole <: Element
 
 """
-    Point(x,y,z)
+    Point(x, y, z)
     Point(; x=0, y=0, z=0)
 
 `Point` objects are used for point holes in a `UniformPlane`.
+
+Keyword arguments are `x`, `y`, `z`.
 """
 immutable Point <: Hole
   xyz  :: Array{Float64,1}
@@ -30,10 +32,12 @@ end
 
 
 """
-    Rect(x1,y1,z1,x2,y2,z2)
-    Rect(; x1=0, y1=0, z1=0, x2=0, y2=0, z2=0)
+    Rect(x1, y1, z1, x2, y2, z2)
+    Rect(<keyword arguments>)
 
 `Rect` objects are used for rectangular holes in a `UniformPlane`.
+
+Keyword arguments are `x1`, `y1`, `z1`, `x2`, `y2`, `z2`.
 """
 immutable Rect <: Hole
   corner1  :: Array{Float64,1}
@@ -62,10 +66,12 @@ function transform!(x::Rect, tm::Array{Float64,2})
 end
 
 """
-    Circle(x,y,z,r)
+    Circle(x, y, z, r)
     Circle(; x=0, y=0, z=0, r=0)
 
 `Circle` objects are used for circular holes in a `UniformPlane`.
+
+Keyword arguments are `x`, `y`, `z`, `r`.
 """
 immutable Circle <: Hole
   center  :: Array{Float64,1}
@@ -93,11 +99,24 @@ end
 
 
 """
-    UniformPlane(name, corner1, corner2, corner3, thick, seg1, seg2,
-              segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
-              nodes, holes)
+    UniformPlane(<keyword arguments>)
 
 `UniformPlane` objects `show` a FastHenry uniform discretized plane command.
+
+** Keyword Arguments **
+- `name`              -- plane name
+- `x1`,`y1`,`z1`      -- coordinate of first corner
+- `x2`,`y2`,`z2`      -- coordinate of second corner
+- `x3`,`y3`,`z3`      -- coordinate of third corner
+- `thick`             -- segment thickness
+- `seg1`,`seg2`       -- number of segments along each side of plane 
+- `segwid1`,`segwid2` -- segment width 
+- `sigma`,`rho`       -- specify conductivity or resistivity
+- `nhinc`             -- integer number of filaments
+- `rh`                -- filament ratio
+- `relx`,`rely`,`relz`-- see FastHenry documentation
+- `nodes`             -- Array of `Node` connection points to plane
+- `holes`             -- Array of `Holes` (`Point`, `Rect`, or `Circle`)
 """
 immutable UniformPlane <: Element
   name :: AutoName
