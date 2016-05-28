@@ -1,7 +1,6 @@
 # Internal API
 
 ```@meta
-CurentModule = FastFieldSolversHelper.FastHenryHelper
 ```
 
 ## Index

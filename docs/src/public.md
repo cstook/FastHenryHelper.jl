@@ -1,7 +1,7 @@
 # Public API
 
 ```@meta
-CurentModule = FastFieldSolversHelper.FastHenryHelper
+CurentModule = FastHenryHelper
 ```
 
 ## Index

@@ -1,14 +1,10 @@
 using Documenter
-using FastFieldSolversHelper
-using .FastCapHelper
-using .FastHenryHelper
+using FastHenryHelper
 
 # Build docs.
 # ===========
 
 makedocs(
-    modules = [FastFieldSolversHelper,
-               FastFieldSolversHelper.FastHenryHelper,
-               FastFieldSolversHelper.FastCapHelper],
+    modules = FastHenryHelper,
     clean   = true
 )
