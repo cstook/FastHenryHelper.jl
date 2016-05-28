@@ -57,7 +57,7 @@ Transform (rotate, translate, scale, etc...) a element by 4x4
 [transform matrix](# http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html)
  `tm`.
 """
-transfrom, transform!
+transform, transform!
 transform{T<:Number}(x::Element, ::Array{T,2}) = x
 transform!{T<:Number}(::Element, ::Array{T,2}) = nothing
 function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
