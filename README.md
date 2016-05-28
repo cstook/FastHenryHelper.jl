@@ -1,3 +1,3 @@
 # FastHenryHelper
 
-Documentation is [here](http://www.chrisstook.com/FastHenryHelper.jl )
+Documentation is [here](http://cstook.github.io/FastHenryHelper.jl)
