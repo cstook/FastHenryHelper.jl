@@ -1,13 +1,11 @@
 using Documenter
-using FastFieldSolversHelper
-using .FastCapHelper
-using .FastHenryHelper
+using FastHenryHelper
 
 # Build docs.
 # ===========
 
 makedocs(
-    modules = FastFieldSolversHelper.FastHenryHelper,
+    modules = FastHenryHelper,
     clean   = true
 )
 
@@ -20,5 +18,5 @@ makedocs(
 
 deploydocs(
     # options
-    repo = "git@github.com:cstook/FastFieldSolversHelper.jl.git"
+    repo = "git@github.com:cstook/FastHenryHelper.jl.git"
 )
