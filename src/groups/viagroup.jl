@@ -22,26 +22,26 @@ which match keyword arguments are used.  Specify n=0 to bypass via (.equiv top b
 viagroup(;radius=NaN, height=NaN, n=8, h=NaN, sigma=NaN, rho=NaN,
           nhinc=5, rh=NaN) = 
   viagroup(radius, height, n, SegmentParameters(h=h,sigma=sigma,rho=rho,nhinc=nhinc,rh=rh))
-function viagroup(r, h, n=8, sp::SegmentParameters=SegmentParameters())
-  if isnan(r)
+function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters())
+  if isnan(radius)
     throw(ArgumentError("radius must be specified"))
   end
-  if isnan(h)
+  if isnan(height)
     throw(ArgumentError("height must be specified"))
   end
-  if isnan(sp.wh.h)
+  if isnan(h(sp))
     throw(ArgumentError("wall thickness (height of segemnt) must be specified"))
   end
   if n!=0 && n<2 
     throw(ArgumentError("must have zero or at least 2 segments"))
   end
   centertop = Node(0,0,0)
-  centerbot = Node(0,0,-h)
+  centerbot = Node(0,0,-height)
   terminals = Dict(:top=>centertop,:bot=>centerbot)
   if n!=0
     angle = linspace(0.0, 2.0*pi-(2*pi/n), n)
-    x = r .* map(cos,angle)
-    y = r .* map(sin,angle)
+    x = radius .* map(cos,angle)
+    y = radius .* map(sin,angle)
     wx = map(cos,angle.+(pi/2))
     wy = map(sin,angle.+(pi/2))
     w = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
@@ -49,16 +49,16 @@ function viagroup(r, h, n=8, sp::SegmentParameters=SegmentParameters())
     botnodes = Array(Node,n)
     for i in 1:n
       topnodes[i] = Node(x[i],y[i],0.0)
-      botnodes[i] = Node(x[i],y[i],-h)
+      botnodes[i] = Node(x[i],y[i],-height)
     end
     eqtop = Equiv([centertop;topnodes])
     eqbot = Equiv([centerbot;botnodes])
     segments = Array(Segment,n)
     for i in 1:n
       segments[i] = Segment(topnodes[i],botnodes[i],
-                      w=sp.wh.w, h=sp.wh.h, wx=wx[i], wy=wy[i], 
-                      nhinc=sp.wh.nhinc, rh=sp.wh.rh, sigma=sp.sigmarho.sigma,
-                      rho=sp.sigmarho.rho, nwinc=1)
+                      w=w, h=h(sp), wx=wx[i], wy=wy[i], 
+                      nhinc=nhinc(sp), rh=rh(sp), sigma=sigma(sp),
+                      rho=rho(sp), nwinc=1)
     end
     group = Group([topnodes;botnodes;eqtop;eqbot;segments],terminals)
   else # n=0 for bypass

@@ -1,4 +1,5 @@
 export Segment, SegmentParameters
+export w, h, nhinc, nwinc, rh, rw, sigma, rho, wx, wy, wz
 
 immutable SigmaRho
   sigma :: Float64
@@ -123,6 +124,8 @@ Object to hold parameters for `Segment` and `Default`
 - `wx`, `wy`, `wz`  -- segment orientation.  vector pointing along width of segment's cross section.
 - `nhinc`, `nwinc`  -- integer number of filaments in height and width
 - `rh`, `rw`        -- ratio in the height and width
+
+All keyword paramwters are also functions which return their fields value.
 """
 immutable SegmentParameters
   wh        :: WH
@@ -133,6 +136,17 @@ SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
                   nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 
+w(sp::SegmentParameters) = sp.wh.w
+h(sp::SegmentParameters) = sp.wh.h
+nhinc(sp::SegmentParameters) = sp.wh.nhinc
+nwinc(sp::SegmentParameters) = sp.wh.nwinc
+rh(sp::SegmentParameters) = sp.wh.rh
+rw(sp::SegmentParameters) = sp.wh.rw
+sigma(sp::SegmentParameters) = sp.sigmarho.sigma
+rho(sp::SegmentParameters) = sp.sigmarho.rho
+wx(sp::SegmentParameters) = sp.wxwywz.wx
+wy(sp::SegmentParameters) = sp.wxwywz.wy
+wz(sp::SegmentParameters) = sp.wxwywz.wz
 
 """
     Segment([name], n1::Node, n2::Node, [parameters::SegmentParameters])
