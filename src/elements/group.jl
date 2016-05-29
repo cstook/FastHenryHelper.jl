@@ -1,4 +1,4 @@
-export Group
+export Group, terms, terms!, elements, elements!
 
 """
     Group()
@@ -25,7 +25,7 @@ Connection points (terminals) to the group are in the `terms` dictionary.
 
 Elements may be added to a group with push!(group, element).
 """
-immutable Group <: Element
+type Group <: Element
   elements :: Array{Element,1}
   terms :: Dict{Symbol,Node}
 end
@@ -40,7 +40,10 @@ Get and set `elements` field in a `Group`.
 """
 elements, elements!
 elements(g::Group) = g.elements
-elements!(g::Group, e::Element) = g.elements = e
+function elements!{T<:Element}(g::Group, e::Array{T,1})
+  g.elements = e
+  return nothing
+end
 
 """
     terms(g::Group)
@@ -50,7 +53,10 @@ Get and set the `terms` field in a `Group`.
 """
 terms, terms!
 terms(g::Group) = g.terms
-terms!(g::Group, p::Dict{Symbol,Node}) = g.terms = p
+function terms!(g::Group, p::Dict{Symbol,Node})
+  g.terms = p
+  return nothing
+end
 
 Base.getindex(g::Group, key::Symbol) = g.terms[key]
 function Base.setindex!(g::Group, n::Node, key::Symbol)

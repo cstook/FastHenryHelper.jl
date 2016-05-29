@@ -1,19 +1,24 @@
 # Example 1: A simple example from the FastHenry documentation.
 
-This example is a recreation of the example in section 1.2 of "FastHenry Users Guide".
+This example is a recreation of the example in section 1.2 of "FastHenry Users Guide" using FastHeneryHelper.
 
 load the module
 ```@example 1
 using FastHenryHelper
 ```
 
+Create a group of FastHenry elements for FastHenry to compute the loop inductance of an L shaped trace over a ground plane with the trace's return path through the plane.
 ```@example 1
 title = Title("A FastHenry example using a reference plane")
 u = Units("mils")
 nin = Node("in",800,800,0)
 nout = Node("out",0,200,0)
-g = UniformPlane(x1=0, y1=0, z1=0, x2=1000, y2=0, z2=0, x3=1000, y3=1000, z3=0,
-    thick= 1.2, seg1=20, seg2=20, nodes=[nin, nout])
+g = UniformPlane(x1=0,    y1=0,    z1=0,
+				 x2=1000, y2=0,    z2=0,
+				 x3=1000, y3=1000, z3=0,
+    			 thick= 1.2, 
+    			 seg1=20, seg2=20,
+    			 nodes=[nin, nout])
 d = Default(SegmentParameters(sigma=62.1e6*2.54e-5,nwinc=8, nhinc=1))
 n1 = Node("1",0,200,1.5)
 n2 = Node(800,200,1.5)
