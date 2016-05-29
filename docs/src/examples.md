@@ -74,3 +74,78 @@ push!(example1,External(n1,nout))
 push!(example1,Freq(min=1e-1, max=1e9, ndec=0.05))
 push!(example1,End())
 ```
+
+# Example 2: Four square loops
+
+This example demonstrates using groups to simplify repetitive structures.
+
+Load the module.
+```@example 2
+using FastHenryHelper
+```
+
+Create a group for one square loop 10mm on a side.
+```@example 2
+squareloop = Group()
+c1 = Comment("loop start")
+c2 = Comment("loop end")
+n1 = Node(0,0,0)
+n2 = Node(10,0,0)
+n3 = Node(10,10,0)
+n4 = Node(0,10,0)
+n5 = Node(0,1,0) # leave a 1mm gap for the port
+terms!(squareloop,Dict(:a=>n1,:b=>n5)) # ports will be between :a and :b
+segments = connectnodes([n1,n2,n3,n4,n5],SegmentParameters(h=.5, w=1.5))
+elements!(squareloop,[c1,n1,n2,n3,n4,n5,segments...,c2])
+```
+
+Take a look at what we have so far.
+```@example 2
+squareloop
+```
+
+Create an array of four square loops, each one shifted 10mm on z axis
+```@example 2
+loops = Array(Group,4)
+z = [0.0, 10.0, 20.0, 30.0]
+for i in eachindex(loops)
+    loops[i] = transform(squareloop, txyz(0,0,z[i]))
+end
+```
+
+Create the top level group.
+```@example 2
+fourloops = Group()
+push!(fourloops, Title("Four loops 10mm on a side offset by 10mm in z"))
+push!(fourloops, Units("mm"))
+push!(fourloops, Comment(""))
+push!(fourloops, Comment("sigma for copper, 25 filiments per segment"))
+push!(fourloops, Default(sigma=62.1e6*1e-3, nwinc=5, nhinc=5))
+push!(fourloops, Comment(""))
+push!(fourloops, Comment("the loops"))
+for i in eachindex(loops)
+    push!(fourloops,loops[i])
+end
+push!(fourloops, Comment(""))
+push!(fourloops, Comment("tie top two loops together"))
+push!(fourloops, Segment(loops[3][:a],loops[4][:a],h=.5,w=1.5))
+push!(fourloops, Comment(""))
+push!(fourloops, Comment("define three ports"))
+push!(fourloops, External(loops[3][:b],loops[4][:b],"port_1"))
+push!(fourloops, External(loops[2][:a],loops[2][:b],"port_2"))
+push!(fourloops, External(loops[1][:a],loops[1][:b],"port_3"))
+push!(fourloops, Comment(""))
+push!(fourloops, Comment("define frequencies"))
+push!(fourloops, Freq(min=1e-1, max=1e9, ndec=0.05))
+push!(fourloops, Comment(""))
+push!(fourloops, Comment("always need end"))
+push!(fourloops, End())
+```
+
+Write fourloops to file.
+```@example 2
+open("fourloops.inp","w") do io
+    show(io,fourloops)
+end
+```
+See the output file [here](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
