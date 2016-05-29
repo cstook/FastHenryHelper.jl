@@ -4,7 +4,7 @@ Subtypes of `Element` `show` FastHenry commands.
 
 Geometric transformations can be preformed on elements with `transform`.
 Elements which require a name will automatically generate unique names if 
-no name is provided.  Gropus of elements are elements.
+no name is provided.  Groups of elements are elements.
 """
 abstract Element
 

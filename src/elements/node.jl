@@ -45,7 +45,7 @@ end
 """
     xyz(n::Node)
 
-Return the cooridinate on a node.
+Return the coordinate on a node.
 """
 xyz(n::Node) = n.xyz[1:3]
 
@@ -96,7 +96,7 @@ rz(γ) = [cos(γ) sin(γ) 0.0  0.0;
                    0.0 0.0 1.0  r;
                    0.0 0.0 0.0 1.0]
 
-[Translation matrix](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html).  Translate a cooridnate by adding [p,q,r]
+[Translation matrix](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html).  Translate a coordinate by adding [p,q,r]
 """
 txyz(p,q,r) = [1.0 0.0 0.0  p;
                0.0 1.0 0.0  q;
@@ -110,7 +110,7 @@ txyz(p,q,r) = [1.0 0.0 0.0  p;
                        0.0 0.0  r  0.0;
                        0.0 0.0 0.0 1.0]
 
-[Scale matrix](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html).  Scale a cooridnate [x, y, z] by [p, q, r].
+[Scale matrix](http://www.cs.mtu.edu/~shene/COURSES/cs3621/NOTES/geometry/geo-tran.html).  Scale a coordinate [x, y, z] by [p, q, r].
 """
 scalexyz(p,q,r) = [ p  0.0 0.0 0.0;
                    0.0  q  0.0 0.0;

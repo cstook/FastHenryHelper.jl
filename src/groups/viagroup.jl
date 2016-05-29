@@ -12,7 +12,7 @@ Returns a `Group` of `Segment`s for the barrel of a via.
 - `height`          -- height of via 
 - `h`               -- thickness of copper plating
 - `n`               -- number of segment around via
-- `sigma`,`rho`     -- specify conductivity or resitivity
+- `sigma`,`rho`     -- specify conductivity or resistivity
 - `hninc`           -- number of filaments per segment 
 - `rh`              -- ratio of filament width
 
@@ -30,7 +30,7 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
     throw(ArgumentError("height must be specified"))
   end
   if isnan(h(sp))
-    throw(ArgumentError("wall thickness (height of segemnt) must be specified"))
+    throw(ArgumentError("wall thickness (height of segment) must be specified"))
   end
   if n!=0 && n<2 
     throw(ArgumentError("must have zero or at least 2 segments"))

@@ -125,7 +125,7 @@ Object to hold parameters for `Segment` and `Default`
 - `nhinc`, `nwinc`  -- integer number of filaments in height and width
 - `rh`, `rw`        -- ratio in the height and width
 
-All keyword paramwters are also functions which return their fields value.
+All keyword parameters are also functions which return their fields value.
 """
 immutable SegmentParameters
   wh        :: WH
