@@ -57,7 +57,7 @@ function Base.setindex!(g::Group, n::Node, key::Symbol)
   g.terms[key] = n
   return nothing
 end
-function Base.push!(g::Group, n::Node)
+function Base.push!(g::Group, n::Element)
   push!(g.elements,n)
   return nothing
 end
