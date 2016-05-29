@@ -104,7 +104,7 @@ Take a look at what we have so far.
 squareloop
 ```
 
-Create an array of four square loops, each one shifted 10mm on z axis
+Create an array of four square loops, each one shifted 10mm on z axis.
 ```@example 2
 loops = Array(Group,4)
 z = [0.0, 10.0, 20.0, 30.0]
