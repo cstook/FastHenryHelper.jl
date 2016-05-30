@@ -1,5 +1,5 @@
 export Segment, SegmentParameters
-export w, h, nhinc, nwinc, rh, rw, sigma, rho, wx, wy, wz
+#export w, h, nhinc, nwinc, rh, rw, sigma, rho, wx, wy, wz
 
 immutable SigmaRho
   sigma :: Float64
@@ -112,6 +112,7 @@ end
 
 """
     SegmentParameters(<keyword arguments>)
+    SegmentParameters(parameters::SegmentParameters, <keyword arguments>)
 
 Object to hold parameters for `Segment` and `Default`
 
@@ -125,7 +126,7 @@ Object to hold parameters for `Segment` and `Default`
 - `nhinc`, `nwinc`  -- integer number of filaments in height and width
 - `rh`, `rw`        -- ratio in the height and width
 
-All keyword parameters are also functions which return their fields value.
+The second form replaces values in `parameters` with any keyword parameters present.
 """
 immutable SegmentParameters
   wh        :: WH
@@ -135,6 +136,24 @@ end
 SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
                   nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
+function SegmentParameters(sp::SegmentParameters; w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0,
+                           wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN)
+  new_w = isnan(w) ? sp.wh.w : w
+  new_h = isnan(h) ? sp.wh.h : h
+  new_nhinc = isnan(nhinc) ? sp.wh.nhinc : nhinc
+  new_nwinc = isnan(nwinc) ? sp.wh.nwinc : nwinc
+  new_rh = isnan(rh) ? sp.wh.rh : rh
+  new_rw = isnan(rw) ? sp.wh.rw : rw
+  new_sigma = isnan(sigma) ? sp.sigmarho.sigma : sigma
+  new_rho = isnan(rho) ? sp.sigmarho.rho : rho
+  new_wx = isnan(wx) ? sp.wxwywz.wx : wx
+  new_wy = isnan(wy) ? sp.wxwywz.wy : wy
+  new_wz = isnan(wz) ? sp.wxwywz.wz : wz
+  new_wh = WH(new_w,new_h,new_nhinc,new_nwinc,new_rh,new_rw)
+  new_sigmarho = SigmaRho(new_sigma, new_rho)
+  new_wxwywz = WxWyWz(new_wx,new_wy,new_wz)
+  SegmentParameters(new_wh, new_sigmarho, new_wxwywz)
+end
 
 w(sp::SegmentParameters) = sp.wh.w
 h(sp::SegmentParameters) = sp.wh.h

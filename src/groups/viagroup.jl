@@ -56,9 +56,7 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
     segments = Array(Segment,n)
     for i in 1:n
       segments[i] = Segment(topnodes[i],botnodes[i],
-                      w=w, h=h(sp), wx=wx[i], wy=wy[i], 
-                      nhinc=nhinc(sp), rh=rh(sp), sigma=sigma(sp),
-                      rho=rho(sp), nwinc=1)
+        SegmentParameters(sp, w=w, wx=wx[i], wy=wy[i], nwinc=1))
     end
     group = Group([topnodes;botnodes;eqtop;eqbot;segments],terminals)
   else # n=0 for bypass
