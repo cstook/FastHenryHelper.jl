@@ -1,5 +1,4 @@
 export Segment, SegmentParameters
-#export w, h, nhinc, nwinc, rh, rw, sigma, rho, wx, wy, wz
 
 immutable SigmaRho
   sigma :: Float64

@@ -19,11 +19,8 @@ when `show` is called.  Generated names start with an
 underscore (_1, _2, _3, ...).  Do not use these names for manual 
 named elements.
 
-Connection points (terminals) to the group are in the `terms` dictionary.
- The Group is a dictionary of its terms.  In other words, you may write 
- group[key] instead of group.terms[key].
-
-Elements may be added to a group with push!(group, element).
+`getindex`, `setindex!`, and `merge!` work on `terms`.
+`push!`, `pop!`, `unshift!`, `shift!`, `append!`, `prepend!` work on `elements`.
 """
 type Group <: Element
   elements :: Array{Element,1}
@@ -63,10 +60,13 @@ function Base.setindex!(g::Group, n::Node, key::Symbol)
   g.terms[key] = n
   return nothing
 end
-function Base.push!(g::Group, n::Element)
-  push!(g.elements,n)
-  return nothing
-end
+Base.merge!(g::Group, args...) = merge(g.terms, args...)
+Base.push!(g::Group, args...) = push!(g.elements, args...)
+Base.pop!(g::Group) = pop!(g.elements)
+Base.unshift!(g::Group, args...) = unshift!(g.elements, args...)
+Base.shift!(g::Group) = shift!(g.elements)
+Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
+Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
 function printfh!(io::IO, pfh::PrintFH, group::Group)
   for element in group.elements 
