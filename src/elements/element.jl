@@ -49,6 +49,15 @@ printfh!(::IO, ::PrintFH, ::Element) = nothing
 printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
 Base.show(io::IO, e::Element) = printfh(io,e)
+
+transform{T<:Number}(x::Element, ::Array{T,2}) = x
+transform!{T<:Number}(::Element, ::Array{T,2}) = nothing
+function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
+  for i in eachindex(x)
+    transform!(x[i],tm)
+  end
+  return nothing
+end
 """
     transform{T<Number}(x::Element, tm::Array{T,2})
     transform!{T<Number}(::Element, tm::Array{T,2})
@@ -64,14 +73,6 @@ parameters of `Segment`.  `transform` of a `Segment` will not modify its `Node`s
 Typically `transform` would only be applied to `Group` objects.
 """
 transform, transform!
-transform{T<:Number}(x::Element, ::Array{T,2}) = x
-transform!{T<:Number}(::Element, ::Array{T,2}) = nothing
-function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
-  for i in eachindex(x)
-    transform!(x[i],tm)
-  end
-  return nothing
-end
 resetiname!(::Element) = nothing
 resetist!(n::Element) = nothing
 

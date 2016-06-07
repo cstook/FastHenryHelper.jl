@@ -29,6 +29,12 @@ end
 Group() = Group([],Dict{Symbol,Node}())
 Group(e) = Group(e,Dict{Symbol,Node}())
 
+
+elements(g::Group) = g.elements
+function elements!{T<:Element}(g::Group, e::Array{T,1})
+  g.elements = e
+  return nothing
+end
 """
     elements(g::Group)
     elements!(g::Group, e::Element)
@@ -36,12 +42,13 @@ Group(e) = Group(e,Dict{Symbol,Node}())
 Get and set `elements` field in a `Group`.
 """
 elements, elements!
-elements(g::Group) = g.elements
-function elements!{T<:Element}(g::Group, e::Array{T,1})
-  g.elements = e
+
+
+terms(g::Group) = g.terms
+function terms!(g::Group, p::Dict{Symbol,Node})
+  g.terms = p
   return nothing
 end
-
 """
     terms(g::Group)
     terms!(g::Group, p::Dict{Symbol,Node})
@@ -49,11 +56,6 @@ end
 Get and set the `terms` field in a `Group`.
 """
 terms, terms!
-terms(g::Group) = g.terms
-function terms!(g::Group, p::Dict{Symbol,Node})
-  g.terms = p
-  return nothing
-end
 
 Base.getindex(g::Group, key::Symbol) = g.terms[key]
 function Base.setindex!(g::Group, n::Node, key::Symbol)
