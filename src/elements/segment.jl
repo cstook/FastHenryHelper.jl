@@ -212,7 +212,16 @@ end
 
 resetiname!(x::Segment) = reset!(x.name)
 
-
+function wxwywz(p1, p2)
+  v1 = p2 - p1
+  v2 = [0.0, 0.0, 1.0]
+  w = cross(v1,v2)
+  if norm(w) < 1e-10  # close to 0
+    v2 = [0.0, 1.0, 0.0]
+    w = cross(v1,v2)
+  end
+  w/norm(w,3)
+end
 function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   if wxwywz.isdefault
     v1 = n2.xyz - n1.xyz
@@ -235,4 +244,40 @@ end
 function transform(s::Segment, tm::Array{Float64,2})
   news = deepcopy(s)
   transform!(news)
+end
+
+function corners(p1, p2, w, h)
+  wxyz = wxwywz(p1,p2)
+  mp1 = p1+(wxyz.*w)
+  mp2 = p1-(wxyz.*w)
+  mp3 = p2+(wxyz.*w)
+  mp4 = p2-(wxyz.*w)
+  hxyz = cross(wxyz,(p2-p1))
+  hxyz = hxyz/norm(hxyz,3)
+  result = Array(Float64,(3,8))
+  result[:,1] = mp1+(hxyz.*h)
+  result[:,2] = mp1-(hxyz.*h)
+  result[:,3] = mp2-(hxyz.*h)
+  result[:,4] = mp2+(hxyz.*h)
+  result[:,5] = mp3+(hxyz.*h)
+  result[:,6] = mp3-(hxyz.*h)
+  result[:,7] = mp4-(hxyz.*h)
+  result[:,8] = mp4+(hxyz.*h)
+  return result
+end
+
+function plotdata!(pd::PlotData, s::Segment)
+  p1 = xyz(s.node1)
+  p2 = xyz(s.node2)
+  c = corners(p1, p2, s.wh.w, s.wh.h)
+  s = [(1,2),(2,3),(3,4),(4,1),(5,6),(6,7),(7,8),(8,5),(1,5),(2,6),(3,7),(4,8)]
+  for (a,b) in s
+      pd.groupcounter += 1
+      push!(pd.group,pd.groupcounter,pd.groupcounter)
+      push!(pd.marker,:none)
+      push!(pd.x,c[1,a],c[1,b])
+      push!(pd.y,c[2,a],c[2,b])
+      push!(pd.z,c[3,a],c[3,b])
+  end
+  return nothing
 end

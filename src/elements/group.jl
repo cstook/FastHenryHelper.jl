@@ -96,3 +96,9 @@ function transform(group::Group, tm::Array{Float64,2})
   return newgroup
 end
 
+function plotdata!(pd::PlotData, group::Group)
+  for i in eachindex(group.elements)
+    plotdata!(pd,group.elements[i])
+  end
+  return nothing
+end

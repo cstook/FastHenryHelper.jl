@@ -76,6 +76,27 @@ transform, transform!
 resetiname!(::Element) = nothing
 resetist!(n::Element) = nothing
 
+type PlotData
+  x :: Array{Float64,1}
+  y :: Array{Float64,1}
+  z :: Array{Float64,1}
+  group :: Array{Int,1}
+  marker :: Array{Symbol,1}
+  groupcounter :: Int
+  PlotData() = new([],[],[],[],[],0)
+end
+
+plotdata!(::PlotData, ::Element) = nothing
+
+function Plots.plot(e::Element)
+  pd = PlotData()
+  plotdata!(pd,e)
+  plot(pd.x, pd.y, pd.z, group=pd.group,
+    legend = false,
+    linecolor = :blue,
+    marker=transpose(pd.marker),
+    markercolor = :red)
+end
 
 include("title.jl")
 include("node.jl")

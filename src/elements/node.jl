@@ -32,6 +32,16 @@ end
 
 resetiname!(n::Node) = reset!(n.name)
 
+function plotdata!(pd::PlotData, n::Node)
+  pd.groupcounter += 1
+  push!(pd.group,pd.groupcounter)
+  push!(pd.marker,:circle)
+  push!(pd.x, n.xyz[1])
+  push!(pd.y, n.xyz[2])
+  push!(pd.z, n.xyz[3])
+  return nothing
+end
+
 function transform!(n::Node, tm::Array{Float64,2})
   xyz = tm*n.xyz
   n.xyz[1:4] = xyz[1:4]
