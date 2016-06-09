@@ -95,7 +95,8 @@ function Plots.plot(e::Element)
     legend = false,
     linecolor = :blue,
     marker=transpose(pd.marker),
-    markercolor = :red)
+    markercolor = :red,
+    markeralpha = 0.3)
 end
 
 include("title.jl")
