@@ -262,14 +262,16 @@ end
 
 function plotdata!(pd::PlotData, seg::Segment)
   c = corners(seg)
-  s = [(1,2),(2,3),(3,4),(4,1),(5,6),(6,7),(7,8),(8,5),(1,5),(2,6),(3,7),(4,8)]
-  for (a,b) in s
-      pd.groupcounter += 1
-      push!(pd.group,pd.groupcounter,pd.groupcounter)
-      push!(pd.marker,:none)
-      push!(pd.x,c[1,a],c[1,b])
-      push!(pd.y,c[2,a],c[2,b])
-      push!(pd.z,c[3,a],c[3,b])
+  t = [(1,2,3,4,1,5,6,7,8,5),(2,6),(3,7),(4,8)]
+  for g in t
+    pd.groupcounter += 1
+    push!(pd.marker,:none)
+    for p in g
+      push!(pd.group,pd.groupcounter)
+      push!(pd.x,c[1,p])
+      push!(pd.y,c[2,p])
+      push!(pd.z,c[3,p])
+    end
   end
   return nothing
 end
