@@ -20,14 +20,14 @@ end
 
 type PrintFH
   nextname  :: Int
-  usednames :: Set{String}
+  usednames :: Set{AbstractString}
   function PrintFH(e::Element)
     resetiname!(e)
-    new(1,Set{String}())
+    new(1,Set{AbstractString}())
   end
 end
 
-checkduplicatename(pfh::PrintFH, name::String) = nothing
+checkduplicatename(pfh::PrintFH, name::AbstractString) = nothing
 
 function autoname!(pfh::PrintFH, an::AutoName)
   if an.iname != 0  # already got an autoname
@@ -77,7 +77,7 @@ resetiname!(::Element) = nothing
 resetist!(n::Element) = nothing
 
 type PlotData
-  title :: String
+  title :: AbstractString
   x :: Array{Float64,1}
   y :: Array{Float64,1}
   z :: Array{Float64,1}
@@ -89,9 +89,29 @@ end
 
 plotdata!(::PlotData, ::Element) = nothing
 
+function pointsatlimits!(pd::PlotData)
+  lims = [minimum([pd.x pd.y pd.z]),maximum([pd.x pd.y pd.z])]
+  pd.groupcounter +=1
+  push!(pd.group, pd.groupcounter)
+  push!(pd.marker, :none)
+  push!(pd.x, lims[1])
+  push!(pd.y, lims[1])
+  push!(pd.z, lims[1])
+  pd.groupcounter +=1
+  push!(pd.group, pd.groupcounter)
+  push!(pd.marker, :none)
+  push!(pd.x, lims[2])
+  push!(pd.y, lims[2])
+  push!(pd.z, lims[2])
+end
+
 function Plots.plot(e::Element)
   pd = PlotData()
   plotdata!(pd,e)
+  # pointsatlimits! and match_dimentions = true are both 
+  # attempts to force xlims = ylims = zlims
+  # seems to work for pyplot
+  pointsatlimits!(pd)
   plot(pd.x, pd.y, pd.z, group=pd.group,
     title = pd.title,
     legend = false,

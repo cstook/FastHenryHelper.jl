@@ -1,12 +1,12 @@
 export Comment
 
 """
-    Comment(text::String)
+    Comment(text::AbstractString)
 
 `Comment` objects `show` a FastHenry comment.
 """
 immutable Comment <: Element
-  text :: String
+  text :: AbstractString
 end
 
 function printfh!(io::IO, ::PrintFH, x::Comment)

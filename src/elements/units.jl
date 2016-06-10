@@ -1,12 +1,12 @@
 export Units
 
 """
-    Units(unitname::String)
+    Units(unitname::AbstractString)
 
 `Units` objects `show` a FastHenry .units command.
 """
 immutable Units <: Element
-  unitname :: String
+  unitname :: AbstractString
   function Units(x)
     if ~issubset(Set([x]),Set(["km", "m", "cm", "mm", "um", "in", "mils"]))
       throw(ArgumentError("valid units are km, m, cm, mm, um, in, mils"))

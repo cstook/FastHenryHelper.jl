@@ -23,7 +23,7 @@ Terminals are :a and :b.
 
 note: Assumes units are mm.
 """
-function coilcraft1010vsgroup(partnumber::String; nhinc=0, nwinc=0, rh=NaN, rw=NaN)
+function coilcraft1010vsgroup(partnumber::AbstractString; nhinc=0, nwinc=0, rh=NaN, rw=NaN)
   # Assumes units = mm !!!
   pndict = Dict("1010VS-23NME" => (3.55, 0.65, 1.5*2π),
                 "1010VS-46NME" => (3.55, 0.65, 2.5*2π),
