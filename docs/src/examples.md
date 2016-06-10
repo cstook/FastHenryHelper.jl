@@ -55,17 +55,21 @@ end
 Groups may also be built with push!.
 ```@example 1
 # same example, using push!
+# same example, using push!
 example1 = Group()
 push!(example1,Title("A FastHenry example using a reference plane"))
 push!(example1,Units("mils"))
-push!(example1,Node("in",800,800,0))
-push!(example1,Node("out",0,200,0))
+nin = Node("in",800,800,0)
+nout = Node("out",0,200,0)
 push!(example1,UniformPlane(x1=0, y1=0, z1=0, x2=1000, y2=0, z2=0, x3=1000, y3=1000, z3=0,
     thick= 1.2, seg1=20, seg2=20, nodes=[nin, nout]))
 push!(example1,Default(SegmentParameters(sigma=62.1e6*2.54e-5,nwinc=8, nhinc=1)))
-push!(example1,Node("1",0,200,1.5))
-push!(example1,Node(800,200,1.5))
-push!(example1,Node(800,800,1.5))
+n1 = Node("1",0,200,1.5)
+push!(example1,n1)
+n2 = Node(800,200,1.5)
+push!(example1,n2)
+n3 = Node(800,800,1.5)
+push!(example1,n3)
 sp = SegmentParameters(w=8,h=1)
 push!(example1,Segment(n1,n2,sp))
 push!(example1,Segment(n2,n3,sp))
