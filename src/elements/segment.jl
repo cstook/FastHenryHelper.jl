@@ -29,11 +29,11 @@ end
 type WxWyWz
   xyz :: Array{Float64,1}
   isdefault :: Bool
+  WxWyWz(wx, wy, wz) = new([wx,wy,wz],isnan(wx) && isnan(wy) && isnan(wz))
 end
-WxWyWz(;wx=0.0, wy=0.0, wz=0.0) = 
-  WxWyWz([wx,wy,wz],wx==0.0 && wy==0.0 && wz==0.0)
-WxWyWz(wx, wy, wz) = 
-  WxWyWz([wx,wy,wz],wx==0.0 && wy==0.0 && wz==0.0)
+WxWyWz(;wx=NaN, wy=NaN, wz=NaN) = 
+  WxWyWz([wx,wy,wz])
+
 function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
     print(io,"+ ")
@@ -133,15 +133,15 @@ immutable SegmentParameters
   sigmarho  :: SigmaRho
   wxwywz    :: WxWyWz
 end
-SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0, wy=0.0, wz=0.0,
+SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN,
                   nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
   SegmentParameters(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
-function SegmentParameters(sp::SegmentParameters; w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=0.0,
-                           wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN)
+function SegmentParameters(sp::SegmentParameters; w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN,
+                           wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN)
   new_w = isnan(w) ? sp.wh.w : w
   new_h = isnan(h) ? sp.wh.h : h
-  new_nhinc = isnan(nhinc) ? sp.wh.nhinc : nhinc
-  new_nwinc = isnan(nwinc) ? sp.wh.nwinc : nwinc
+  new_nhinc = nhinc==0 ? sp.wh.nhinc : nhinc
+  new_nwinc = nwinc==0 ? sp.wh.nwinc : nwinc
   new_rh = isnan(rh) ? sp.wh.rh : rh
   new_rw = isnan(rw) ? sp.wh.rw : rw
   new_sigma = isnan(sigma) ? sp.sigmarho.sigma : sigma
@@ -193,10 +193,10 @@ immutable Segment <: Element
   end
 end
 Segment(n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
-        wx=0.0, wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
+        wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
             Segment(:null, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 Segment(name, n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
-        wx=0.0, wy=0.0, wz=0.0, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
+        wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
             Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 Segment(n1::Node, n2::Node, sp::SegmentParameters) = 
             Segment(:null, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
