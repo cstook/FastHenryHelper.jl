@@ -90,26 +90,45 @@ function transform!(group::Group, tm::Array{Float64,2})
   return nothing
 end
 
-elementcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
-function elementcopy!(nodedict::Dict{Element,Element}, n::Node)
-  newnode = deepcopy(n)
+deepcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
+function deepcopy!(nodedict::Dict{Element,Element}, n::Node)
+  newnode = Node(:null, n.xyz[1], n.xyz[2], n.xyz[3])
   nodedict[n] = newnode
   return newnode
 end
-function elementcopy!(nodedict::Dict{Element,Element}, seg::Segment)
+function deepcopy!(nodedict::Dict{Element,Element}, seg::Segment)
   node1 = nodedict[seg.node1]
   node2 = nodedict[seg.node2]
-  Segment(seg.name.name, node1, node2, seg.wh, seg.sigmarho, seg.wxwywz)
+  Segment(deepcopy(seg.name.name),
+          node1, node2,
+          deepcopy(seg.wh),
+          deepcopy(seg.sigmarho),
+          deepcopy(seg.wxwywz))
+end
+function deepcopy!(nodedict::Dict{Element,Element}, p::UniformPlane)
+  newnodes = similar(p.nodes)
+  for i in eachindex(p.nodes)
+    deepcopy!(nodedict,p.nodes[i])
+    newnodes[i] = nodedict[p.nodes[i]]
+  end
+  UniformPlane(deepcopy(p.name.name),
+               deepcopy(p.corner1),
+               deepcopy(p.corner2),
+               deepcopy(p.corner3),
+               p.thick,p.seg1,p.seg2,p.segwid1,p.segwid2,p.sigma,p.rho,
+               p.nhinc,p.rh,p.relx,p.rely,p.relz,
+               newnodes,
+               deepcopy(p.holes))
 end
 
-# need to make sure nodes in segments still === the corrent node
-function elementcopy(group::Group)
-  newgroup = Group()
+# need to make sure nodes in segments still === the correct node
+function Base.deepcopy(group::Group)
+  elements = similar(group.elements)
   nodedict = Dict{Element,Element}()
-  for element in group.elements
-    newelement = elementcopy!(nodedict::Dict{Element,Element}, element)
-    push!(newgroup,newelement)
+  for i in eachindex(group.elements)
+    elements[i] = deepcopy!(nodedict::Dict{Element,Element}, group.elements[i])
   end
+  newgroup = Group(elements)
   for (key,value) in group.terms
     newgroup.terms[key] = nodedict[value]
   end

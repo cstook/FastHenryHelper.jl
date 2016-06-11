@@ -51,7 +51,7 @@ printfh(io::Element) = printfh(STDOUT,io)
 Base.show(io::IO, e::Element) = printfh(io,e)
 
 function transform{T<:Number}(x::Element, tm::Array{T,2})
-  newx = elementcopy(x)
+  newx = deepcopy(x)
   transform!(newx,tm)
   return newx
 end
