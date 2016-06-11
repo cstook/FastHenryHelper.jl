@@ -232,13 +232,6 @@ function transform!(s::Segment, tm::Array{Float64,2})
   return nothing
 end
 
-#=
-function transform(s::Segment, tm::Array{Float64,2})
-  news = deepcopy(s)
-  transform!(news)
-end
-=#
-
 function corners(s::Segment)
   w = s.wh.w
   h = s.wh.h
@@ -269,6 +262,10 @@ function plotdata!(pd::PlotData, seg::Segment)
   for g in t
     pd.groupcounter += 1
     push!(pd.marker,:none)
+    push!(pd.markercolor, :red)
+    push!(pd.markeralpha, 0.3)
+    push!(pd.markersize, 1.0)
+    push!(pd.markerstrokewidth, 0.1)
     for p in g
       push!(pd.group,pd.groupcounter)
       push!(pd.x,c[1,p])

@@ -134,13 +134,6 @@ function Base.deepcopy(group::Group)
   end
   return newgroup
 end
-#=
-function transform(group::Group, tm::Array{Float64,2})
-  newgroup = deepcopy(group)
-  transform!(newgroup,tm)
-  return newgroup
-end
-=#
 
 function plotdata!(pd::PlotData, group::Group)
   for i in eachindex(group.elements)
