@@ -50,7 +50,12 @@ printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
 printfh(io::Element) = printfh(STDOUT,io)
 Base.show(io::IO, e::Element) = printfh(io,e)
 
-transform{T<:Number}(x::Element, ::Array{T,2}) = x
+function transform{T<:Number}(x::Element, tm::Array{T,2})
+  newx = elementcopy(x)
+  transform!(newx,tm)
+  return newx
+end
+
 transform!{T<:Number}(::Element, ::Array{T,2}) = nothing
 function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
   for i in eachindex(x)

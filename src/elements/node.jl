@@ -47,10 +47,12 @@ function transform!(n::Node, tm::Array{Float64,2})
   n.xyz[1:4] = xyz[1:4]
   return nothing
 end
+#=
 function transform(n::Node, tm::Array{Float64,2})
   newn = deepcopy(n)
   transform!(newn)
 end
+=#
 
 """
     xyz(n::Node)

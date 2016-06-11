@@ -90,11 +90,38 @@ function transform!(group::Group, tm::Array{Float64,2})
   return nothing
 end
 
+elementcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
+function elementcopy!(nodedict::Dict{Element,Element}, n::Node)
+  newnode = deepcopy(n)
+  nodedict[n] = newnode
+  return newnode
+end
+function elementcopy!(nodedict::Dict{Element,Element}, seg::Segment)
+  node1 = nodedict[seg.node1]
+  node2 = nodedict[seg.node2]
+  Segment(seg.name.name, node1, node2, seg.wh, seg.sigmarho, seg.wxwywz)
+end
+
+# need to make sure nodes in segments still === the corrent node
+function elementcopy(group::Group)
+  newgroup = Group()
+  nodedict = Dict{Element,Element}()
+  for element in group.elements
+    newelement = elementcopy!(nodedict::Dict{Element,Element}, element)
+    push!(newgroup,newelement)
+  end
+  for (key,value) in group.terms
+    newgroup.terms[key] = nodedict[value]
+  end
+  return newgroup
+end
+#=
 function transform(group::Group, tm::Array{Float64,2})
   newgroup = deepcopy(group)
   transform!(newgroup,tm)
   return newgroup
 end
+=#
 
 function plotdata!(pd::PlotData, group::Group)
   for i in eachindex(group.elements)

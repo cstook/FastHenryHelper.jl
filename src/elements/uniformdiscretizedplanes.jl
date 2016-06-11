@@ -33,7 +33,7 @@ function printfh!(io::IO, ::PrintFH ,x::Point)
   return nothing
 end
 
-transform(x::Point, tm::Array{Float64,2}) = Point(tm*x.xyz)
+#transform(x::Point, tm::Array{Float64,2}) = Point(tm*x.xyz)
 function transform!(x::Point, tm::Array{Float64,2})
   xyz = tm*x.xyz
   x.xyz[1:4] = xyz[1:4]
@@ -66,7 +66,7 @@ function printfh!(io::IO, ::PrintFH ,x::Rect)
   return nothing
 end
 
-transform(x::Rect, tm::Array{Float64,2}) = Rect(tm*x.corner1,tm*x.corner2)
+#transform(x::Rect, tm::Array{Float64,2}) = Rect(tm*x.corner1,tm*x.corner2)
 function transform!(x::Rect, tm::Array{Float64,2})
   corner1 = tm*x.corner1
   corner2 = tm*x.corner2
@@ -100,7 +100,7 @@ function printfh!(io::IO, ::PrintFH, x::Circle)
   return nothing
 end
 
-transform(x::Circle, tm::Array{Float64,2}) = Circle(tm*x.center,x.radius)
+#transform(x::Circle, tm::Array{Float64,2}) = Circle(tm*x.center,x.radius)
 function transform!(x::Circle, tm::Array{Float64,2})
   center = tm*x.center
   x.center[1:4] = center[1:4]
@@ -238,11 +238,13 @@ end
 
 resetiname!(x::UniformPlane) = reset!(x.name)
 
+#=
 function transform(x::UniformPlane, tm::Array{Float64,2})
   newplane = deepcopy(x)
   transform!(newplane,tm)
   return newplane
 end
+=#
 
 function transform!(x::UniformPlane, tm::Array{Float64,2})
   corner1 = tm*x.corner1

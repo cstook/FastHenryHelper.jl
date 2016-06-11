@@ -57,6 +57,7 @@ function transform!(x::WxWyWz, tm::Array{Float64,2})
   return nothing
 end
 
+
 immutable WH
   w :: Float64
   h :: Float64 
@@ -231,10 +232,12 @@ function transform!(s::Segment, tm::Array{Float64,2})
   return nothing
 end
 
+#=
 function transform(s::Segment, tm::Array{Float64,2})
   news = deepcopy(s)
   transform!(news)
 end
+=#
 
 function corners(s::Segment)
   w = s.wh.w
