@@ -19,8 +19,8 @@ when `show` is called.  Generated names start with an
 underscore (_1, _2, _3, ...).  Do not use these names for manual 
 named elements.
 
-`getindex`, `setindex!`, and `merge!` work on `terms`.
-`push!`, `pop!`, `unshift!`, `shift!`, `append!`, `prepend!` work on `elements`.
+`getindex`, `setindex!`, and `merge!` operate on `terms`.
+`push!`, `pop!`, `unshift!`, `shift!`, `append!`, `prepend!` operate on `elements`.
 """
 type Group <: Element
   elements :: Array{Element,1}

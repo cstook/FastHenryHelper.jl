@@ -146,9 +146,9 @@ function SegmentParameters(sp::SegmentParameters; w=NaN, h=NaN, sigma=NaN, rho=N
   new_rw = isnan(rw) ? sp.wh.rw : rw
   new_sigma = isnan(sigma) ? sp.sigmarho.sigma : sigma
   new_rho = isnan(rho) ? sp.sigmarho.rho : rho
-  new_wx = isnan(wx) ? sp.wxwywz.wx : wx
-  new_wy = isnan(wy) ? sp.wxwywz.wy : wy
-  new_wz = isnan(wz) ? sp.wxwywz.wz : wz
+  new_wx = isnan(wx) ? sp.wxwywz.xyz[1] : wx
+  new_wy = isnan(wy) ? sp.wxwywz.xyz[2] : wy
+  new_wz = isnan(wz) ? sp.wxwywz.xyz[3] : wz
   new_wh = WH(new_w,new_h,new_nhinc,new_nwinc,new_rh,new_rw)
   new_sigmarho = SigmaRho(new_sigma, new_rho)
   new_wxwywz = WxWyWz(new_wx,new_wy,new_wz)
