@@ -232,9 +232,9 @@ function transform!(s::Segment, tm::Array{Float64,2})
   return nothing
 end
 
-function corners(s::Segment)
-  w = s.wh.w
-  h = s.wh.h
+function corners(pd::PlotData, s::Segment)
+  w = isnan(s.wh.w) ? pd.default_w : s.wh.w
+  h = isnan(s.wh.h) ? pd.default_h : s.wh.h
   p1 = xyz(s.node1)
   p2 = xyz(s.node2)
   wxyz = s.wxwywz.xyz
@@ -257,7 +257,7 @@ function corners(s::Segment)
 end
 
 function plotdata!(pd::PlotData, seg::Segment)
-  c = corners(seg)
+  c = corners(pd,seg)
   t = [(1,2,3,4,1,5,6,7,8,5),(2,6),(3,7),(4,8)]
   for g in t
     pd.groupcounter += 1

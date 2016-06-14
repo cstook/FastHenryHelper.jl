@@ -28,3 +28,9 @@ function printfh!(io::IO, pfh::PrintFH, x::Default)
   printfh!(io, pfh, x.wh)
   printfh!(io, pfh, x.sigmarho)
 end
+
+function plotdata!(pd::PlotData, d::Default)
+  pd.default_w = d.wh.w
+  pd.default_h = d.wh.h
+  return nothing
+end

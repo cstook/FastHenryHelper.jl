@@ -87,13 +87,15 @@ type PlotData
   y :: Array{Float64,1}
   z :: Array{Float64,1}
   group :: Array{Int,1}
+  default_h :: Float64
+  default_w :: Float64
   marker :: Array{Symbol,1}
   markercolor :: Array{Symbol,1}
   markeralpha :: Array{Float64,1}
   markersize :: Array{Float64,1}
   markerstrokewidth :: Array{Float64,1}
   groupcounter :: Int
-  PlotData() = new("",[],[],[],[],[],[],[],[],[],0)
+  PlotData() = new("",[],[],[],[],NaN,NaN,[],[],[],[],[],0)
 end
 
 plotdata!(::PlotData, ::Element) = nothing
@@ -131,9 +133,8 @@ end
 function Plots.plot(e::Element)
   pd = PlotData()
   plotdata!(pd,e)
-  # pointsatlimits! and match_dimentions = true are both 
+  # pointsatlimits!  
   # attempts to force xlims = ylims = zlims
-  # seems to work for pyplot
   pointsatlimits!(pd)
   plot(pd.x, pd.y, pd.z, group=pd.group,
     title = pd.title,
