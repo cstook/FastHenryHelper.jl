@@ -10,7 +10,7 @@ immutable SigmaRho
     new(sigma,rho)
   end
 end
-SigmaRho(;sigma = NaN, Rho=NaN) = SigmaRho(sigma,rho)
+SigmaRho(;sigma = NaN, rho=NaN) = SigmaRho(sigma,rho)
 function printfh!(io::IO, ::PrintFH, x::SigmaRho)
   if isnan(x.sigma) && isnan(x.rho)
     return nothing
@@ -32,7 +32,7 @@ type WxWyWz
   WxWyWz(wx, wy, wz) = new([wx,wy,wz],isnan(wx) && isnan(wy) && isnan(wz))
 end
 WxWyWz(;wx=NaN, wy=NaN, wz=NaN) = 
-  WxWyWz([wx,wy,wz])
+  WxWyWz(wx,wy,wz)
 
 function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
@@ -163,9 +163,9 @@ rh(sp::SegmentParameters) = sp.wh.rh
 rw(sp::SegmentParameters) = sp.wh.rw
 sigma(sp::SegmentParameters) = sp.sigmarho.sigma
 rho(sp::SegmentParameters) = sp.sigmarho.rho
-wx(sp::SegmentParameters) = sp.wxwywz.wx
-wy(sp::SegmentParameters) = sp.wxwywz.wy
-wz(sp::SegmentParameters) = sp.wxwywz.wz
+wx(sp::SegmentParameters) = sp.wxwywz.xyz[1]
+wy(sp::SegmentParameters) = sp.wxwywz.xyz[2]
+wz(sp::SegmentParameters) = sp.wxwywz.xyz[3]
 
 """
     Segment([name], n1::Node, n2::Node, [parameters::SegmentParameters])
