@@ -62,7 +62,11 @@ function Base.setindex!(g::Group, n::Node, key::Symbol)
   g.terms[key] = n
   return nothing
 end
-Base.merge!(g::Group, args...) = merge(g.terms, args...)
+function Base.merge!(g::Group, args...)
+  for arg in args
+    merge(g.terms, arg.terms)
+  end
+end
 Base.push!(g::Group, args...) = push!(g.elements, args...)
 Base.pop!(g::Group) = pop!(g.elements)
 Base.unshift!(g::Group, args...) = unshift!(g.elements, args...)

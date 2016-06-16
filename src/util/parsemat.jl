@@ -4,7 +4,15 @@
 export parsefasthenrymat
 
 """
-result of parsing FastHenry .mat file
+    ParseFastHenryMatResult
+
+Result of parsing FastHenry .mat file.
+
+**Fields**
+- `portnames`     -- array of port names, index is row number in impedance matrix
+- `frequencies`   -- frequencies at which impedance matrix is computed
+- `impedance`    -- impedance matrix at each frequency. impedance[row, col, frequency]
+
 """
 type ParseFastHenryMatResult
   "array of port names, index is row number in impedance matrix"
@@ -78,7 +86,12 @@ function parsefasthenrymat(io::IO)
   ParseFastHenryMatResult(portnames,frequencymatrix,resultmatrix)
 end
 
-parsefasthenrymat(filename::AbstractString) = parsefasthenrymat(open(filename,"r"))
+function parsefasthenrymat(filename::AbstractString)
+  io = open(filename,"r")
+  result = parsefasthenrymat(io)
+  close(io)
+  return result
+end
 
 """
     parsefasthenrymat(io::IO)

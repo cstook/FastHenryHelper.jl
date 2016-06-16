@@ -78,8 +78,9 @@ parameters of `Segment`.  `transform` of a `Segment` will not modify its `Node`s
 Typically `transform` would only be applied to `Group` objects.
 """
 transform, transform!
+
 resetiname!(::Element) = nothing
-resetist!(n::Element) = nothing
+resetist!(::Element) = nothing
 
 type PlotData
   title :: AbstractString

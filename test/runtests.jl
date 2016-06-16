@@ -221,6 +221,8 @@ nhinc=16, rh=17,
 relx=18, rely=19, relz=20,
 nodes=[n10,n11],
 holes=[p,r,c])
+up2 = deepcopy(up)
+transform!(up2,txyz(1,2,3))
 open("testuniformplane.inp","w") do io
     print(io,up)
 end
@@ -284,6 +286,19 @@ close(io)
 g4 = Group([title,u,n20,n21,seg20,c,def1,eq1,up,ex1,f1,])
 g5 = transform(g1,rx(π/2))
 pd = FastHenryHelper.plotdata(g4)
+FastHenryHelper.pointsatlimits!(pd)
+nullgroup = Group()
+elements!(nullgroup,[title,n20,n21,seg20])
+terms!(nullgroup,Dict(:a=>n20,:b=>n21))
+nullgroup[:c] = n20
+@test nullgroup[:a] === nullgroup[:a]
+push!(g1,n20)
+@test pop!(g1) === n20
+unshift!(g1,n20)
+@test shift!(g1) === n20
+append!(g1,g2)
+prepend!(g1,g2)
+merge!(g1,g2,g3)
 
 n1 = Node(1,2,3)
 n2 = Node(4,5,6)
@@ -303,8 +318,6 @@ inductor = coilcraft1010vsgroup("1010VS-111ME")
 @test length(elements(inductor)) == 85
 @test length(keys(terms(inductor))) == 2
 
-io = open("example3_Zc.mat","r")
-pfhmr = parsefasthenrymat(io)
-close(io)
+pfhmr = parsefasthenrymat("example3_Zc.mat")
 
 nothing
