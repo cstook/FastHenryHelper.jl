@@ -130,6 +130,12 @@ function pointsatlimits!(pd::PlotData)
   push!(pd.z, zcenter-range/2.0)
 end
 
+function plotdata(e::Element)
+  pd = PlotData()
+  plotdata!(pd,e)
+  return pd
+end
+
 function Plots.plot(e::Element)
   pd = PlotData()
   plotdata!(pd,e)

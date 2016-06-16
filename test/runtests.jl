@@ -181,4 +181,130 @@ u = Units("in")
 io = IOBuffer()
 print(io,u)
 @test takebuf_string(io) == ".units in\n"
+close(io)
 
+p = FastHenryHelper.Point(x=1,y=2,z=3)
+io = IOBuffer()
+print(io,p)
+@test takebuf_string(io) == "+ hole point (1.000000000e+00, 2.000000000e+00, 3.000000000e+00)\n"
+close(io)
+
+r = FastHenryHelper.Rect(x1=1,y1=2,z1=3,x2=4,y2=5,z2=6)
+io = IOBuffer()
+print(io,r)
+@test takebuf_string(io) == "+ hole rect (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00, 5.000000000e+00, 6.000000000e+00)\n"
+close(io)
+
+c = FastHenryHelper.Circle(x=1,y=2,z=3,r=4)
+io = IOBuffer()
+print(io,c)
+@test takebuf_string(io) == "+ hole circle (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00)\n"
+close(io)
+
+@test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=4,rh=5,sigma=6,rho=7))
+@test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=4,rh=-5,sigma=6))
+@test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=-4,rh=5,rho=7))
+@test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=0, nhinc=4,rh=5,sigma=6))
+@test_throws(ArgumentError,UniformPlane(thick=1, seg1=0, seg2=3, nhinc=4,rh=5,sigma=6))
+@test_throws(ArgumentError,UniformPlane(seg1=2, seg2=3, nhinc=4,rh=5,sigma=6))
+
+n10 = Node(10,11,12)
+n11 = Node(13,14,15)
+up = UniformPlane(
+x1=1, y1=2, z1=3,
+x2=4, y2=5, z2=6,
+x3=7, y3=8, z3=9,
+thick=10, seg1=11, seg2=12,
+segwid1 = 13, segwid2 = 14,
+sigma = 15,
+nhinc=16, rh=17,
+relx=18, rely=19, relz=20,
+nodes=[n10,n11],
+holes=[p,r,c])
+open("testuniformplane.inp","w") do io
+    print(io,up)
+end
+io = open("testuniformplane.inp","r")
+@test readline(io) == "G_1\n"
+@test readline(io) == "+ x1=1.000000000e+00 y1=2.000000000e+00 z1=3.000000000e+00\n"
+@test readline(io) == "+ x2=4.000000000e+00 y2=5.000000000e+00 z2=6.000000000e+00\n"
+@test readline(io) == "+ x3=7.000000000e+00 y3=8.000000000e+00 z3=9.000000000e+00\n"
+@test readline(io) == "+ thick=1.000000000e+01 seg1=11 seg2=12\n"
+@test readline(io) == "+ segwid1=1.300000000e+01\n"
+@test readline(io) == "+ segwid2=1.400000000e+01\n"
+@test readline(io) == "+ sigma=1.500000000e+01\n"
+@test readline(io) == "+ nhinc=16\n"
+@test readline(io) == "+ rh=17\n"
+@test readline(io) == "+ relx=1.800000000e+01\n"
+@test readline(io) == "+ rely=1.900000000e+01\n"
+@test readline(io) == "+ relz=2.000000000e+01\n"
+@test readline(io) == "+ N_2 (1.000000000e+01,1.100000000e+01,1.200000000e+01)\n"
+@test readline(io) == "+ N_3 (1.300000000e+01,1.400000000e+01,1.500000000e+01)\n"
+@test readline(io) == "+ hole point (1.000000000e+00, 2.000000000e+00, 3.000000000e+00)\n"
+@test readline(io) == "+ hole rect (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00, 5.000000000e+00, 6.000000000e+00)\n"
+@test readline(io) == "+ hole circle (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00)\n"
+close(io)
+
+title = Title("test title")
+n20 = Node(1,0,0)
+n21 = Node(10,0,0)
+sp20 = SegmentParameters(h=3,w=5,sigma=0.1)
+seg20 = Segment(n20,n21,sp20)
+g1 = Group([title,n20,n21,seg20],Dict(:a=>n20,:b=>n21))
+g2 = transform(g1,rz(π/4))
+g3 = Group([g1,g2],Dict(:c=>g1[:a], :d=>g1[:b], :e=>g2[:a], :f=>g2[:b]))
+io = IOBuffer()
+print(io,g3[:c])
+@test takebuf_string(io) == "N_1 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00\n"
+print(io,g3[:d])
+@test takebuf_string(io) == "N_1 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00\n"
+print(io,g3[:e])
+@test takebuf_string(io) == "N_1 x=7.071067812e-01 y=-7.071067812e-01 z=0.000000000e+00\n"
+print(io,g3[:f])
+@test takebuf_string(io) == "N_1 x=7.071067812e+00 y=-7.071067812e+00 z=0.000000000e+00\n"
+close(io)
+open("testgroup.inp","w") do io
+    print(io,g3)
+end
+io = open("testgroup.inp","r")
+@test readline(io) == "* test title\n"
+@test readline(io) == "N_1 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00\n"
+@test readline(io) == "N_2 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00\n"
+@test readline(io) == "E_3 N_1 N_2 \n"
+@test readline(io) == "+  w=5.000000000e+00 h=3.000000000e+00\n"
+@test readline(io) == "+  sigma=1.000000000e-01\n"
+@test readline(io) == "* test title\n"
+@test readline(io) == "N_4 x=7.071067812e-01 y=-7.071067812e-01 z=0.000000000e+00\n"
+@test readline(io) == "N_5 x=7.071067812e+00 y=-7.071067812e+00 z=0.000000000e+00\n"
+@test readline(io) == "E_6 N_4 N_5 \n"
+@test readline(io) == "+  w=5.000000000e+00 h=3.000000000e+00\n"
+@test readline(io) == "+  sigma=1.000000000e-01\n"
+@test readline(io) == "+  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00\n"
+close(io)
+g4 = Group([title,u,n20,n21,seg20,c,def1,eq1,up,ex1,f1,])
+g5 = transform(g1,rx(π/2))
+pd = FastHenryHelper.plotdata(g4)
+
+n1 = Node(1,2,3)
+n2 = Node(4,5,6)
+n3 = Node(7,8,9)
+sp = SegmentParameters(w=10,h=2,sigma=3)
+segmentarray = connectnodes([n1,n2,n3],sp)
+@test length(segmentarray) == 2
+g6 = Group([n1,n2,n3,segmentarray...])
+
+@test_throws(ArgumentError,viagroup(height=20, h=3))
+@test_throws(ArgumentError,viagroup(radius=10, h=3))
+@test_throws(ArgumentError,viagroup(radius=10, height=20))
+@test_throws(ArgumentError,viagroup(radius=10, height=20, h=3,n=1))
+via = viagroup(radius=10, height=20, h=3)
+
+inductor = coilcraft1010vsgroup("1010VS-111ME")
+@test length(elements(inductor)) == 85
+@test length(keys(terms(inductor))) == 2
+
+io = open("example3_Zc.mat","r")
+pfhmr = parsefasthenrymat(io)
+close(io)
+
+nothing

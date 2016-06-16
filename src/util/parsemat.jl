@@ -1,12 +1,12 @@
 # parsemat.jl
 # 
 # parses impedance matrix output file from FastFieldSolvers
-export parsefasthenrymap
+export parsefasthenrymat
 
 """
 result of parsing FastHenry .mat file
 """
-type ParseFastHenryMapResult
+type ParseFastHenryMatResult
   "array of port names, index is row number in impedance matrix"
   portnames :: Array{AbstractString,1}
   "list of frequencies at which impedance matrix is computed"
@@ -18,7 +18,7 @@ type ParseFastHenryMapResult
   impeadance :: Array{Complex{Float64},3}
 end
 
-function parsefasthenrymap(io::IO)
+function parsefasthenrymat(io::IO)
   findportname = r"(\d+):.*port name: (\w+)"
   line = readline(io)
   m = match(findportname,line)
@@ -75,17 +75,17 @@ function parsefasthenrymap(io::IO)
     read!(buffer,impeadancematrix)
     resultmatrix[:,:,i] = impeadancematrix
   end
-  ParseFastHenryMapResult(portnames,frequencymatrix,resultmatrix)
+  ParseFastHenryMatResult(portnames,frequencymatrix,resultmatrix)
 end
 
-parsefasthenrymap(filename::AbstractString) = parsefasthenrymap(open(filename,"r"))
+parsefasthenrymat(filename::AbstractString) = parsefasthenrymat(open(filename,"r"))
 
 """
-    parsefasthenrymap(io::IO)
-    parsefasthenrymap(filename::AbstractString)
+    parsefasthenrymat(io::IO)
+    parsefasthenrymat(filename::AbstractString)
 
 parses the .mat output file from FastHenry
 
 returns type `ParseFastHenryResult`
 """
-parsefasthenrymap
+parsefasthenrymat
