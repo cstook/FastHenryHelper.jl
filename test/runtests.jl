@@ -284,6 +284,7 @@ io = open("testgroup.inp","r")
 @test readline(io) == "+  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00\n"
 close(io)
 g4 = Group([title,u,n20,n21,seg20,c,def1,eq1,up,ex1,f1,])
+deepcopyg4 = deepcopy(g4)
 g5 = transform(g1,rx(π/2))
 pd = FastHenryHelper.plotdata(g4)
 FastHenryHelper.pointsatlimits!(pd)
