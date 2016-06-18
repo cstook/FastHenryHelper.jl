@@ -40,7 +40,7 @@ sp2 = SegmentParameters(sp1,w=5,h=2)
 s2 = Segment(n1, n2, sp2)
 ```
 
-Elements can be collected into groups.  Auto-generated names are unique within the `Group` `show` is called on.  `Group`s may be transformed (rotated, translated, etc.).  `Group`s may be `deepcopy`ed.  `Group`s may be nested within each other.  
+Elements can be collected into groups.  Auto-generated names are unique within the `Group` `show` is called on.  `Group`s may be transformed (rotated, translated, etc.).  `Group`s may be nested within each other.  
 ```@example intro
 g1 = Group([n1,n2,s2])
 ```
@@ -162,5 +162,6 @@ end
 
 FastHenry was run with "eightloops.inp" input file.  FastHenryHelper does not call FastHenry.
 
-view [eightloops.inp](eightloops.inp)<br>
-view FastHenry output [eightloopsZc.mat](eightloopsZc.mat)
+view [eightloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloops.inp).
+
+view FastHenry output [eightloopsZc.mat](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloopsZc.mat).
