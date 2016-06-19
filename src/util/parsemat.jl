@@ -9,6 +9,7 @@ export parsefasthenrymat
 Result of parsing FastHenry .mat file.
 
 **Fields**
+
 - `portnames`    -- array of port names, index is row number in impedance matrix
 - `frequencies`  -- frequencies at which impedance matrix is computed
 - `impedance`    -- impedance matrix at each frequency. impedance[row, col, frequency]
