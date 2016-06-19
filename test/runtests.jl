@@ -319,6 +319,7 @@ inductor = coilcraft1010vsgroup("1010VS-111ME")
 @test length(elements(inductor)) == 85
 @test length(keys(terms(inductor))) == 2
 
-pfhmr = parsefasthenrymat("example3_Zc.mat")
+pfhmr_example3 = parsefasthenrymat("example3_Zc.mat")
+pfhmr_eightloops = parsefasthenrymat("eightloopsZc.mat")
 
 nothing

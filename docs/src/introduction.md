@@ -165,3 +165,9 @@ FastHenry was run with "eightloops.inp" input file.  FastHenryHelper does not ca
 view [eightloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloops.inp).
 
 view FastHenry output [eightloopsZc.mat](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloopsZc.mat).
+
+The FastHenry .mat output file can be parsed.
+```@example intro
+result = parsefasthenrymat("eightloopsZc.mat")
+result.impedance
+```

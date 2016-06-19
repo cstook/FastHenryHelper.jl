@@ -40,6 +40,8 @@ Hole
 Point
 Rect
 Circle
+parsefasthenrymat
+ParseFastHenryMatResult
 ```
 
 ## Groups and Arrays

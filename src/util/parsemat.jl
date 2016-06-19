@@ -9,8 +9,8 @@ export parsefasthenrymat
 Result of parsing FastHenry .mat file.
 
 **Fields**
-- `portnames`     -- array of port names, index is row number in impedance matrix
-- `frequencies`   -- frequencies at which impedance matrix is computed
+- `portnames`    -- array of port names, index is row number in impedance matrix
+- `frequencies`  -- frequencies at which impedance matrix is computed
 - `impedance`    -- impedance matrix at each frequency. impedance[row, col, frequency]
 
 """
@@ -23,11 +23,11 @@ type ParseFastHenryMatResult
   impedance matrix at each frequency.  <br>
   impedance [impedance matrix row : impedance matrix column : frequency]
   """
-  impeadance :: Array{Complex{Float64},3}
+  impedance :: Array{Complex{Float64},3}
 end
 
 function parsefasthenrymat(io::IO)
-  findportname = r"(\d+):.*port name: (\w+)"
+  findportname = r"Row (\d+):.*?(port name: (\w+)|$)"m
   line = readline(io)
   m = match(findportname,line)
   if m==nothing
@@ -35,7 +35,7 @@ function parsefasthenrymat(io::IO)
   end
   numberofrows = parse(Int,m.captures[1])
   portnames = Array(AbstractString,numberofrows)
-  portnames[numberofrows] = m.captures[2]
+  portnames[numberofrows] = m.captures[3] == nothing ? "" : m.captures[3]
   for i in numberofrows-1:-1:1
     line = readline(io)
     m = match(findportname,line)
@@ -43,7 +43,7 @@ function parsefasthenrymat(io::IO)
       rowstring = @sprintf("%d",i)
       throw(ParseError("did not find rows line for Row="*rowstring))
     end
-    portnames[i] = m.captures[2]
+    portnames[i] = m.captures[3] == nothing ? "" : m.captures[3]
   end
   frequencies = 0
   buffer = IOBuffer()
