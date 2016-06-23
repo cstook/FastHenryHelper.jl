@@ -13,7 +13,7 @@ Returns a `Group` of `Segment`s for the barrel of a via.
 - `h`               -- thickness of copper plating
 - `n`               -- number of segment around via
 - `sigma`,`rho`     -- specify conductivity or resistivity
-- `hninc`           -- number of filaments per segment 
+- `nhinc`           -- number of filaments per segment 
 - `rh`              -- ratio of filament width
 
 Terminals are in the center labeled :top and :bot.  Only `SegmentParameters` 
@@ -56,9 +56,9 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
     segments = Array(Segment,n)
     for i in 1:n
       segments[i] = Segment(topnodes[i],botnodes[i],
-        SegmentParameters(sp, w=w, wx=wx[i], wy=wy[i], nwinc=1))
+        SegmentParameters(sp, w=w, wx=wx[i], wy=wy[i], wz=0.0, nwinc=1))
     end
-    group = Group([topnodes;botnodes;eqtop;eqbot;segments],terminals)
+    group = Group([topnodes;botnodes;centertop;centerbot;eqtop;eqbot;segments],terminals)
   else # n=0 for bypass
     eq = Equiv([centertop;centerbot])
     group = Group([centertop;centerbot;eq],terminals)
