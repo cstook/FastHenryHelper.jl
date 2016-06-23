@@ -44,7 +44,7 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
     y = radius .* map(sin,angle)
     wx = map(cos,angle.+(pi/2))
     wy = map(sin,angle.+(pi/2))
-    w = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2)
+    w = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2) * 1/cos(pi/n)
     topnodes = Array(Node,n)
     botnodes = Array(Node,n)
     for i in 1:n
