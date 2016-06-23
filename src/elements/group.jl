@@ -64,7 +64,7 @@ function Base.setindex!(g::Group, n::Node, key::Symbol)
 end
 function Base.merge!(g::Group, args...)
   for arg in args
-    merge(g.terms, arg.terms)
+    merge!(g.terms, arg.terms)
   end
 end
 Base.push!(g::Group, args...) = push!(g.elements, args...)
