@@ -7,16 +7,15 @@ This introduction does not attempt to explain FastHenry.  See the [FastHenry Use
 ## Loading the modules
 ```@example intro
 using FastHenryHelper
-using Plots; pyplot() # using pyplot() backend for plots, plotlyjs() also works.
+using Plots; pyplot() # using pyplot() backed for plots, plotlyjs() also works.
 ```
 ## Creating a Simple Group
-FastHenry commands are julia types which show their command
-for example:
+FastHenry commands are julia types which show their command.
 ```@example intro
 n1 = Node(10,0,0)
 ```
 A name was not specified, so _1 was automatically generated.
-x, y, and z must always be specified.  Default z is not allowed.
+x, y, and z must always be specified.  Default coordinates not allowed.
 
 A name can be specified as the first parameter.
 ```@example intro
