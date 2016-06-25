@@ -147,7 +147,7 @@ immutable UniformPlane <: Element
   holes :: Array{Hole,1}
   function UniformPlane(name, corner1, corner2, corner3, thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
-                nodes, holes)
+                nodes::Array{Node,1}, holes)
     if isnan(thick)
       throw(ArgumentError("Must specify thick for plane"))
     end
@@ -171,6 +171,13 @@ immutable UniformPlane <: Element
                 nodes, holes)
   end
 end
+function UniformPlane(name, corner1, corner2, corner3, thick, seg1, seg2,
+                segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
+                nodes::Node, holes)
+  UniformPlane(name, corner1, corner2, corner3, thick, seg1, seg2,
+        segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
+        [nodes], holes)
+end
 UniformPlane(;name = :null,  
               x1=0, y1=0, z1=0, x2=0, y2=0, z2=0, x3=0, y3=0, z3=0,
               thick = NaN, seg1 = 0, seg2 = 0,
@@ -178,7 +185,7 @@ UniformPlane(;name = :null,
               sigma = NaN, rho = NaN,
               nhinc = 0, rh = 0,
               relx = NaN, rely = NaN, relz = NaN,
-              nodes = [], holes = []) = 
+              nodes = Array{Node,1}(), holes = []) = 
   UniformPlane(name,[x1,y1,z1,1],[x2,y2,z2,1],[x3,y3,z3,1], thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)

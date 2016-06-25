@@ -24,10 +24,10 @@ named elements.
 """
 type Group <: Element
   elements :: Array{Element,1}
-  terms :: Dict{Symbol,Node}
+  terms :: Dict{Symbol,Union{Node,Array{Node,1}}}
 end
 Group() = Group([],Dict{Symbol,Node}())
-Group(e) = Group(e,Dict{Symbol,Node}())
+Group(e) = Group(e,Dict{Symbol,Union{Node,Array{Node,1}}}())
 
 
 elements(g::Group) = g.elements
@@ -58,7 +58,7 @@ Get and set the `terms` field in a `Group`.
 terms, terms!
 
 Base.getindex(g::Group, key::Symbol) = g.terms[key]
-function Base.setindex!(g::Group, n::Node, key::Symbol)
+function Base.setindex!(g::Group, n::Union{Node,Array{Node,1}}, key::Symbol)
   g.terms[key] = n
   return nothing
 end
