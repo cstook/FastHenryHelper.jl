@@ -5,7 +5,7 @@ export Group, terms, terms!, elements, elements!
     Group(Array{Element,1})
     Group(Array{Element,1}, Dict{Symbol,Node})
 
-`Group` objects `show` FastHenry commands of their 
+`Group` objects `show` FastHenry commands of their
 elements.
 
 **Fields**
@@ -13,11 +13,10 @@ elements.
 - `elements`    -- Array of `Element`'s
 - `terms`       -- Dict{Symbol,Node} # connections to the Group
 
-Groups may be nested.  Automatic name generation will create a 
-name for each `Element` in the `Group` and all subgroups as needed 
-when `show` is called.  Generated names start with an 
-underscore (_1, _2, _3, ...).  Do not use these names for manual 
-named elements.
+Groups may be nested.  Automatic name generation will create a name for
+each `Element` in the `Group` and all subgroups as needed when `show` is
+called.  Generated names start with an underscore.  Do not use these names
+for user named elements.
 
 `getindex`, `setindex!`, and `merge!` operate on `terms`.
 `push!`, `pop!`, `unshift!`, `shift!`, `append!`, `prepend!` operate on `elements`.
@@ -75,14 +74,14 @@ Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
 function printfh!(io::IO, pfh::PrintFH, group::Group)
-  for element in group.elements 
+  for element in group.elements
     printfh!(io, pfh, element)
   end
   return nothing
 end
 
 function resetiname!(group::Group)
-  for element in group.elements 
+  for element in group.elements
     resetiname!(element)
   end
 end
