@@ -1,15 +1,23 @@
 # make element an iterator which traverses element tree
-immutable NullElement<:Element end
+# TODO
+# might be more efficent with IObuffer instead of shifting and
+# prepending an array
 
-Base.start(e::Element) = e
+Base.start(e::Element) = [e]
+Base.start(e::Group) = deepcopy(e.elements)
 
-Base.next(e::Element, state) = state, NullElement()
-function Base.next(e::Group, state)
-  for groupe in e.elements
-    next(groupe,state)
-  end
-  return NullElement(), NullElement()
+updatestate!(state, s::Element) = nothing
+function updatestate!(state, s::Group)
+  # replace group with its elements
+  shift!(state)
+  prepend!(state,s.elements)
+  return nothing
 end
 
-Base.done(e::Element, state::Element) = false
-Base.done(e::Element, state::NullElement) = true
+function Base.next(e::Element, state)
+  updatestate!(state, state[1])
+  item = shift!(state)
+  return (item,state)
+end
+
+Base.done(e::Element, state) = length(state) == 0
