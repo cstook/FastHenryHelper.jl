@@ -168,3 +168,4 @@ include("comment.jl")
 include("group.jl")
 
 include("traversetree.jl")
+include("visualizedata.jl")

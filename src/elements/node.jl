@@ -9,7 +9,7 @@ export Node, rx, ry, rz, xyz, txyz, scalexyz
 immutable Node <: Element
   name :: AutoName
   xyz  :: Array{Float64,1}
-  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz) 
+  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz)
 end
 Node(xyz::Array{Float64,1}) = Node(:null,xyz)
 Node(name,x,y,z) = Node(name,[x,y,z,1.0])
@@ -113,7 +113,7 @@ txyz(p,q,r) = [1.0 0.0 0.0  p;
                0.0 1.0 0.0  q;
                0.0 0.0 1.0  r;
                0.0 0.0 0.0 1.0]
-
+txyz(a) = txyz(a[1],a[2],a[3])
 
 """
     scalexyz(p,q,r) = [ p  0.0 0.0 0.0;
@@ -126,4 +126,4 @@ txyz(p,q,r) = [1.0 0.0 0.0  p;
 scalexyz(p,q,r) = [ p  0.0 0.0 0.0;
                    0.0  q  0.0 0.0;
                    0.0 0.0  r  0.0;
-                   0.0 0.0 0.0 1.0] 
+                   0.0 0.0 0.0 1.0]

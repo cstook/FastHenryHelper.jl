@@ -2,7 +2,7 @@ export Segment, SegmentParameters
 
 immutable SigmaRho
   sigma :: Float64
-  rho   :: Float64 
+  rho   :: Float64
   function SigmaRho(sigma,rho)
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
@@ -17,10 +17,10 @@ function printfh!(io::IO, ::PrintFH, x::SigmaRho)
   end
   print(io,"+ ")
   if ~isnan(x.sigma)
-    @printf(io," sigma=%.9e",x.sigma) 
+    @printf(io," sigma=%.9e",x.sigma)
   end
   if ~isnan(x.rho)
-    @printf(io," rho=%.9e",x.rho) 
+    @printf(io," rho=%.9e",x.rho)
   end
   println(io)
   return nothing
@@ -31,20 +31,20 @@ type WxWyWz
   isdefault :: Bool
   WxWyWz(wx, wy, wz) = new([wx,wy,wz],isnan(wx) && isnan(wy) && isnan(wz))
 end
-WxWyWz(;wx=NaN, wy=NaN, wz=NaN) = 
+WxWyWz(;wx=NaN, wy=NaN, wz=NaN) =
   WxWyWz(wx,wy,wz)
 
 function printfh!(io::IO, ::PrintFH, x::WxWyWz)
   if ~x.isdefault
     print(io,"+ ")
     if ~isnan(x.xyz[1])
-      @printf(io," wx=%.9e",x.xyz[1]) 
+      @printf(io," wx=%.9e",x.xyz[1])
     end
     if ~isnan(x.xyz[2])
-      @printf(io," wy=%.9e",x.xyz[2]) 
+      @printf(io," wy=%.9e",x.xyz[2])
     end
     if ~isnan(x.xyz[3])
-      @printf(io," wz=%.9e",x.xyz[3]) 
+      @printf(io," wz=%.9e",x.xyz[3])
     end
     println(io)
   end
@@ -60,10 +60,10 @@ end
 
 immutable WH
   w :: Float64
-  h :: Float64 
-  nhinc :: Int 
-  nwinc :: Int 
-  rh :: Float64 
+  h :: Float64
+  nhinc :: Int
+  nwinc :: Int
+  rh :: Float64
   rw :: Float64
   function WH(w, h, nhinc, nwinc, rh, rw)
     if nhinc<0
@@ -81,7 +81,7 @@ immutable WH
     return new(w, h, nhinc, nwinc, rh, rw)
   end
 end
-WH(;w=NaN, h=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
+WH(;w=NaN, h=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
   WH(w, h, nhinc, nwinc, rh, rw)
 function printfh!(io::IO, ::PrintFH, x::WH)
   if isnan(x.w) && isnan(x.h) && x.nhinc==0 && x.nwinc==0 && isnan(x.rh) && isnan(x.rw)
@@ -92,19 +92,19 @@ function printfh!(io::IO, ::PrintFH, x::WH)
     @printf(io," w=%.9e",x.w)
   end
   if ~isnan(x.h)
-    @printf(io," h=%.9e",x.h) 
+    @printf(io," h=%.9e",x.h)
   end
   if x.nhinc>0
-    print(io," nhinc=",x.nhinc) 
+    print(io," nhinc=",x.nhinc)
   end
   if x.nwinc>0
-    print(io," nwinc=",x.nwinc) 
+    print(io," nwinc=",x.nwinc)
   end
   if ~isnan(x.rh)
-    @printf(io," rh=%.9e",x.rh) 
+    @printf(io," rh=%.9e",x.rh)
   end
   if ~isnan(x.rw)
-    @printf(io," rw=%.9e",x.rw) 
+    @printf(io," rw=%.9e",x.rw)
   end
   println(io)
   return nothing
@@ -120,8 +120,8 @@ Object to hold parameters for `Segment` and `Default`
 
 - `w`               -- segment width
 - `h`               -- segment height
-- `sigma`           -- conductivity 
-- `rho`             -- resistivity 
+- `sigma`           -- conductivity
+- `rho`             -- resistivity
 - `wx`, `wy`, `wz`  -- segment orientation.  vector pointing along width of segment's cross section.
 - `nhinc`, `nwinc`  -- integer number of filaments in height and width
 - `rh`, `rw`        -- ratio in the height and width
@@ -134,7 +134,7 @@ immutable SegmentParameters
   wxwywz    :: WxWyWz
 end
 SegmentParameters(;w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN, wy=NaN, wz=NaN,
-                  nhinc=0, nwinc=0, rh=NaN, rw=NaN) = 
+                  nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
   SegmentParameters(WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 function SegmentParameters(sp::SegmentParameters; w=NaN, h=NaN, sigma=NaN, rho=NaN, wx=NaN,
                            wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN)
@@ -166,6 +166,7 @@ rho(sp::SegmentParameters) = sp.sigmarho.rho
 wx(sp::SegmentParameters) = sp.wxwywz.xyz[1]
 wy(sp::SegmentParameters) = sp.wxwywz.xyz[2]
 wz(sp::SegmentParameters) = sp.wxwywz.xyz[3]
+wxyz(sp::SegmentParameters) = sp.wxwywz.xyz
 
 """
     Segment([name], n1::Node, n2::Node, [parameters::SegmentParameters])
@@ -175,14 +176,14 @@ wz(sp::SegmentParameters) = sp.wxwywz.xyz[3]
 
 Keyword arguments are the same as for `SegmentParameters`.
 
-note: When rotating segments, the vector [wx, wy, wz] will be rotated.  Default 
-values will be used if not specified.  wx, wy, wz will show after `transform[!]` is 
+note: When rotating segments, the vector [wx, wy, wz] will be rotated.  Default
+values will be used if not specified.  wx, wy, wz will show after `transform[!]` is
 called on a `Segment`.
 """
 immutable Segment <: Element
   name      :: AutoName
-  node1     :: Node 
-  node2     :: Node 
+  node1     :: Node
+  node2     :: Node
   wh        :: WH
   sigmarho  :: SigmaRho
   wxwywz    :: WxWyWz
@@ -198,10 +199,10 @@ Segment(n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
 Segment(name, n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
         wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
             Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
-Segment(n1::Node, n2::Node, sp::SegmentParameters) = 
+Segment(n1::Node, n2::Node, sp::SegmentParameters) =
             Segment(:null, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
-Segment(name, n1::Node, n2::Node, sp::SegmentParameters) = 
-            Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)     
+Segment(name, n1::Node, n2::Node, sp::SegmentParameters) =
+            Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
 
 function printfh!(io::IO, pfh::PrintFH, s::Segment)
   println(io,"E",autoname!(pfh,s.name)," N",autoname!(pfh,s.node1.name)," N",autoname!(pfh,s.node2.name)," ")
