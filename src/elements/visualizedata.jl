@@ -2,6 +2,14 @@ using GLVisualize, GeometryTypes, GLAbstraction, Colors
 
 export mesh
 
+type VisualizeState
+  nodedict    :: Dict{Node,Array{Float64,1}}
+  unit        :: ASCIIString
+  height      :: Float64
+  width       :: Float64
+  VisualizeState() = new(Dict(), "m", 0.0, 0.0)
+end
+
 abstract VisualizeElement
 type SegmentData <: VisualizeElement
   segment :: Segment
@@ -10,36 +18,31 @@ type SegmentData <: VisualizeElement
   wxyz    :: Array{Float64,1}
   height  :: Float64
   width   :: Float64
-  function SegmentData(state::VisualizeData, segment::Segment)
+  function SegmentData(state::VisualizeState, segment::Segment)
     n1xyz = state.nodedict[segment.node1]
     n2xyz = state.nodedict[segment.node2]
     wxyz = segment.wxwywz.xyz
-    height = tometers[state.unit]* isnan(segment.wh.h)?state.height:segment.wh.h
-    width = tometers[state.unit]* isnan(segment.wh.w)?state.width:segment.wh.w
+    height = tometers[state.unit]* (isnan(segment.wh.h)?state.height:segment.wh.h)
+    width = tometers[state.unit]* (isnan(segment.wh.w)?state.width:segment.wh.w)
     new(segment, n1xyz, n2xyz, wxyz, height, width)
   end
 end
 type NodeData <: VisualizeElement
   node  :: Node
   xyz   :: Array{Float64,1}
-  function NodeData!(state::VisualizeData, node::Node)
-    xyz = tometers[state.unit].*node.xyz[1:3]
-    state.nodedict[node] = xyz
-    new(node,xyz)
-  end
+end
+function NodeData!(state::VisualizeState, node::Node)
+  xyz = tometers[state.unit].*node.xyz[1:3]
+  state.nodedict[node] = xyz
+  NodeData(node,xyz)
 end
 type VisualizeData
-  # data
   elements    :: Array{VisualizeElement,1}
   displayunit :: ASCIIString
   title       :: AbstractString
-  # state
-  nodedict    :: Dict{Node,Array{Float64,1}}
-  unit        :: ASCIIString
-  height      :: Float64
-  width       :: Float64
-  ismeters    :: Boolean # true if elements are in meters, false if in displayunit
-  VisualizeData() = new([], "", "", Dict(), "m", 0.0, 0.0, true)
+  ismeters    :: Bool # true if elements are in meters, false if in displayunit
+  state       :: VisualizeState
+  VisualizeData() = new([], "", "", true, VisualizeState())
 end
 
 visualizedata!(vd::VisualizeData, e::Element) = nothing
@@ -47,20 +50,20 @@ function visualizedata!(vd::VisualizeData, e::Units)
   if vd.displayunit == ""
     vd.displayunit = e.unitname
   end
-  vd.unit = e.unitname
+  vd.state.unit = e.unitname
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Default)
-  height = tometers[state.unit]*e.wh.h
-  width = tometers[state.unit]*e.wh.w
+  vd.state.height = tometers[vd.state.unit]*e.wh.h
+  vd.state.width = tometers[vd.state.unit]*e.wh.w
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Segment)
-  push!(vd.elements, SegmentData(vd,e))
+  push!(vd.elements, SegmentData(vd.state,e))
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Node)
-  push!(vd.elements, NodeData!(vd,e))
+  push!(vd.elements, NodeData!(vd.state,e))
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Title)
