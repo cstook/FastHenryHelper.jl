@@ -7,8 +7,9 @@ type VisualizeState
   unit        :: ASCIIString
   height      :: Float64
   width       :: Float64
-  VisualizeState() = new(Dict(), "m", 0.0, 0.0)
+  VisualizeState() = new(Dict(), "", 0.0, 0.0)
 end
+
 
 abstract VisualizeElement
 type SegmentData <: VisualizeElement
@@ -23,8 +24,8 @@ function SegmentData(state::VisualizeState, segment::Segment)
   n1xyz = state.nodedict[segment.node1]
   n2xyz = state.nodedict[segment.node2]
   wxyz = segment.wxwywz.xyz
-  height = tometers[state.unit]* (isnan(segment.wh.h)?state.height:segment.wh.h)
-  width = tometers[state.unit]* (isnan(segment.wh.w)?state.width:segment.wh.w)
+  height = isnan(segment.wh.h)?state.height:segment.wh.h
+  width = isnan(segment.wh.w)?state.width:segment.wh.w
   SegmentData(segment, n1xyz, n2xyz, wxyz, height, width)
 end
 type NodeData <: VisualizeElement
@@ -36,6 +37,8 @@ function NodeData!(state::VisualizeState, node::Node)
   state.nodedict[node] = xyz
   NodeData(node,xyz)
 end
+
+
 type VisualizeData
   elements    :: Array{VisualizeElement,1}
   displayunit :: ASCIIString
@@ -44,7 +47,6 @@ type VisualizeData
   state       :: VisualizeState
   VisualizeData() = new([], "", "", true, VisualizeState())
 end
-
 visualizedata!(vd::VisualizeData, e::Element) = nothing
 function visualizedata!(vd::VisualizeData, e::Units)
   if vd.displayunit == ""
@@ -70,6 +72,8 @@ function visualizedata!(vd::VisualizeData, e::Title)
   vd.title = e.text
   return nothing
 end
+
+
 const tometers = Dict("km"  =>1e3,
                       "m"   =>1.0,
                       "cm"  =>1e-2,
@@ -80,10 +84,6 @@ const tometers = Dict("km"  =>1e3,
                       ""    =>1.0)
 
 function todisplayunit!(e::SegmentData, scale)
-  for i in 1:3
-    e.n1xyz[i] = scale*e.n1xyz[i]
-    e.n2xyz[i] = scale*e.n2xyz[i]
-  end
   e.height = scale*e.height
   e.width = scale*e.width
   return nothing
@@ -95,7 +95,7 @@ function todisplayunit!(e::NodeData, scale)
   return nothing
 end
 function todisplayunit!(vd::VisualizeData)
-  if vd.ismeters && vd.displayunit!="m"
+  if vd.ismeters && vd.displayunit != "m"
     scale = 1.0/tometers[vd.displayunit]
     for e in vd.elements
       todisplayunit!(e::VisualizeElement, scale)
@@ -198,4 +198,18 @@ function mesh(element::Element)
     push!(allmesh,m)
   end
   return merge(allmesh)
+end
+
+export testvd
+function testvd(element::Element)
+  # collect data for visualization
+  vd = VisualizeData()
+  for e in element
+    visualizedata!(vd,e)
+  end
+  if length(vd.elements)<1
+    throw(ArgumentError("No visualization for arguments.  Try passing Node's and Segment's"))
+  end
+  todisplayunit!(vd) # convert to display units
+  return vd
 end
