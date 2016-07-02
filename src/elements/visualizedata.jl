@@ -18,14 +18,14 @@ type SegmentData <: VisualizeElement
   wxyz    :: Array{Float64,1}
   height  :: Float64
   width   :: Float64
-  function SegmentData(state::VisualizeState, segment::Segment)
-    n1xyz = state.nodedict[segment.node1]
-    n2xyz = state.nodedict[segment.node2]
-    wxyz = segment.wxwywz.xyz
-    height = tometers[state.unit]* (isnan(segment.wh.h)?state.height:segment.wh.h)
-    width = tometers[state.unit]* (isnan(segment.wh.w)?state.width:segment.wh.w)
-    new(segment, n1xyz, n2xyz, wxyz, height, width)
-  end
+end
+function SegmentData(state::VisualizeState, segment::Segment)
+  n1xyz = state.nodedict[segment.node1]
+  n2xyz = state.nodedict[segment.node2]
+  wxyz = segment.wxwywz.xyz
+  height = tometers[state.unit]* (isnan(segment.wh.h)?state.height:segment.wh.h)
+  width = tometers[state.unit]* (isnan(segment.wh.w)?state.width:segment.wh.w)
+  SegmentData(segment, n1xyz, n2xyz, wxyz, height, width)
 end
 type NodeData <: VisualizeElement
   node  :: Node
@@ -76,15 +76,16 @@ const tometers = Dict("km"  =>1e3,
                       "mm"  =>1e-3,
                       "um"  =>1e-6,
                       "in"  =>2.54e-2,
-                      "mils"=>2.54e-5)
+                      "mils"=>2.54e-5,
+                      ""    =>1.0)
 
 function todisplayunit!(e::SegmentData, scale)
   for i in 1:3
     e.n1xyz[i] = scale*e.n1xyz[i]
-    e.nxyz[i] = scale*e.nxyz[i]
-    e.height[i] = scale*e.height[i]
-    e.width[i] = scale*e.width[i]
+    e.n2xyz[i] = scale*e.n2xyz[i]
   end
+  e.height = scale*e.height
+  e.width = scale*e.width
   return nothing
 end
 function todisplayunit!(e::NodeData, scale)
@@ -94,7 +95,7 @@ function todisplayunit!(e::NodeData, scale)
   return nothing
 end
 function todisplayunit!(vd::VisualizeData)
-  if vd.ismeters && displayunit!="m"
+  if vd.ismeters && vd.displayunit!="m"
     scale = 1.0/tometers[vd.displayunit]
     for e in vd.elements
       todisplayunit!(e::VisualizeElement, scale)
@@ -158,7 +159,11 @@ function mesh(element::SegmentData, color::Colorant, ::Float64)
   segmentcorrection * mesh
 end
 function mesh(n::NodeData, color::Colorant, size::Float64)
-  GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]), size), color))
+  println("node mesh:")
+  println(n,color,size)
+  m = GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]), size), color))
+  println("done")
+  return m
 end
 
 update_min_hw!(::VisualizeElement, ::Float64, ::Float64) = nothing
@@ -195,7 +200,11 @@ function mesh(element::Element)
   allmesh = Array(HomogenousMesh,0)
   ns = nodesize(vd)
   for e in vd.elements
-    push!(allmesh,mesh(e, elementcolor(s), ns))
+    println(e)
+    println("aaaaa")
+    m = mesh(e, elementcolor(e), ns)
+    println("bbbbb")
+    push!(allmesh,m)
   end
   return merge(allmesh)
 end

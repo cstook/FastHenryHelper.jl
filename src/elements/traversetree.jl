@@ -4,7 +4,7 @@
 # prepending an array
 
 Base.start(e::Element) = [e]
-Base.start(e::Group) = deepcopy(e.elements)
+Base.start(e::Group) = copy(e.elements)
 
 updatestate!(state, s::Element) = nothing
 function updatestate!(state, s::Group)
