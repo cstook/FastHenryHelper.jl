@@ -136,7 +136,7 @@ end
 elementcolor(::SegmentData) = RGBA(0.2f0,0.2f0,1f0,0.5f0)
 elementcolor(::NodeData) = RGBA(1f0,0f0,0f0,0.5f0)
 
-function mesh(element::SegmentData, color::Colorant, ::Float64)
+function mesh(element::SegmentData, color::Colorant, ::Float32)
   n1 = element.n1xyz
   n2 = element.n2xyz
   height = element.height
@@ -158,32 +158,26 @@ function mesh(element::SegmentData, color::Colorant, ::Float64)
   segmentcorrection = translationmatrix(Vec3f0(c...)) * rot_rz * rot_ry * rot_rx
   segmentcorrection * mesh
 end
-function mesh(n::NodeData, color::Colorant, size::Float64)
-  println("node mesh:")
-  println(n,color,size)
-  m = GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]), size), color))
-  println("done")
-  return m
+function mesh(n::NodeData, color::Colorant, size::Float32)
+  GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]), size), color))
 end
 
-update_min_hw!(::VisualizeElement, ::Float64, ::Float64) = nothing
-function update_min_hw!(e::SegmentData,  minheight::Float64, minwidth::Float64)
-  if e.height < minheight
-    minheight = e.height
+update_min_hw!(::VisualizeElement, ::Array{Float32,1}) = nothing
+function update_min_hw!(e::SegmentData,  minhw::Array{Float32,1})
+  if e.height < minhw[2]
+    minhw[2] = Float32(e.height)
   end
-  if e.width < minwidth
-    minwidth = e.width
+  if e.width < minhw[1]
+    minhw[1] = Float32(e.width)
   end
   return nothing
 end
 function nodesize(vd::VisualizeData)
-  minheight = 0.0
-  minwidth = 0.0
+  minhw = [Inf32,Inf32]
   for e in vd.elements
-    update_min_hw!(e, minheight, minwidth)
+    update_min_hw!(e, minhw)
   end
-  min_hw = min(minheight,minwidth)
-  return min_hw/3.0
+  return  min(minhw...)/6.0f0
 end
 
 function mesh(element::Element)
@@ -200,10 +194,7 @@ function mesh(element::Element)
   allmesh = Array(HomogenousMesh,0)
   ns = nodesize(vd)
   for e in vd.elements
-    println(e)
-    println("aaaaa")
     m = mesh(e, elementcolor(e), ns)
-    println("bbbbb")
     push!(allmesh,m)
   end
   return merge(allmesh)
