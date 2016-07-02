@@ -1,5 +1,5 @@
 using FastHenryHelper
-using GLVisualize, GeometryTypes, GLAbstraction, Colors
+using GLVisualize
 
 n1 = Node(1,1,1)
 n2 = Node(3,2,2)
