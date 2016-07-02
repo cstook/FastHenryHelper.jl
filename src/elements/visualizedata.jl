@@ -151,7 +151,7 @@ function mesh(element::SegmentData, color::Colorant, ::Float32)
   rot_ry = rotationmatrix_y(yangle)
   nrot_ry = rotationmatrix_y(yangle)
   rot_wxyz = nrot_ry * nrot_rz * wxyz
-  xangle = atan2(rot_wxyz[3],rot_wxyz[2])
+  xangle = -atan2(rot_wxyz[3],rot_wxyz[2])
   rot_rx = rotationmatrix_x(xangle)
   mesh = GLNormalMesh((HyperRectangle(Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),Vec3f0(length,width,height)),color))
   c = n1 + v1./2
