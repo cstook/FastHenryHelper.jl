@@ -17,7 +17,7 @@ open("testnode.inp","w") do io
     show(io,n2)
     show(io,n3)
     show(io,n4)
-    show(io,n5) 
+    show(io,n5)
 end
 io = open("testnode.inp","r")
 @test readline(io) == "N_1 x=1.000000000e+00 y=1.000000000e+00 z=1.000000000e+00\n"
@@ -321,5 +321,7 @@ inductor = coilcraft1010vsgroup("1010VS-111ME")
 
 pfhmr_example3 = parsefasthenrymat("example3_Zc.mat")
 pfhmr_eightloops = parsefasthenrymat("eightloopsZc.mat")
+
+vd = FastHenryHelper.VisualizeData(inductor)
 
 nothing

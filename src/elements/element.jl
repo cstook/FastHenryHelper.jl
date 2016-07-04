@@ -82,78 +82,6 @@ transform, transform!
 resetiname!(::Element) = nothing
 resetist!(::Element) = nothing
 
-type PlotData
-  title :: AbstractString
-  x :: Array{Float64,1}
-  y :: Array{Float64,1}
-  z :: Array{Float64,1}
-  group :: Array{Int,1}
-  default_h :: Float64
-  default_w :: Float64
-  marker :: Array{Symbol,1}
-  markercolor :: Array{Symbol,1}
-  markeralpha :: Array{Float64,1}
-  markersize :: Array{Float64,1}
-  markerstrokewidth :: Array{Float64,1}
-  groupcounter :: Int
-  PlotData() = new("",[],[],[],[],NaN,NaN,[],[],[],[],[],0)
-end
-
-plotdata!(::PlotData, ::Element) = nothing
-
-function pointsatlimits!(pd::PlotData)
-  xlims = [minimum(pd.x) maximum(pd.x)]
-  ylims = [minimum(pd.y) maximum(pd.y)]
-  zlims = [minimum(pd.z) maximum(pd.z)]
-  xcenter = (xlims[1]+xlims[2])/2.0
-  ycenter = (ylims[1]+ylims[2])/2.0
-  zcenter = (zlims[1]+zlims[2])/2.0
-  range = maximum([xlims[2]-xlims[1] ylims[2]-ylims[1] zlims[2]-zlims[1]])
-  pd.groupcounter +=1
-  push!(pd.group, pd.groupcounter)
-  push!(pd.marker, :cross)
-  push!(pd.markercolor, :red)
-  push!(pd.markeralpha, 0.0)
-  push!(pd.markersize, 0.0)
-  push!(pd.markerstrokewidth, 0.0)
-  push!(pd.x, xcenter+range/2.0)
-  push!(pd.y, ycenter+range/2.0)
-  push!(pd.z, zcenter+range/2.0)
-  pd.groupcounter +=1
-  push!(pd.group, pd.groupcounter)
-  push!(pd.marker, :cross)
-  push!(pd.markercolor, :red)
-  push!(pd.markeralpha, 0.0)
-  push!(pd.markersize, 0.0)
-  push!(pd.markerstrokewidth, 0.0)
-  push!(pd.x, xcenter-range/2.0)
-  push!(pd.y, ycenter-range/2.0)
-  push!(pd.z, zcenter-range/2.0)
-end
-
-function plotdata(e::Element)
-  pd = PlotData()
-  plotdata!(pd,e)
-  return pd
-end
-
-function Plots.plot(e::Element)
-  pd = PlotData()
-  plotdata!(pd,e)
-  # pointsatlimits!
-  # attempts to force xlims = ylims = zlims
-  pointsatlimits!(pd)
-  plot(pd.x, pd.y, pd.z, group=pd.group,
-    title = pd.title,
-    legend = false,
-    linecolor = :blue,
-    marker=transpose(pd.marker),
-    markercolor = transpose(pd.markercolor),
-    markeralpha = transpose(pd.markeralpha),
-    markersize = transpose(pd.markersize),
-    markerstrokewidth = transpose(pd.markerstrokewidth))
-end
-
 include("title.jl")
 include("node.jl")
 include("segment.jl")
@@ -169,3 +97,4 @@ include("group.jl")
 
 include("traversetree.jl")
 include("visualizedata.jl")
+include("plotdata.jl")

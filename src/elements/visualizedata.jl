@@ -40,12 +40,13 @@ end
 
 
 type VisualizeData
-  elements    :: Array{VisualizeElement,1}
+  nodedataarray :: Array{NodeData,1}
+  segmentdataarray :: Array{SegmentData,1}
   displayunit :: ASCIIString
   title       :: AbstractString
   ismeters    :: Bool # true if elements are in meters, false if in displayunit
   state       :: VisualizeState
-  VisualizeData() = new([], "", "", true, VisualizeState())
+  VisualizeData() = new([], [], "", "", true, VisualizeState())
 end
 visualizedata!(vd::VisualizeData, e::Element) = nothing
 function visualizedata!(vd::VisualizeData, e::Units)
@@ -61,18 +62,24 @@ function visualizedata!(vd::VisualizeData, e::Default)
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Segment)
-  push!(vd.elements, SegmentData(vd.state,e))
+  push!(vd.segmentdataarray, SegmentData(vd.state,e))
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Node)
-  push!(vd.elements, NodeData!(vd.state,e))
+  push!(vd.nodedataarray, NodeData!(vd.state,e))
   return nothing
 end
 function visualizedata!(vd::VisualizeData, e::Title)
   vd.title = e.text
   return nothing
 end
-
+function VisualizeData(element)
+  vd = VisualizeData()
+  for e in element
+    visualizedata!(vd,e)
+  end
+  return vd
+end
 
 const tometers = Dict("km"  =>1e3,
                       "m"   =>1.0,
@@ -97,40 +104,15 @@ end
 function todisplayunit!(vd::VisualizeData)
   if vd.ismeters && vd.displayunit != "m"
     scale = 1.0/tometers[vd.displayunit]
-    for e in vd.elements
-      todisplayunit!(e::VisualizeElement, scale)
+    for nodedata in vd.nodedataarray
+      todisplayunit!(nodedata::NodeData, scale)
+    end
+    for segmentdata in vd.segmentdataarray
+      todisplayunit!(segmentdata::SegmentData, scale)
     end
     vd.ismeters = false
   end
   return nothing
-end
-
-function GeometryTypes.GLNormalMesh(args::Tuple{Segment,Colorant})
-  (segment,color) = args
-  n1 = segment.node1.xyz[1:3]
-  n2 = segment.node2.xyz[1:3]
-  height = segment.wh.h
-  width = segment.wh.w
-  wxyz = vcat(segment.wxwywz.xyz,1)
-  v1 = (n2-n1)
-  length = norm(v1)
-  zangle = atan2(v1[2],v1[1])
-  rot_rz = rotationmatrix_z(zangle)
-  nrot_rz = rotationmatrix_z(-zangle)
-  yangle = π/2+acos(v1[3]/length)
-  rot_ry = rotationmatrix_y(yangle)
-  nrot_ry = rotationmatrix_y(yangle)
-  rot_wxyz = nrot_ry * nrot_rz * wxyz
-  xangle = atan2(rot_wxyz[3],rot_wxyz[2])
-  rot_rx = rotationmatrix_x(xangle)
-  mesh = GLNormalMesh((HyperRectangle(Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),Vec3f0(length,width,height)),color))
-  c = n1 + v1./2
-  segmentcorrection = translationmatrix(Vec3f0(c...)) * rot_rz * rot_ry * rot_rx
-  segmentcorrection * mesh
-end
-function GeometryTypes.GLNormalMesh(args::Tuple{Node,Colorant})
-  (n,color) = args
-  GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]),0.1f0), color))
 end
 
 elementcolor(::SegmentData) = RGBA(0.2f0,0.2f0,1f0,0.5f0)
@@ -163,53 +145,40 @@ function mesh(n::NodeData, color::Colorant, size::Float32)
 end
 
 update_min_hw!(::VisualizeElement, ::Array{Float32,1}) = nothing
-function update_min_hw!(e::SegmentData,  minhw::Array{Float32,1})
-  if e.height < minhw[2]
-    minhw[2] = Float32(e.height)
+function update_min_hw!(segmentdata::SegmentData,  minhw::Array{Float32,1})
+  if segmentdata.height < minhw[2]
+    minhw[2] = Float32(segmentdata.height)
   end
-  if e.width < minhw[1]
-    minhw[1] = Float32(e.width)
+  if segmentdata.width < minhw[1]
+    minhw[1] = Float32(segmentdata.width)
   end
   return nothing
 end
 function nodesize(vd::VisualizeData)
   minhw = [Inf32,Inf32]
-  for e in vd.elements
-    update_min_hw!(e, minhw)
+  for segmentdata in vd.segmentdataarray
+    update_min_hw!(segmentdata, minhw)
   end
   return  min(minhw...)/6.0f0
 end
 
 function mesh(element::Element)
   # collect data for visualization
-  vd = VisualizeData()
-  for e in element
-    visualizedata!(vd,e)
-  end
-  if length(vd.elements)<1
+  vd = VisualizeData(element)
+  if length(vd.nodedataarray)<1 && length(vd.segmentdataarray)<1
     throw(ArgumentError("No visualization for arguments.  Try passing Node's and Segment's"))
   end
   todisplayunit!(vd) # convert to display units
   # collect
   allmesh = Array(HomogenousMesh,0)
   ns = nodesize(vd)
-  for e in vd.elements
-    m = mesh(e, elementcolor(e), ns)
+  for nodedata in vd.nodedataarray
+    m = mesh(nodedata, elementcolor(nodedata), ns)
+    push!(allmesh,m)
+  end
+  for segmentdata in vd.segmentdataarray
+    m = mesh(segmentdata, elementcolor(segmentdata), ns)
     push!(allmesh,m)
   end
   return merge(allmesh)
-end
-
-export testvd
-function testvd(element::Element)
-  # collect data for visualization
-  vd = VisualizeData()
-  for e in element
-    visualizedata!(vd,e)
-  end
-  if length(vd.elements)<1
-    throw(ArgumentError("No visualization for arguments.  Try passing Node's and Segment's"))
-  end
-  todisplayunit!(vd) # convert to display units
-  return vd
 end

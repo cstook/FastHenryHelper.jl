@@ -137,10 +137,3 @@ function Base.deepcopy(group::Group)
   end
   return newgroup
 end
-
-function plotdata!(pd::PlotData, group::Group)
-  for i in eachindex(group.elements)
-    plotdata!(pd,group.elements[i])
-  end
-  return nothing
-end
