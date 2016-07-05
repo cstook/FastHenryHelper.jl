@@ -49,15 +49,8 @@ function pointsatlimits!(pd::PlotData)
   push!(pd.z, zcenter-range/2.0)
 end
 
-function plotdata(e::Element)
-  pd = PlotData()
-  plotdata!(pd,e)
-  return pd
-end
-
 function plot(e::Element)
-  pd = PlotData()
-  plotdata!(pd,e)
+  pd = PlotData(e)
   # pointsatlimits!
   # attempts to force xlims = ylims = zlims
   pointsatlimits!(pd)
@@ -72,6 +65,86 @@ function plot(e::Element)
     markerstrokewidth = transpose(pd.markerstrokewidth))
 end
 
+function PlotData(e::Element)
+  pd = PlotData()
+  vd = VisualizeData(e)
+  todisplayunit!(vd)
+  pd.title = vd.title
+  pd.groupcounter = 0
+  # move nodes into pd
+  for nodedata in vd.nodedataarray
+    push!(pd,nodedata)
+  end
+  # mode segments into pd
+  for segmentdata in vd.segmentdataarray
+    push!(pd, segmentdata)
+  end
+  return pd
+end
+
+function Base.push!(pd::PlotData, nodedata::NodeData)
+  pd.groupcounter += 1
+  push!(pd.group,pd.groupcounter)
+  push!(pd.marker,:circle)
+  push!(pd.markercolor, :red)
+  push!(pd.markeralpha, 0.3)
+  push!(pd.markersize, 3.0)
+  push!(pd.markerstrokewidth, 0.1)
+  push!(pd.x, nodedata.xyz[1])
+  push!(pd.y, nodedata.xyz[2])
+  push!(pd.z, nodedata.xyz[3])
+  return nothing
+end
+
+function Base.push!(pd::PlotData, segmentdata::SegmentData)
+  c = corners(pd,segmentdata)
+  t = [(1,2,3,4,1,5,6,7,8,5),(2,6),(3,7),(4,8)]
+  for g in t
+    pd.groupcounter += 1
+    push!(pd.marker,:none)
+    push!(pd.markercolor, :red)
+    push!(pd.markeralpha, 0.3)
+    push!(pd.markersize, 1.0)
+    push!(pd.markerstrokewidth, 0.1)
+    for p in g
+      push!(pd.group,pd.groupcounter)
+      push!(pd.x,c[1,p])
+      push!(pd.y,c[2,p])
+      push!(pd.z,c[3,p])
+    end
+  end
+  return nothing
+end
+
+function corners(pd::PlotData, s::SegmentData)
+  mp1 = s.n1xyz+(s.wxyz.*s.width/2)
+  mp2 = s.n1xyz-(s.wxyz.*s.width/2)
+  mp3 = s.n2xyz+(s.wxyz.*s.width/2)
+  mp4 = s.n2xyz-(s.wxyz.*s.width/2)
+  hxyz = cross(s.wxyz,(s.n2xyz-s.n1xyz))
+  hxyz = hxyz/norm(hxyz,3)
+  result = Array(Float64,(3,8))
+  result[:,1] = mp1+(hxyz.*s.height/2)
+  result[:,2] = mp1-(hxyz.*s.height/2)
+  result[:,3] = mp2-(hxyz.*s.height/2)
+  result[:,4] = mp2+(hxyz.*s.height/2)
+  result[:,5] = mp3+(hxyz.*s.height/2)
+  result[:,6] = mp3-(hxyz.*s.height/2)
+  result[:,7] = mp4-(hxyz.*s.height/2)
+  result[:,8] = mp4+(hxyz.*s.height/2)
+  return result
+end
+
+
+
+#=
+
+
+function plotdata(e::Element)
+  pd = PlotData()
+  plotdata!(pd,e)
+  return pd
+end
 
 function plotdata!(pd::PlotData, d::Default)
   pd.default_w = d.wh.w
@@ -79,14 +152,12 @@ function plotdata!(pd::PlotData, d::Default)
   return nothing
 end
 
-
 function plotdata!(pd::PlotData, group::Group)
   for i in eachindex(group.elements)
     plotdata!(pd,group.elements[i])
   end
   return nothing
 end
-
 
 function plotdata!(pd::PlotData, n::Node)
   pd.groupcounter += 1
@@ -101,7 +172,6 @@ function plotdata!(pd::PlotData, n::Node)
   push!(pd.z, n.xyz[3])
   return nothing
 end
-
 
 function corners(pd::PlotData, s::Segment)
   w = isnan(s.wh.w) ? pd.default_w : s.wh.w
@@ -153,3 +223,4 @@ function plotdata!(pd::PlotData, title::Title)
   end
   return nothing
 end
+=#
