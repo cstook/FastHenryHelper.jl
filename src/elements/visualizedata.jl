@@ -1,4 +1,7 @@
-using GLVisualize, GeometryTypes, GLAbstraction, Colors
+using GLVisualize: GLNormalMesh
+using GeometryTypes: HyperRectangle, HyperSphere
+using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z
+using Colors: Colorant, RGBA
 
 export mesh
 

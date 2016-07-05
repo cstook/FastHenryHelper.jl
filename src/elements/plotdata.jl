@@ -1,3 +1,4 @@
+import Plots: plot
 
 type PlotData
   title :: AbstractString
@@ -54,7 +55,7 @@ function plotdata(e::Element)
   return pd
 end
 
-function Plots.plot(e::Element)
+function plot(e::Element)
   pd = PlotData()
   plotdata!(pd,e)
   # pointsatlimits!
