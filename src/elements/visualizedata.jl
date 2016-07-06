@@ -1,6 +1,7 @@
 using GLVisualize: GLNormalMesh
-using GeometryTypes: HyperRectangle, HyperSphere
-using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z
+using GeometryTypes: HyperRectangle, HyperSphere, HomogenousMesh
+using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z,
+      translationmatrix, Point3f0, Vec3f0
 using Colors: Colorant, RGBA
 
 export mesh
@@ -12,7 +13,6 @@ type VisualizeState
   width       :: Float64
   VisualizeState() = new(Dict(), "", 0.0, 0.0)
 end
-
 
 abstract VisualizeElement
 type SegmentData <: VisualizeElement
@@ -27,8 +27,8 @@ function SegmentData(state::VisualizeState, segment::Segment)
   n1xyz = state.nodedict[segment.node1]
   n2xyz = state.nodedict[segment.node2]
   wxyz = segment.wxwywz.xyz
-  height = isnan(segment.wh.h)?state.height:segment.wh.h
-  width = isnan(segment.wh.w)?state.width:segment.wh.w
+  height = isnan(segment.wh.h) ? state.height : tometers[state.unit]*segment.wh.h
+  width = isnan(segment.wh.w) ? state.width : tometers[state.unit]*segment.wh.w
   SegmentData(segment, n1xyz, n2xyz, wxyz, height, width)
 end
 type NodeData <: VisualizeElement
@@ -40,7 +40,6 @@ function NodeData!(state::VisualizeState, node::Node)
   state.nodedict[node] = xyz
   NodeData(node,xyz)
 end
-
 
 type VisualizeData
   nodedataarray :: Array{NodeData,1}
@@ -172,7 +171,7 @@ function mesh(element::Element)
     throw(ArgumentError("No visualization for arguments.  Try passing Node's and Segment's"))
   end
   todisplayunit!(vd) # convert to display units
-  # collect
+  # create meshes
   allmesh = Array(HomogenousMesh,0)
   ns = nodesize(vd)
   for nodedata in vd.nodedataarray
