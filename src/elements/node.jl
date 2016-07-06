@@ -7,20 +7,24 @@ export Node, rx, ry, rz, xyz, txyz, scalexyz
 `Node` objects `show` a FastHenry node command.
 """
 immutable Node <: Element
-  name :: AutoName
+  name :: Symbol
   xyz  :: Array{Float64,1}
-  Node(n,xyz::Array{Float64,1}) = new(AutoName(n),xyz)
+  Node(n,xyz::Array{Float64,1}) = new(Symbol(n),xyz)
 end
-Node(xyz::Array{Float64,1}) = Node(:null,xyz)
+Node(xyz::Array{Float64,1}) = Node(Symbol(""),xyz)
 Node(name,x,y,z) = Node(name,[x,y,z,1.0])
-Node(x,y,z) = Node(:null,x,y,z)
-Node(;name = :null, x=0, y=0, z=0) = Node(name,x,y,z)
+Node(x,y,z) = Node(Symbol(""),x,y,z)
+Node(;name = Symbol(""), x=0, y=0, z=0) = Node(name,x,y,z)
 
-function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
+function Base.show(io::IO, n::Node;
+                   plane = false,
+                   autoname = AutoName())
+  update!(autoname,n)
   if plane
     print(io,"+ ")
   end
-  print(io,"N",autoname!(pfh, n.name)," ")
+  print(io, "N")
+  print(io, autoname.namedict[n], " ")
   if plane
     @printf(io,"(%.9e,%.9e,%.9e)",n.xyz[1],n.xyz[2],n.xyz[3])
   else
@@ -29,8 +33,6 @@ function printfh!(io::IO, pfh::PrintFH, n::Node; plane = false)
   println(io)
   return nothing
 end
-
-resetiname!(n::Node) = reset!(n.name)
 
 function transform!(n::Node, tm::Array{Float64,2})
   xyz = tm*n.xyz

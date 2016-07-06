@@ -73,19 +73,6 @@ Base.shift!(g::Group) = shift!(g.elements)
 Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
-function printfh!(io::IO, pfh::PrintFH, group::Group)
-  for element in group.elements
-    printfh!(io, pfh, element)
-  end
-  return nothing
-end
-
-function resetiname!(group::Group)
-  for element in group.elements
-    resetiname!(element)
-  end
-end
-
 function transform!(group::Group, tm::Array{Float64,2})
   for i in eachindex(group.elements)
     transform!(group.elements[i],tm)
@@ -95,14 +82,14 @@ end
 
 deepcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
 function deepcopy!(nodedict::Dict{Element,Element}, n::Node)
-  newnode = Node(:null, n.xyz[1], n.xyz[2], n.xyz[3])
+  newnode = Node(Symbol(""), n.xyz[1], n.xyz[2], n.xyz[3])
   nodedict[n] = newnode
   return newnode
 end
 function deepcopy!(nodedict::Dict{Element,Element}, seg::Segment)
   node1 = nodedict[seg.node1]
   node2 = nodedict[seg.node2]
-  Segment(deepcopy(seg.name.name),
+  Segment(deepcopy(seg.name),
           node1, node2,
           deepcopy(seg.wh),
           deepcopy(seg.sigmarho),
@@ -114,7 +101,7 @@ function deepcopy!(nodedict::Dict{Element,Element}, p::UniformPlane)
     deepcopy!(nodedict,p.nodes[i])
     newnodes[i] = nodedict[p.nodes[i]]
   end
-  UniformPlane(deepcopy(p.name.name),
+  UniformPlane(deepcopy(p.name),
                deepcopy(p.corner1),
                deepcopy(p.corner2),
                deepcopy(p.corner3),

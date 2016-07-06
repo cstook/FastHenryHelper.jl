@@ -9,10 +9,11 @@ immutable Equiv <: Element
   nodes :: Array{Node,1}
 end
 
-function printfh!(io::IO, pfh::PrintFH, x::Equiv)
+function Base.show(io::IO, x::Equiv, autoname = AutoName())
   print(io,".equiv")
   for node in x.nodes
-    print(io," N",autoname!(pfh, node.name))
+    update!(autoname, node)
+    print(io," N",autoname.namedict[node])
   end
   println(io)
   return nothing

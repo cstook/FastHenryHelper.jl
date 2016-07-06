@@ -9,6 +9,6 @@ immutable Title <: Element
   text :: AbstractString
 end
 
-function printfh!(io::IO, ::PrintFH, title::Title)
+function Base.show(io::IO, title::Title; autoname = nothing)
   println(io,"* ",title.text)
 end

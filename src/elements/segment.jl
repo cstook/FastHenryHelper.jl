@@ -11,7 +11,7 @@ immutable SigmaRho
   end
 end
 SigmaRho(;sigma = NaN, rho=NaN) = SigmaRho(sigma,rho)
-function printfh!(io::IO, ::PrintFH, x::SigmaRho)
+function Base.show(io::IO, x::SigmaRho)
   if isnan(x.sigma) && isnan(x.rho)
     return nothing
   end
@@ -34,7 +34,7 @@ end
 WxWyWz(;wx=NaN, wy=NaN, wz=NaN) =
   WxWyWz(wx,wy,wz)
 
-function printfh!(io::IO, ::PrintFH, x::WxWyWz)
+function Base.show(io::IO, x::WxWyWz)
   if ~x.isdefault
     print(io,"+ ")
     if ~isnan(x.xyz[1])
@@ -83,7 +83,7 @@ immutable WH
 end
 WH(;w=NaN, h=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
   WH(w, h, nhinc, nwinc, rh, rw)
-function printfh!(io::IO, ::PrintFH, x::WH)
+function Base.show(io::IO, x::WH)
   if isnan(x.w) && isnan(x.h) && x.nhinc==0 && x.nwinc==0 && isnan(x.rh) && isnan(x.rw)
     return nothing
   end
@@ -181,7 +181,7 @@ values will be used if not specified.  wx, wy, wz will show after `transform[!]`
 called on a `Segment`.
 """
 immutable Segment <: Element
-  name      :: AutoName
+  name      :: Symbol
   node1     :: Node
   node2     :: Node
   wh        :: WH
@@ -190,29 +190,33 @@ immutable Segment <: Element
   function Segment(n, n1::Node, n2::Node, wh::WH, sigmarho::SigmaRho, wxwywz::WxWyWz)
     new_wxwywz = deepcopy(wxwywz)
     initialixe_wxwywz!(n1,n2,new_wxwywz)
-    new(AutoName(n), n1, n2, wh, sigmarho, new_wxwywz)
+    new(Symbol(n), n1, n2, wh, sigmarho, new_wxwywz)
   end
 end
 Segment(n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
         wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
-            Segment(:null, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
+            Segment(Symbol(""), n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 Segment(name, n1::Node, n2::Node; w=NaN, h=NaN, sigma=NaN, rho=NaN,
         wx=NaN, wy=NaN, wz=NaN, nhinc=0, nwinc=0, rh=NaN, rw=NaN) =
             Segment(name, n1, n2, WH(w,h,nhinc,nwinc,rh,rw), SigmaRho(sigma,rho), WxWyWz(wx,wy,wz))
 Segment(n1::Node, n2::Node, sp::SegmentParameters) =
-            Segment(:null, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
+            Segment(Symbol(""), n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
 Segment(name, n1::Node, n2::Node, sp::SegmentParameters) =
             Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
 
-function printfh!(io::IO, pfh::PrintFH, s::Segment)
-  println(io,"E",autoname!(pfh,s.name)," N",autoname!(pfh,s.node1.name)," N",autoname!(pfh,s.node2.name)," ")
-  printfh!(io,pfh,s.wh)
-  printfh!(io,pfh,s.sigmarho)
-  printfh!(io,pfh,s.wxwywz)
+function Base.show(io::IO, s::Segment; autoname = AutoName())
+  update!(autoname, s)
+  update!(autoname, s.node1)
+  update!(autoname, s.node2)
+  print(io,"E")
+  print(io, autoname.namedict[s])
+  print(io," N", autoname.namedict[s.node1])
+  println(io," N", autoname.namedict[s.node2], " ")
+  show(io, s.wh)
+  show(io, s.sigmarho)
+  show(io, s.wxwywz)
   return nothing
 end
-
-resetiname!(x::Segment) = reset!(x.name)
 
 function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   if wxwywz.isdefault

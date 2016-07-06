@@ -8,6 +8,6 @@ export End
 type End <: Element
 end
 
-function printfh!(io::IO, ::PrintFH, ::End)
+function Base.show(io::IO, ::End, autoname = nothing)
   println(io,".end")
 end

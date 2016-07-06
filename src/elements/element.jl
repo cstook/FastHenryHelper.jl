@@ -8,48 +8,6 @@ no name is provided.  Groups of elements are elements.
 """
 abstract Element
 
-type AutoName
-  name :: Symbol
-  iname :: Int
-  AutoName(x) = new(Symbol(x),0)
-end
-function reset!(x::AutoName)
-  x.iname =0
-  return nothing
-end
-
-type PrintFH
-  nextname  :: Int
-  usednames :: Set{AbstractString}
-  function PrintFH(e::Element)
-    resetiname!(e)
-    new(1,Set{AbstractString}())
-  end
-end
-
-checkduplicatename(pfh::PrintFH, name::AbstractString) = nothing
-
-function autoname!(pfh::PrintFH, an::AutoName)
-  if an.iname != 0  # already got an autoname
-    return string("_",an.iname)
-  end
-  if an.name == :null # needs an autoname
-    name = string("_",pfh.nextname)
-    an.iname = pfh.nextname
-    pfh.nextname += 1
-  else  # user specified name
-    name = string(an.name)
-  end
-  checkduplicatename(pfh, name)
-  push!(pfh.usednames, name)
-  return name
-end
-
-printfh!(::IO, ::PrintFH, ::Element) = nothing
-printfh(io::IO, e::Element) = printfh!(io, PrintFH(e), e)
-printfh(io::Element) = printfh(STDOUT,io)
-Base.show(io::IO, e::Element) = printfh(io,e)
-
 function transform{T<:Number}(x::Element, tm::Array{T,2})
   newx = deepcopy(x)
   transform!(newx,tm)
@@ -79,9 +37,6 @@ Typically `transform` would only be applied to `Group` objects.
 """
 transform, transform!
 
-resetiname!(::Element) = nothing
-resetist!(::Element) = nothing
-
 include("title.jl")
 include("node.jl")
 include("segment.jl")
@@ -96,5 +51,6 @@ include("comment.jl")
 include("group.jl")
 
 include("traversetree.jl")
+include("showelement.jl")
 include("visualizedata.jl")
 include("plotdata.jl")

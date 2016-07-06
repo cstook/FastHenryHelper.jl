@@ -9,7 +9,6 @@ immutable Comment <: Element
   text :: AbstractString
 end
 
-function printfh!(io::IO, ::PrintFH, x::Comment)
+function Base.show(io::IO, x::Comment, autoname = nothing)
   println(io,"* ",x.text)
 end
-

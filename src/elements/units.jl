@@ -15,8 +15,7 @@ immutable Units <: Element
   end
 end
 
-function printfh!(io::IO, ::PrintFH, x::Units)
+function Base.show(io::IO, x::Units, autoname = nothing)
   println(io,".units ",x.unitname)
   return nothing
 end
-
