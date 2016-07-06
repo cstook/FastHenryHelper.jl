@@ -6,15 +6,13 @@ type PlotData
   y :: Array{Float64,1}
   z :: Array{Float64,1}
   group :: Array{Int,1}
-  default_h :: Float64
-  default_w :: Float64
   marker :: Array{Symbol,1}
   markercolor :: Array{Symbol,1}
   markeralpha :: Array{Float64,1}
   markersize :: Array{Float64,1}
   markerstrokewidth :: Array{Float64,1}
   groupcounter :: Int
-  PlotData() = new("",[],[],[],[],NaN,NaN,[],[],[],[],[],0)
+  PlotData() = new("",[],[],[],[],[],[],[],[],[],0)
 end
 
 plotdata!(::PlotData, ::Element) = nothing
