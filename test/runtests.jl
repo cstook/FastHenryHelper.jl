@@ -323,5 +323,7 @@ pfhmr_example3 = parsefasthenrymat("example3_Zc.mat")
 pfhmr_eightloops = parsefasthenrymat("eightloopsZc.mat")
 
 vd = FastHenryHelper.VisualizeData(inductor)
+meshtest1 = mesh(inductor)
+meshtest2 = mesh(Node(1,1,1))
 
 nothing
