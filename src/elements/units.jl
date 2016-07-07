@@ -15,7 +15,7 @@ immutable Units <: Element
   end
 end
 
-function Base.show(io::IO, x::Units, autoname = nothing)
+function Base.show(io::IO, x::Units; autoname = nothing)
   println(io,".units ",x.unitname)
   return nothing
 end

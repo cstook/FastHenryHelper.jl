@@ -9,7 +9,7 @@ immutable Equiv <: Element
   nodes :: Array{Node,1}
 end
 
-function Base.show(io::IO, x::Equiv, autoname = AutoName())
+function Base.show(io::IO, x::Equiv; autoname = AutoName())
   print(io,".equiv")
   for node in x.nodes
     update!(autoname, node)

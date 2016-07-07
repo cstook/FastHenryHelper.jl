@@ -13,7 +13,7 @@ immutable External <: Element
       new(n1,n2,portname)
 end
 
-function Base.show(io::IO, x::External, autoname = AutoName())
+function Base.show(io::IO, x::External; autoname = AutoName())
   update!(autoname, x.node1)
   update!(autoname, x.node2)
   print(io, ".external N")
