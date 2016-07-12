@@ -7,6 +7,6 @@ module FastHenryHelper
 
 include("elements/element.jl")
 include("groups/groups.jl")
-include("util/parsemat.jl")
+include("util/util.jl")
 
 end
