@@ -1,8 +1,8 @@
 export planeconnect
 
 """
-    planeconnect(Array{Node,1})
-    planeconnect(Node)
+    planeconnect(nodes::Array{Node,1})
+    planeconnect(node::Node)
 
 Provides objects needed to connect to a plane.
 
