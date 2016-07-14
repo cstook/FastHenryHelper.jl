@@ -249,7 +249,7 @@ function transform!(x::UniformPlane, tm::Array{Float64,2})
   x.corner2[1:4] = corner2[1:4]
   corner3 = tm*x.corner3
   x.corner3[1:4] = corner3[1:4]
-    for i in eachindex(x.nodes)
+  for i in eachindex(x.nodes)
     transform!(x.nodes[i],tm)
   end
   for i in eachindex(x.holes)
