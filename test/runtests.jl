@@ -356,9 +356,17 @@ function testplaneconnect()
   ex = External(n1,n5)
   f = Freq(min=1e-1, max=1e9, ndec=0.05)
   e = End()
-  post = Group({ex,f,e})
+  post = Group([ex,f,e])
   Group([pre;g1;g2;post])
 end
 testplaneconnect()
+
+# test transform with rectangulararray
+function test_rectangulararray_transform()
+  g1 = transform(Node(1,1,1), rectangulararray(0,0,[1,2,3]))
+  via = viagroup(radius=5, height=3, h=1, n=8)
+  g2 = transform(via,  rectangulararray([20,40,60],[40,80],[100,200]))
+end
+test_rectangulararray_transform()
 
 nothing
