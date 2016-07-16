@@ -40,15 +40,36 @@ function NodeData!(state::VisualizeState, node::Node)
   state.nodedict[node] = xyz
   NodeData(node,xyz)
 end
+type PlaneData <: VisualizeElement
+  plane :: UniformPlane
+  v1 :: Array{Float64,1} # vector along length of plane
+  wxyz :: Array{Float64,1} # vector along width of plane
+  corner2 :: Array{Float64,1}
+  thick :: Float64 # same as height
+  width :: Float64
+  nodes :: Array{Node,1}
+  holes :: Array{Hole,1}
+end
+function PlaneData(::VisualizeState, up::UniformPlane)
+  v1 = up.corner1 - up.corner2
+  wxyz = up.corner3 - up.corner2
+  corner2 = up.corner2
+  thick = up.thick
+  width = norm(wxyz)
+  nodes = up.nodes
+  holes = up.holes
+  PlaneData(up, v1, wxyz, corner2, thick, width, nodes, holes)
+end
 
 type VisualizeData
   nodedataarray :: Array{NodeData,1}
   segmentdataarray :: Array{SegmentData,1}
+  planedataarray :: Array{PlaneData,1}
   displayunit :: ASCIIString
   title       :: AbstractString
   ismeters    :: Bool # true if elements are in meters, false if in displayunit
   state       :: VisualizeState
-  VisualizeData() = new([], [], "", "", true, VisualizeState())
+  VisualizeData() = new([], [], [], "", "", true, VisualizeState())
 end
 visualizedata!(vd::VisualizeData, e::Element) = nothing
 function visualizedata!(vd::VisualizeData, e::Units)
@@ -73,6 +94,10 @@ function visualizedata!(vd::VisualizeData, e::Node)
 end
 function visualizedata!(vd::VisualizeData, e::Title)
   vd.title = e.text
+  return nothing
+end
+function visualizedata!(vd::VisualizeData, e::PlaneData)
+  push!(vd.planedataarray, PlaneData(vd.state,e))
   return nothing
 end
 function VisualizeData(element)
@@ -119,27 +144,45 @@ end
 
 elementcolor(::SegmentData) = RGBA(0.2f0,0.2f0,1f0,0.5f0)
 elementcolor(::NodeData) = RGBA(1f0,0f0,0f0,0.5f0)
+elementcolor(::PlaneData) = RGBA(0f0,1f0,0f0,0.2f0)
 
+function rxyz(lengthvector::Array{Float64,1}, widthvector::Array{Float64,1})
+  zangle = atan2(lengthvector[2],lengthvector[1])
+  rot_rz = rotationmatrix_z(zangle)
+  nrot_rz = rotationmatrix_z(-zangle)
+  yangle = π/2+acos(lengthvector[3]/norm(lengthvector))
+  rot_ry = rotationmatrix_y(yangle)
+  nrot_ry = rotationmatrix_y(-yangle)
+  rot_wxyz = nrot_ry * nrot_rz * vcat(widthvector,1.0)
+  xangle = atan2(rot_wxyz[3],rot_wxyz[2])
+  rot_rx = rotationmatrix_x(xangle)
+  return rot_rz * rot_ry * rot_rx
+end
+
+function mesh(element::PlaneData, color::Colorant, nodesize::Float32)
+  length = norm(element.v1)
+  width = element.width
+  height = element.thick
+  c2 = element.corner2
+  uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(length,width,height)),color))
+  correction = translationmatrix(Vec3f0(c2...)) * rxyz(v1, element.wxyz)
+  planemesh = Array(HomogenousMesh,0)
+  push!(planemesh, correction * uncorrectedplanemesh)
+  for node in element.nodes
+    push!(planemesh, GLNormalMesh((HyperSphere(Point3f0(node.xyz[1],node.xyz[2],node.xyz[3]), nodesize), color)))
+  end
+  return merge(planemesh)
+end
 function mesh(element::SegmentData, color::Colorant, ::Float32)
   n1 = element.n1xyz
   n2 = element.n2xyz
   height = element.height
   width = element.width
-  wxyz = vcat(element.wxyz,1)
   v1 = (n2-n1)
   length = norm(v1)
-  zangle = atan2(v1[2],v1[1])
-  rot_rz = rotationmatrix_z(zangle)
-  nrot_rz = rotationmatrix_z(-zangle)
-  yangle = π/2+acos(v1[3]/length)
-  rot_ry = rotationmatrix_y(yangle)
-  nrot_ry = rotationmatrix_y(-yangle)
-  rot_wxyz = nrot_ry * nrot_rz * wxyz
-  xangle = atan2(rot_wxyz[3],rot_wxyz[2])
-  rot_rx = rotationmatrix_x(xangle)
   mesh = GLNormalMesh((HyperRectangle(Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),Vec3f0(length,width,height)),color))
   c = n1 + v1./2
-  segmentcorrection = translationmatrix(Vec3f0(c...)) * rot_rz * rot_ry * rot_rx
+  segmentcorrection = translationmatrix(Vec3f0(c...)) * rxyz(v1, element.wxyz)
   segmentcorrection * mesh
 end
 function mesh(n::NodeData, color::Colorant, size::Float32)
@@ -180,6 +223,10 @@ function mesh(element::Element)
   end
   for segmentdata in vd.segmentdataarray
     m = mesh(segmentdata, elementcolor(segmentdata), ns)
+    push!(allmesh,m)
+  end
+  for planedata in vd.planedataarray
+    m = mesh(planedata, elementcolor(planedata), ns)
     push!(allmesh,m)
   end
   return merge(allmesh)
