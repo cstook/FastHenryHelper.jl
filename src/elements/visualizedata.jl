@@ -51,9 +51,9 @@ type PlaneData <: VisualizeElement
   holes :: Array{Hole,1}
 end
 function PlaneData(::VisualizeState, up::UniformPlane)
-  v1 = up.corner1 - up.corner2
-  wxyz = up.corner3 - up.corner2
-  corner2 = up.corner2
+  v1 = up.corner1[1:3] - up.corner2[1:3]
+  wxyz = up.corner3[1:3] - up.corner2[1:3]
+  corner2 = up.corner2[1:3]
   thick = up.thick
   width = norm(wxyz)
   nodes = up.nodes
@@ -96,7 +96,7 @@ function visualizedata!(vd::VisualizeData, e::Title)
   vd.title = e.text
   return nothing
 end
-function visualizedata!(vd::VisualizeData, e::PlaneData)
+function visualizedata!(vd::VisualizeData, e::UniformPlane)
   push!(vd.planedataarray, PlaneData(vd.state,e))
   return nothing
 end
@@ -142,9 +142,9 @@ function todisplayunit!(vd::VisualizeData)
   return nothing
 end
 
-elementcolor(::SegmentData) = RGBA(0.2f0,0.2f0,1f0,0.5f0)
-elementcolor(::NodeData) = RGBA(1f0,0f0,0f0,0.5f0)
-elementcolor(::PlaneData) = RGBA(0f0,1f0,0f0,0.2f0)
+elementcolor(::SegmentData) = RGBA(0.2f0, 0.2f0, 1.0f0, 0.5f0)
+elementcolor(::NodeData)    = RGBA(1.0f0, 0.0f0, 0.0f0, 0.5f0)
+elementcolor(::PlaneData)   = RGBA(0.0f0, 1.0f0, 0.0f0, 0.5f0)
 
 function rxyz(lengthvector::Array{Float64,1}, widthvector::Array{Float64,1})
   zangle = atan2(lengthvector[2],lengthvector[1])
@@ -164,8 +164,8 @@ function mesh(element::PlaneData, color::Colorant, nodesize::Float32)
   width = element.width
   height = element.thick
   c2 = element.corner2
-  uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(length,width,height)),color))
-  correction = translationmatrix(Vec3f0(c2...)) * rxyz(v1, element.wxyz)
+  uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(0f0,0f0,0f0),Vec3f0(length,width,height)),color))
+  correction = translationmatrix(Vec3f0(c2...)) * rxyz(element.v1, element.wxyz)
   planemesh = Array(HomogenousMesh,0)
   push!(planemesh, correction * uncorrectedplanemesh)
   for node in element.nodes
@@ -210,7 +210,9 @@ end
 function mesh(element::Element)
   # collect data for visualization
   vd = VisualizeData(element)
-  if length(vd.nodedataarray)<1 && length(vd.segmentdataarray)<1
+  if length(vd.nodedataarray)<1 &&
+     length(vd.segmentdataarray)<1 &&
+     length(vd.planedataarray)<1
     throw(ArgumentError("No visualization for arguments.  Try passing Node's and Segment's"))
   end
   todisplayunit!(vd) # convert to display units
