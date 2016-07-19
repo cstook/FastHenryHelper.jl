@@ -164,14 +164,19 @@ function mesh(element::PlaneData, color::Colorant, nodesize::Float32)
   width = element.width
   height = element.thick
   c2 = element.corner2
+  center = translationmatrix(Vec3f0(-0.5*length, -0.5*width, -0.5*height))
+  uncenter = translationmatrix(Vec3f0(0.5*length, 0.5*width, 0.5*height))
   uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(0f0,0f0,0f0),Vec3f0(length,width,height)),color))
-  correction = translationmatrix(Vec3f0(c2...)) * rxyz(element.v1, element.wxyz)
+  correction = translationmatrix(Vec3f0(c2...)) * uncenter * rxyz(element.v1, element.wxyz) * center
   planemesh = Array(HomogenousMesh,0)
   push!(planemesh, correction * uncorrectedplanemesh)
+  #=
   for node in element.nodes
     push!(planemesh, GLNormalMesh((HyperSphere(Point3f0(node.xyz[1],node.xyz[2],node.xyz[3]), nodesize), color)))
   end
   return merge(planemesh)
+  =#
+  planemesh[1]
 end
 function mesh(element::SegmentData, color::Colorant, ::Float32)
   n1 = element.n1xyz

@@ -166,6 +166,11 @@ immutable UniformPlane <: Element
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
     end
+    v1 = corner1 - corner2
+    v2 = corner3 - corner2
+    if abs(dot(v1/norm(v1), v2/norm(v2))) > 1e-9
+      throw(ArgumentError("Corners do not form a rectangle"))
+    end
     new(Symbol(name), corner1, corner2, corner3, thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)

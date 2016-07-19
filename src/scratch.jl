@@ -33,6 +33,11 @@ renderloop(window)
 vd = testvd(helix)
 println(vd.elements[40])
 
+up = UniformPlane(x1=0,   y1=0,   z1=0,
+                  x2=100,   y2=0,   z2=0,
+                  x3=100, y3=100, z3=0,
+    thick= 50, seg1=20, seg2=20)
+m = mesh(up)
 
 vd.displayunit
 vd.state.unit
