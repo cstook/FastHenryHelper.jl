@@ -42,23 +42,25 @@ function NodeData!(state::VisualizeState, node::Node)
 end
 type PlaneData <: VisualizeElement
   plane :: UniformPlane
-  v1 :: Array{Float64,1} # vector along length of plane
+  lxyz :: Array{Float64,1} # vector along length of plane
   wxyz :: Array{Float64,1} # vector along width of plane
   corner2 :: Array{Float64,1}
   thick :: Float64 # same as height
   width :: Float64
+  length :: Float64
   nodes :: Array{Node,1}
   holes :: Array{Hole,1}
 end
 function PlaneData(::VisualizeState, up::UniformPlane)
-  v1 = up.corner1[1:3] - up.corner2[1:3]
+  lxyz = up.corner1[1:3] - up.corner2[1:3]
   wxyz = up.corner3[1:3] - up.corner2[1:3]
   corner2 = up.corner2[1:3]
   thick = up.thick
   width = norm(wxyz)
+  length = norm(lxyz)
   nodes = up.nodes
   holes = up.holes
-  PlaneData(up, v1, wxyz, corner2, thick, width, nodes, holes)
+  PlaneData(up, lxyz, wxyz, corner2, thick, width, length, nodes, holes)
 end
 
 type VisualizeData
@@ -161,14 +163,14 @@ end
 
 function mesharray(element::PlaneData, color::Colorant, nodesize::Float32)
   planenodecolor = RGBA(red(color), green(color), blue(color), 0.5f0)
-  length = norm(element.v1)
+  length = element.length
   width = element.width
   height = element.thick
   c2 = element.corner2
   center = translationmatrix(Vec3f0(-0.5*length, -0.5*width, -0.5*height))
   uncenter = translationmatrix(Vec3f0(0.5*length, 0.5*width, 0.5*height))
   uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(0f0,0f0,0f0),Vec3f0(length,width,height)),color))
-  correction = translationmatrix(Vec3f0(c2...)) * uncenter * rxyz(element.v1, element.wxyz) * center
+  correction = translationmatrix(Vec3f0(c2...)) * uncenter * rxyz(element.lxyz, element.wxyz) * center
   planemesh = Array(HomogenousMesh,0)
   push!(planemesh, correction * uncorrectedplanemesh)
   for node in element.nodes
