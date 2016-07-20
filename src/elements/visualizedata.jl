@@ -2,9 +2,9 @@ using GLVisualize: GLNormalMesh
 using GeometryTypes: HyperRectangle, HyperSphere, HomogenousMesh
 using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z,
       translationmatrix, Point3f0, Vec3f0
-using Colors: Colorant, RGBA
+using Colors: Colorant, RGBA, red, green, blue
 
-export mesh
+export mesh, mesharray
 
 type VisualizeState
   nodedict    :: Dict{Node,Array{Float64,1}}
@@ -144,7 +144,7 @@ end
 
 elementcolor(::SegmentData) = RGBA(0.2f0, 0.2f0, 1.0f0, 0.5f0)
 elementcolor(::NodeData)    = RGBA(1.0f0, 0.0f0, 0.0f0, 0.5f0)
-elementcolor(::PlaneData)   = RGBA(0.0f0, 1.0f0, 0.0f0, 0.5f0)
+elementcolor(::PlaneData)   = RGBA(0.0f0, 1.0f0, 0.0f0, 0.2f0)
 
 function rxyz(lengthvector::Array{Float64,1}, widthvector::Array{Float64,1})
   zangle = atan2(lengthvector[2],lengthvector[1])
@@ -159,7 +159,8 @@ function rxyz(lengthvector::Array{Float64,1}, widthvector::Array{Float64,1})
   return rot_rz * rot_ry * rot_rx
 end
 
-function mesh(element::PlaneData, color::Colorant, nodesize::Float32)
+function mesharray(element::PlaneData, color::Colorant, nodesize::Float32)
+  planenodecolor = RGBA(red(color), green(color), blue(color), 0.5f0)
   length = norm(element.v1)
   width = element.width
   height = element.thick
@@ -170,15 +171,12 @@ function mesh(element::PlaneData, color::Colorant, nodesize::Float32)
   correction = translationmatrix(Vec3f0(c2...)) * uncenter * rxyz(element.v1, element.wxyz) * center
   planemesh = Array(HomogenousMesh,0)
   push!(planemesh, correction * uncorrectedplanemesh)
-  #=
   for node in element.nodes
-    push!(planemesh, GLNormalMesh((HyperSphere(Point3f0(node.xyz[1],node.xyz[2],node.xyz[3]), nodesize), color)))
+    push!(planemesh, GLNormalMesh((HyperSphere(Point3f0(node.xyz[1],node.xyz[2],node.xyz[3]), nodesize), planenodecolor)))
   end
-  return merge(planemesh)
-  =#
-  planemesh[1]
+  return planemesh
 end
-function mesh(element::SegmentData, color::Colorant, ::Float32)
+function mesharray(element::SegmentData, color::Colorant, ::Float32)
   n1 = element.n1xyz
   n2 = element.n2xyz
   height = element.height
@@ -187,11 +185,15 @@ function mesh(element::SegmentData, color::Colorant, ::Float32)
   length = norm(v1)
   mesh = GLNormalMesh((HyperRectangle(Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),Vec3f0(length,width,height)),color))
   c = n1 + v1./2
+  returnmesh = Array(HomogenousMesh,1)
   segmentcorrection = translationmatrix(Vec3f0(c...)) * rxyz(v1, element.wxyz)
-  segmentcorrection * mesh
+  returnmesh[1] = segmentcorrection * mesh
+  return returnmesh
 end
-function mesh(n::NodeData, color::Colorant, size::Float32)
-  GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]), size), color))
+function mesharray(n::NodeData, color::Colorant, size::Float32)
+  returnmesh = Array(HomogenousMesh,1)
+  returnmesh[1] = GLNormalMesh((HyperSphere(Point3f0(n.xyz[1],n.xyz[2],n.xyz[3]), size), color))
+  return returnmesh
 end
 
 update_min_hw!(::VisualizeElement, ::Array{Float32,1}) = nothing
@@ -212,7 +214,7 @@ function nodesize(vd::VisualizeData)
   return  min(minhw...)/6.0f0
 end
 
-function mesh(element::Element)
+function mesharray(element::Element)
   # collect data for visualization
   vd = VisualizeData(element)
   if length(vd.nodedataarray)<1 &&
@@ -225,16 +227,18 @@ function mesh(element::Element)
   allmesh = Array(HomogenousMesh,0)
   ns = nodesize(vd)
   for nodedata in vd.nodedataarray
-    m = mesh(nodedata, elementcolor(nodedata), ns)
-    push!(allmesh,m)
+    m = mesharray(nodedata, elementcolor(nodedata), ns)
+    append!(allmesh,m)
   end
   for segmentdata in vd.segmentdataarray
-    m = mesh(segmentdata, elementcolor(segmentdata), ns)
-    push!(allmesh,m)
+    m = mesharray(segmentdata, elementcolor(segmentdata), ns)
+    append!(allmesh,m)
   end
   for planedata in vd.planedataarray
-    m = mesh(planedata, elementcolor(planedata), ns)
-    push!(allmesh,m)
+    m = mesharray(planedata, elementcolor(planedata), ns)
+    append!(allmesh,m)
   end
-  return merge(allmesh)
+  return allmesh
 end
+
+mesh(element::Element) = merge(mesharray(element))
