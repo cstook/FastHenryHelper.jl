@@ -211,9 +211,9 @@ close(io)
 n10 = Node(10,11,12)
 n11 = Node(13,14,15)
 up = UniformPlane(
-x1=1, y1=2, z1=3,
-x2=4, y2=5, z2=6,
-x3=7, y3=8, z3=9,
+x1=1, y1=2, z1=1,
+x2=1, y2=1, z2=1,
+x3=2, y3=1, z3=1,
 thick=10, seg1=11, seg2=12,
 segwid1 = 13, segwid2 = 14,
 sigma = 15,
@@ -228,9 +228,9 @@ open("testuniformplane.inp","w") do io
 end
 io = open("testuniformplane.inp","r")
 @test readline(io) == "G_1\n"
-@test readline(io) == "+ x1=1.000000000e+00 y1=2.000000000e+00 z1=3.000000000e+00\n"
-@test readline(io) == "+ x2=4.000000000e+00 y2=5.000000000e+00 z2=6.000000000e+00\n"
-@test readline(io) == "+ x3=7.000000000e+00 y3=8.000000000e+00 z3=9.000000000e+00\n"
+@test readline(io) == "+ x1=1.000000000e+00 y1=2.000000000e+00 z1=1.000000000e+00\n"
+@test readline(io) == "+ x2=1.000000000e+00 y2=1.000000000e+00 z2=1.000000000e+00\n"
+@test readline(io) == "+ x3=2.000000000e+00 y3=1.000000000e+00 z3=1.000000000e+00\n"
 @test readline(io) == "+ thick=1.000000000e+01 seg1=11 seg2=12\n"
 @test readline(io) == "+ segwid1=1.300000000e+01\n"
 @test readline(io) == "+ segwid2=1.400000000e+01\n"

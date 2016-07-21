@@ -1,9 +1,7 @@
 export Group, terms, terms!, elements, elements!
 
 """
-    Group()
-    Group(Array{Element,1})
-    Group(Array{Element,1}, Dict{Symbol,Node})
+    Group([elements [, terms]])
 
 `Group` objects `show` FastHenry commands of their
 elements.
@@ -120,7 +118,16 @@ function Base.deepcopy(group::Group)
   end
   newgroup = Group(elements)
   for (key,value) in group.terms
-    newgroup.terms[key] = nodedict[value]
+    newgroup.terms[key] = newvalue(nodedict,value) # nodedict[value]
   end
   return newgroup
+end
+
+newvalue(nodedict::Dict{Element,Element}, value::Node) = nodedict[value]
+function newvalue(nodedict::Dict{Element,Element}, value::Array{Node,1})
+  nv = similar(value)
+  for i in eachindex(value)
+    nv[i] = nodedict[value[i]]
+  end
+  return nv
 end

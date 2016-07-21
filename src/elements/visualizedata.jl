@@ -216,6 +216,14 @@ function nodesize(vd::VisualizeData)
   return  min(minhw...)/6.0f0
 end
 
+"""
+    mesharray(element)
+
+Returns an array of `HomogenousMesh` objects for use with `GLVisualize`.
+
+`mesharray` will accept any `Element` as it's argument, but only makes sense
+ for `Group`'s.  Planes will not show their holes.
+"""
 function mesharray(element::Element)
   # collect data for visualization
   vd = VisualizeData(element)
@@ -243,4 +251,19 @@ function mesharray(element::Element)
   return allmesh
 end
 
+"""
+    mesh(element)
+
+Equivalent to `merge(mesharray(element))`.
+
+Use the following to visualize `element`.
+```
+m = mesh(element)
+
+using GLVisualize
+window = glscreen()
+view(visualize(m), window)
+renderloop(window)
+```
+"""
 mesh(element::Element) = merge(mesharray(element))

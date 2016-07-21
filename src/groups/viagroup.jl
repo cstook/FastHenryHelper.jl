@@ -35,9 +35,14 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
   if n!=0 && n<2 
     throw(ArgumentError("must have zero or at least 2 segments"))
   end
+  group = Group()
+  terminals = terms(group)
+  viaelements = elements(group)
   centertop = Node(0,0,0)
   centerbot = Node(0,0,-height)
-  terminals = Dict(:top=>centertop,:bot=>centerbot)
+  # terminals = Dict(:top=>centertop,:bot=>centerbot)
+  terminals[:top] = centertop
+  terminals[:bot] = centerbot
   if n!=0
     angle = linspace(0.0, 2.0*pi-(2*pi/n), n)
     x = radius .* map(cos,angle)
@@ -58,10 +63,16 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
       segments[i] = Segment(topnodes[i],botnodes[i],
         SegmentParameters(sp, w=w, wx=wx[i], wy=wy[i], wz=0.0, nwinc=1))
     end
-    group = Group([topnodes;botnodes;centertop;centerbot;eqtop;eqbot;segments],terminals)
+    terminals[:alltop] = topnodes
+    terminals[:allbot] = botnodes
+    # group = Group([topnodes;botnodes;centertop;centerbot;eqtop;eqbot;segments],terminals)
+    append!(viaelements,[topnodes;botnodes;centertop;centerbot;eqtop;eqbot;segments])
   else # n=0 for bypass
+    terminals[:alltop] = Array{Node}([centertop])
+    terminals[:allbot] = Array{Node}([centerbot])
     eq = Equiv([centertop;centerbot])
-    group = Group([centertop;centerbot;eq],terminals)
+    # group = Group([centertop;centerbot;eq],terminals)
+    append!(viaelements,[centertop;centerbot;eq])
   end
   return group
 end

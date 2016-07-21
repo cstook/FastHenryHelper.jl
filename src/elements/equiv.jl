@@ -1,7 +1,7 @@
 export Equiv
 
 """
-    Equiv(n::Array(Node,1))
+    Equiv(nodes::Array{Node,1})
 
 `Equiv` objects `show` a FastHenry .equiv command
 """

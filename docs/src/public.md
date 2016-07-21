@@ -40,14 +40,26 @@ Hole
 Point
 Rect
 Circle
-parsefasthenrymat
-ParseFastHenryMatResult
 ```
 
 ## Groups and Arrays
 ```@docs
 connectnodes
-coilcraft1010vsgroup
 helixnodes
 viagroup
+coilcraft1010vsgroup
+```
+
+## for GLVisualize
+```@docs
+mesharray
+mesh
+```
+
+## Utility
+```@docs
+rectangulararray
+planeconnect
+parsefasthenrymat
+ParseFastHenryMatResult
 ```

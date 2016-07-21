@@ -6,7 +6,7 @@ export planeconnect
 
 Provides objects needed to connect to a plane.
 
-Returns a tuple of a deepcopy of the nodes passed and a group of equiv objects
+Returns a tuple of a `deepcopy` of the `nodes` passed and a group of `Equiv` objects
  connecting the nodes passed to the nodes returned.
 
 `(planenodearray, equivgroup) = planeconnect(nodearray)`
