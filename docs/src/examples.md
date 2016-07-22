@@ -156,6 +156,7 @@ end
 See the output file [here](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
 
 # Example 3: via connection to a plane
+[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_between_two_planes.ipynb)
 
 This example demonstrates the use of `viagroup` and `planeconnect` functions.
 
