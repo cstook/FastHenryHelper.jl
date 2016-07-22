@@ -265,4 +265,4 @@ close(io)
 ```
 See the output file [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp).
 
-See the .mat file prodeced by FastHenry. [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
+See the .mat file produced by FastHenry. [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
