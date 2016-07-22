@@ -144,6 +144,7 @@ push!(fourloops, Freq(min=1e-1, max=1e9, ndec=0.05))
 push!(fourloops, Comment(""))
 push!(fourloops, Comment("always need end"))
 push!(fourloops, End())
+nothing # hide
 ```
 
 Write fourloops to file.
@@ -261,3 +262,6 @@ io = open("via_to_plane.inp","w+")
 show(io,via_plane_example)
 close(io)
 ```
+See the output file [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp).
+
+See the .mat file prodeced by FastHenry. [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
