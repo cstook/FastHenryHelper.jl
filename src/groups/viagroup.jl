@@ -1,7 +1,7 @@
 export viagroup
 
 """
-    viagroup(radius, height, n, [parameters::SegmentParameters])
+    viagroup(radius, height, n, [parameters::SegmentParameters [,topequiv [,botequiv]]])
     viagroup(<keyword arguments>)
 
 Returns a `Group` of `Segment`s for the barrel of a via.
@@ -15,14 +15,22 @@ Returns a `Group` of `Segment`s for the barrel of a via.
 - `sigma`,`rho`     -- specify conductivity or resistivity
 - `nhinc`           -- number of filaments per segment 
 - `rh`              -- ratio of filament width
+- `topequiv`        -- include .equiv for all top nodes.  default = true
+- `botequiv`        -- include .equiv for all bot nodes.  default = true
 
 Terminals are in the center labeled :top and :bot.  Only `SegmentParameters` 
 which match keyword arguments are used.  Specify n=0 to bypass via (.equiv top bot).
+Terminals :alltop and :allbot are arrays of all top and bottom nodes.  :alltop, :allbot, 
+`topequiv`, and `botequiv` are intended for connections to planes.
 """
 viagroup(;radius=NaN, height=NaN, n=8, h=NaN, sigma=NaN, rho=NaN,
-          nhinc=5, rh=NaN) = 
-  viagroup(radius, height, n, SegmentParameters(h=h,sigma=sigma,rho=rho,nhinc=nhinc,rh=rh))
-function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters())
+          nhinc=5, rh=NaN, topequiv = true, botequiv = true) = 
+  viagroup(radius, height, n,
+          SegmentParameters(h=h,sigma=sigma,rho=rho,nhinc=nhinc,rh=rh),
+          topequiv,botequiv)
+function viagroup(radius, height, n=8,
+                  sp::SegmentParameters=SegmentParameters(),
+                  topequiv=true, botequiv=true)
   if isnan(radius)
     throw(ArgumentError("radius must be specified"))
   end
@@ -40,7 +48,6 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
   viaelements = elements(group)
   centertop = Node(0,0,0)
   centerbot = Node(0,0,-height)
-  # terminals = Dict(:top=>centertop,:bot=>centerbot)
   terminals[:top] = centertop
   terminals[:bot] = centerbot
   if n!=0
@@ -65,13 +72,18 @@ function viagroup(radius, height, n=8, sp::SegmentParameters=SegmentParameters()
     end
     terminals[:alltop] = topnodes
     terminals[:allbot] = botnodes
-    # group = Group([topnodes;botnodes;centertop;centerbot;eqtop;eqbot;segments],terminals)
-    append!(viaelements,[topnodes;botnodes;centertop;centerbot;eqtop;eqbot;segments])
+    append!(viaelements, [topnodes;botnodes;centertop;centerbot])
+    if topequiv
+      push!(viaelements, eqtop)
+    end
+    if botequiv
+      push!(viaelements, eqbot)
+    end
+    append!(viaelements, segments)
   else # n=0 for bypass
     terminals[:alltop] = Array{Node}([centertop])
     terminals[:allbot] = Array{Node}([centerbot])
     eq = Equiv([centertop;centerbot])
-    # group = Group([centertop;centerbot;eq],terminals)
     append!(viaelements,[centertop;centerbot;eq])
   end
   return group

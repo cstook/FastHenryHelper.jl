@@ -44,7 +44,7 @@ type PlaneData <: VisualizeElement
   plane :: UniformPlane
   lxyz :: Array{Float64,1} # vector along length of plane
   wxyz :: Array{Float64,1} # vector along width of plane
-  corner2 :: Array{Float64,1}
+  center :: Array{Float64,1}
   thick :: Float64 # same as height
   width :: Float64
   length :: Float64
@@ -54,13 +54,16 @@ end
 function PlaneData(::VisualizeState, up::UniformPlane)
   lxyz = up.corner1[1:3] - up.corner2[1:3]
   wxyz = up.corner3[1:3] - up.corner2[1:3]
-  corner2 = up.corner2[1:3]
+  center = Array(Float64,3)
+  for i in 1:3
+    center[i] = (up.corner1[i] + up.corner3[i])/2.0
+  end
   thick = up.thick
   width = norm(wxyz)
   length = norm(lxyz)
   nodes = up.nodes
   holes = up.holes
-  PlaneData(up, lxyz, wxyz, corner2, thick, width, length, nodes, holes)
+  PlaneData(up, lxyz, wxyz, center, thick, width, length, nodes, holes)
 end
 
 type VisualizeData
@@ -166,11 +169,9 @@ function mesharray(element::PlaneData, color::Colorant, nodesize::Float32)
   length = element.length
   width = element.width
   height = element.thick
-  c2 = element.corner2
-  center = translationmatrix(Vec3f0(-0.5*length, -0.5*width, -0.5*height))
-  uncenter = translationmatrix(Vec3f0(0.5*length, 0.5*width, 0.5*height))
-  uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(0f0,0f0,0f0),Vec3f0(length,width,height)),color))
-  correction = translationmatrix(Vec3f0(c2...)) * uncenter * rxyz(element.lxyz, element.wxyz) * center
+  c = element.center
+  uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),Vec3f0(length,width,height)),color))
+  correction = translationmatrix(Vec3f0(c...)) * rxyz(element.lxyz, element.wxyz)
   planemesh = Array(HomogenousMesh,0)
   push!(planemesh, correction * uncorrectedplanemesh)
   for node in element.nodes
