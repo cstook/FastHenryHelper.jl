@@ -11,8 +11,9 @@ type PlotData
   markeralpha :: Array{Float64,1}
   markersize :: Array{Float64,1}
   markerstrokewidth :: Array{Float64,1}
+  linecolor :: Array{Symbol,1}
   groupcounter :: Int
-  PlotData() = new("",[],[],[],[],[],[],[],[],[],0)
+  PlotData() = new("",[],[],[],[],[],[],[],[],[],[],0)
 end
 
 plotdata!(::PlotData, ::Element) = nothing
@@ -32,6 +33,7 @@ function pointsatlimits!(pd::PlotData)
   push!(pd.markeralpha, 0.0)
   push!(pd.markersize, 0.0)
   push!(pd.markerstrokewidth, 0.0)
+  push!(pd.linecolor, :blue)            # line color
   push!(pd.x, xcenter+range/2.0)
   push!(pd.y, ycenter+range/2.0)
   push!(pd.z, zcenter+range/2.0)
@@ -42,6 +44,7 @@ function pointsatlimits!(pd::PlotData)
   push!(pd.markeralpha, 0.0)
   push!(pd.markersize, 0.0)
   push!(pd.markerstrokewidth, 0.0)
+  push!(pd.linecolor, :blue)            # line color
   push!(pd.x, xcenter-range/2.0)
   push!(pd.y, ycenter-range/2.0)
   push!(pd.z, zcenter-range/2.0)
@@ -55,7 +58,7 @@ function plot(e::Element)
   plot(pd.x, pd.y, pd.z, group=pd.group,
     title = pd.title,
     legend = false,
-    linecolor = :blue,
+    linecolor = transpose(pd.linecolor),                # line color
     marker=transpose(pd.marker),
     markercolor = transpose(pd.markercolor),
     markeralpha = transpose(pd.markeralpha),
@@ -73,29 +76,37 @@ function PlotData(e::Element)
   for nodedata in vd.nodedataarray
     push!(pd,nodedata)
   end
-  # mode segments into pd
+  # move segments into pd
   for segmentdata in vd.segmentdataarray
     push!(pd, segmentdata)
+  end
+  # move planes into pd
+  for planedata in vd.planedataarray
+    push!(pd, planedata)
   end
   return pd
 end
 
-function Base.push!(pd::PlotData, nodedata::NodeData)
+function Base.push!(pd::PlotData, nodedata::NodeData, markercolor = :red)
   pd.groupcounter += 1
   push!(pd.group,pd.groupcounter)
   push!(pd.marker,:circle)
-  push!(pd.markercolor, :red)
+  push!(pd.markercolor, markercolor)
   push!(pd.markeralpha, 0.3)
   push!(pd.markersize, 3.0)
   push!(pd.markerstrokewidth, 0.1)
+  push!(pd.linecolor, :blue)            # line color
   push!(pd.x, nodedata.xyz[1])
   push!(pd.y, nodedata.xyz[2])
   push!(pd.z, nodedata.xyz[3])
   return nothing
 end
 
-function Base.push!(pd::PlotData, segmentdata::SegmentData)
-  c = corners(pd,segmentdata)
+linecolor(::SegmentData) = :blue
+linecolor(::PlaneData) = :green
+
+function Base.push!(pd::PlotData, data::Union{SegmentData,PlaneData})
+  c = corners(data)
   t = [(1,2,3,4,1,5,6,7,8,5),(2,6),(3,7),(4,8)]
   for g in t
     pd.groupcounter += 1
@@ -104,6 +115,7 @@ function Base.push!(pd::PlotData, segmentdata::SegmentData)
     push!(pd.markeralpha, 0.3)
     push!(pd.markersize, 1.0)
     push!(pd.markerstrokewidth, 0.1)
+    push!(pd.linecolor, linecolor(data))            # line color
     for p in g
       push!(pd.group,pd.groupcounter)
       push!(pd.x,c[1,p])
@@ -111,10 +123,37 @@ function Base.push!(pd::PlotData, segmentdata::SegmentData)
       push!(pd.z,c[3,p])
     end
   end
+  addplanenodes(pd,data)
   return nothing
 end
 
-function corners(pd::PlotData, s::SegmentData)
+addplanenodes(::PlotData, ::SegmentData) = nothing
+function addplanenodes(pd::PlotData, planedata::PlaneData)
+  nodes = planedata.plane.nodes
+  for node in nodes
+    
+  end
+  return nothing
+end
+
+function corners(p::PlaneData)
+  c = Array(Float64,(3,8))
+  c[:,1] = p.plane.corner1[1:3]
+  c[:,2] = p.plane.corner2[1:3]
+  c[:,3] = p.plane.corner3[1:3]
+  v1 = c[:,1]-c[:,2]
+  v2 = c[:,3]-c[:,2]
+  c[:,4] = v2 + c[:,1]
+  perp = cross(v1,v2)
+  thickperp = perp * (p.thick/norm(perp))
+  c[:,5] = c[:,1] + thickperp
+  c[:,6] = c[:,2] + thickperp
+  c[:,7] = c[:,3] + thickperp
+  c[:,8] = c[:,4] + thickperp
+  return c
+end
+
+function corners(s::SegmentData)
   mp1 = s.n1xyz+(s.wxyz.*s.width/2)
   mp2 = s.n1xyz-(s.wxyz.*s.width/2)
   mp3 = s.n2xyz+(s.wxyz.*s.width/2)

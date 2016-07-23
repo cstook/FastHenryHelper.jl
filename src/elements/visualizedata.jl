@@ -42,28 +42,35 @@ function NodeData!(state::VisualizeState, node::Node)
 end
 type PlaneData <: VisualizeElement
   plane :: UniformPlane
+  c1    :: Array{Float64,1}
+  c2    :: Array{Float64,1}
+  c3    :: Array{Float64,1}
   lxyz :: Array{Float64,1} # vector along length of plane
   wxyz :: Array{Float64,1} # vector along width of plane
   center :: Array{Float64,1}
   thick :: Float64 # same as height
   width :: Float64
   length :: Float64
-  nodes :: Array{Node,1}
-  holes :: Array{Hole,1}
+  node_xyz :: Array{Float64,2}
 end
 function PlaneData(::VisualizeState, up::UniformPlane)
-  lxyz = up.corner1[1:3] - up.corner2[1:3]
-  wxyz = up.corner3[1:3] - up.corner2[1:3]
+  c1 = tometers[state.unit].*up.corner1[1:3]
+  c2 = tometers[state.unit].*up.corner2[1:3]
+  c3 = tometers[state.unit].*up.corner3[1:3]
+  lxyz = up.c1[1:3] - up.c2[1:3]
+  wxyz = up.c3[1:3] - up.c2[1:3]
   center = Array(Float64,3)
   for i in 1:3
-    center[i] = (up.corner1[i] + up.corner3[i])/2.0
+    center[i] = (up.c1[i] + up.c3[i])/2.0
   end
   thick = up.thick
   width = norm(wxyz)
   length = norm(lxyz)
-  nodes = up.nodes
-  holes = up.holes
-  PlaneData(up, lxyz, wxyz, center, thick, width, length, nodes, holes)
+  node_xyz = Array(Float64,3,length(up.nodes))
+  for i in eachindex(up.nodes)
+    node_xyz[:,i] = tometers[state.unit].*up.nodes[i].xyz[1:3]
+  end
+  PlaneData(up, c1,c2,c3, lxyz, wxyz, center, thick, width, length, node_xyz)
 end
 
 type VisualizeData
@@ -133,6 +140,7 @@ function todisplayunit!(e::NodeData, scale)
   end
   return nothing
 end
+function todisplayunit
 function todisplayunit!(vd::VisualizeData)
   if vd.ismeters && vd.displayunit != "m"
     scale = 1.0/tometers[vd.displayunit]
@@ -141,6 +149,9 @@ function todisplayunit!(vd::VisualizeData)
     end
     for segmentdata in vd.segmentdataarray
       todisplayunit!(segmentdata::SegmentData, scale)
+    end
+    for planedata in vd.planedataarray
+      todisplayunit!(planedata::SegmentData, scale)
     end
     vd.ismeters = false
   end
