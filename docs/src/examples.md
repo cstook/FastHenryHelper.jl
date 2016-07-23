@@ -242,7 +242,7 @@ function via_connection_to_plane_example(height, cu_thick)
 
     e = End() # always need an end
 
-    # return a group of the element we want for our FastHenry input file
+    # return a group of the elements we want for our FastHenry input file
     Group([t; u; via;
            topplane; top_plane_nodes_equiv_group;
            botplane; bot_plane_nodes_equiv_group;
