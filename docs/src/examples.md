@@ -1,6 +1,6 @@
 # Example 1: A simple example from the FastHenry documentation.
 
-This example is a recreation of the example in section 1.2 of "FastHenry Users Guide" using FastHeneryHelper.
+This example is a recreation of the example in section 1.2 of "[FastHenry User's Guide](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf)" using FastHeneryHelper.
 
 load the module
 ```@example 1
@@ -79,6 +79,14 @@ push!(example1,Freq(min=1e-1, max=1e9, ndec=0.05))
 push!(example1,End())
 ```
 
+Plot of `example1`
+```@example 1
+using Plots; pyplot()
+plot(example1)
+savefig("example1_plot_1.svg"); nothing # hide
+```
+![](example1_plot_1.svg)
+
 # Example 2: Four square loops
 
 This example demonstrates using groups to simplify repetitive structures.
@@ -147,13 +155,21 @@ push!(fourloops, End())
 nothing # hide
 ```
 
+Plot of `fourloops`
+```@example 2
+using Plots; pyplot()
+plot(fourloops)
+savefig("example2_fourloops.svg"); nothing # hide
+```
+![](example2_fourloops.svg)
+
 Write fourloops to file.
 ```@example 2
 open("fourloops.inp","w") do io
     show(io,fourloops)
 end
 ```
-See the output file [here](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
+See the output file [fourloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
 
 # Example 3: via connection to a plane
 [jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_between_two_planes.ipynb)
@@ -169,7 +185,8 @@ Constants for a 63mil PCB with 1oz copper.
 ```@example 3
 const height = 1.6      # 63mil PCB
 const cu_sigma = 5.8e4
-const cu_thick = 0.035  # 1oz copper
+# const cu_thick = 0.035  # 1oz copper
+const cu_thick = 0.5    # exaggerate thickness
 ```
 
 Create a function which returns a `Group` with all the elements of the FastHenry
@@ -253,9 +270,17 @@ nothing # hide
 ```
 Call the function with PCB height and copper thickness.
 ```@example 3
-via_plane_example = via_connection_to_plane_example(height, cu_thick)
+via_plane_example = via_connection_to_plane_example(height, cu_thick);
 nothing # hide
 ```
+
+Plot of `via_plane_example`
+```@example 3
+using Plots; pyplot()
+plot(via_plane_example)
+savefig("example3_via_plane_example.svg"); nothing # hide
+```
+![](example3_via_plane_example.svg)
 
 Write results to a file.
 ```@example 3
@@ -263,6 +288,6 @@ io = open("via_to_plane.inp","w+")
 show(io,via_plane_example)
 close(io)
 ```
-See the output file [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp).
+See the output file [via_to_plane.inp](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp).
 
-See the .mat file produced by FastHenry. [here](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
+See the .mat file produced by FastHenry [via_to_plane.mat](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
