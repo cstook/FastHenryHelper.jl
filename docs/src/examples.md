@@ -171,7 +171,7 @@ end
 ```
 See the output file [fourloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
 
-# Example 3: via connection to a plane
+# Example 3: Via connection to a plane
 [jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_between_two_planes.ipynb)
 
 This example demonstrates the use of `viagroup` and `planeconnect` functions.
@@ -291,3 +291,33 @@ close(io)
 See the output file [via_to_plane.inp](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp).
 
 See the .mat file produced by FastHenry [via_to_plane.mat](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
+
+# Example 4: Use of rectangulararray
+
+A 2x3 array of via's is produced using `rectangulararray`.  This example does not create a complete FastHenry file.
+
+Load the modules.
+```@example 4
+using FastHenryHelper
+using Plots;pyplot()
+nothing # hide
+```
+
+Create a via.
+```@example 4
+via = viagroup(radius=5, height=7, h=3, n=8);
+nothing # hide
+```
+
+Create an array of 6 vias.
+```@example 4
+six_vias = transform(via,  rectangulararray([20,40,60],[10,30]));
+nothing # hide
+```
+
+Plot of `six_vias`
+```@example 4
+plot(six_vias)
+savefig("example4_six_vias.svg"); nothing # hide
+```
+![](example4_six_vias.svg)
