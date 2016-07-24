@@ -67,7 +67,7 @@ wxyz(x::PlaneData) = x.c3[1:3] - x.c2[1:3]
 function center(x::PlaneData)
   center = Array(Float64,3)
   for i in 1:3
-    center[i] = (up.c1[i] + up.c3[i])/2.0
+    center[i] = (x.c1[i] + x.c3[i])/2.0
   end
   return center
 end
@@ -204,9 +204,9 @@ function mesharray(element::PlaneData, color::Colorant, nodesize::Float32)
     push!(planemesh,
       GLNormalMesh((
         HyperSphere(
-          Point3f0(node_xyz(element)[i,1],
-            node_xyz(element)[i,2],
-            node_xyz(element)[i,3]),
+          Point3f0(node_xyz(element)[1,i],
+            node_xyz(element)[2,i],
+            node_xyz(element)[3,i]),
           nodesize),
       planenodecolor))
     )
