@@ -45,33 +45,36 @@ type PlaneData <: VisualizeElement
   c1    :: Array{Float64,1}
   c2    :: Array{Float64,1}
   c3    :: Array{Float64,1}
-  lxyz :: Array{Float64,1} # vector along length of plane
-  wxyz :: Array{Float64,1} # vector along width of plane
-  center :: Array{Float64,1}
-  thick :: Float64 # same as height
-  width :: Float64
-  length :: Float64
+  thick :: Float64
   node_xyz :: Array{Float64,2}
 end
-function PlaneData(::VisualizeState, up::UniformPlane)
+function PlaneData(state::VisualizeState, up::UniformPlane)
   c1 = tometers[state.unit].*up.corner1[1:3]
   c2 = tometers[state.unit].*up.corner2[1:3]
   c3 = tometers[state.unit].*up.corner3[1:3]
-  lxyz = up.c1[1:3] - up.c2[1:3]
-  wxyz = up.c3[1:3] - up.c2[1:3]
-  center = Array(Float64,3)
-  for i in 1:3
-    center[i] = (up.c1[i] + up.c3[i])/2.0
-  end
-  thick = up.thick
-  width = norm(wxyz)
-  length = norm(lxyz)
+  thick = tometers[state.unit].*up.thick
   node_xyz = Array(Float64,3,length(up.nodes))
   for i in eachindex(up.nodes)
     node_xyz[:,i] = tometers[state.unit].*up.nodes[i].xyz[1:3]
   end
-  PlaneData(up, c1,c2,c3, lxyz, wxyz, center, thick, width, length, node_xyz)
+  PlaneData(up, c1, c2, c3, thick, node_xyz)
 end
+c1(x::PlaneData) = x.c1
+c2(x::PlaneData) = x.c2
+c3(x::PlaneData) = x.c3
+lxyz(x::PlaneData) = x.c1[1:3] - x.c2[1:3]
+wxyz(x::PlaneData) = x.c3[1:3] - x.c2[1:3]
+function center(x::PlaneData)
+  center = Array(Float64,3)
+  for i in 1:3
+    center[i] = (up.c1[i] + up.c3[i])/2.0
+  end
+  return center
+end
+plane_thick(x::PlaneData) = x.thick
+plane_width(x::PlaneData) = norm(wxyz(x))
+plane_length(x::PlaneData) = norm(lxyz(x))
+node_xyz(x::PlaneData) = x.node_xyz
 
 type VisualizeData
   nodedataarray :: Array{NodeData,1}
@@ -130,28 +133,33 @@ const tometers = Dict("km"  =>1e3,
                       ""    =>1.0)
 
 function todisplayunit!(e::SegmentData, scale)
-  e.height = scale*e.height
-  e.width = scale*e.width
+  e.height = scale * e.height
+  e.width = scale * e.width
   return nothing
 end
 function todisplayunit!(e::NodeData, scale)
   for i in 1:3
-    e.xyz[i] = scale*e.xyz[i]
+    e.xyz[i] = scale * e.xyz[i]
   end
   return nothing
 end
-function todisplayunit
+function todisplayunit!(e::PlaneData, scale)
+  e.c1 = scale .* e.c1
+  e.c2 = scale .* e.c2
+  e.c3 = scale .* e.c3
+  e.thick = scale .* e.thick
+  for i in 1:size(e.node_xyz)[2]
+    e.node_xyz[:,i] = scale .* e.node_xyz[:,i]
+  end
+end
 function todisplayunit!(vd::VisualizeData)
   if vd.ismeters && vd.displayunit != "m"
     scale = 1.0/tometers[vd.displayunit]
-    for nodedata in vd.nodedataarray
-      todisplayunit!(nodedata::NodeData, scale)
-    end
-    for segmentdata in vd.segmentdataarray
-      todisplayunit!(segmentdata::SegmentData, scale)
-    end
-    for planedata in vd.planedataarray
-      todisplayunit!(planedata::SegmentData, scale)
+    arraylist = (vd.nodedataarray, vd.segmentdataarray, vd.planedataarray)
+    for a in arraylist
+      for data in a
+        todisplayunit!(data, scale)
+      end
     end
     vd.ismeters = false
   end
@@ -177,16 +185,31 @@ end
 
 function mesharray(element::PlaneData, color::Colorant, nodesize::Float32)
   planenodecolor = RGBA(red(color), green(color), blue(color), 0.5f0)
-  length = element.length
-  width = element.width
-  height = element.thick
-  c = element.center
-  uncorrectedplanemesh = GLNormalMesh((HyperRectangle(Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),Vec3f0(length,width,height)),color))
-  correction = translationmatrix(Vec3f0(c...)) * rxyz(element.lxyz, element.wxyz)
+  length = plane_length(element)
+  width = plane_width(element)
+  height = plane_thick(element)
+  c = center(element)
+  uncorrectedplanemesh = GLNormalMesh((
+    HyperRectangle(
+      Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),
+      Vec3f0(length,width,height)),color
+  ))
+  correction = translationmatrix(
+    Vec3f0(c...))*rxyz(lxyz(element),
+    wxyz(element)
+  )
   planemesh = Array(HomogenousMesh,0)
-  push!(planemesh, correction * uncorrectedplanemesh)
-  for node in element.nodes
-    push!(planemesh, GLNormalMesh((HyperSphere(Point3f0(node.xyz[1],node.xyz[2],node.xyz[3]), nodesize), planenodecolor)))
+  push!(planemesh, correction * uncorrectedplanemesh) # the plane
+  for i in 1:size(node_xyz(element))[2] # nodes in plane
+    push!(planemesh,
+      GLNormalMesh((
+        HyperSphere(
+          Point3f0(node_xyz(element)[i,1],
+            node_xyz(element)[i,2],
+            node_xyz(element)[i,3]),
+          nodesize),
+      planenodecolor))
+    )
   end
   return planemesh
 end

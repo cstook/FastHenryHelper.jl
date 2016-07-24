@@ -87,7 +87,12 @@ function PlotData(e::Element)
   return pd
 end
 
-function Base.push!(pd::PlotData, nodedata::NodeData, markercolor = :red)
+function Base.push!(pd::PlotData, nodedata::NodeData; markercolor = :red)
+  push!(pd, nodedata.xyz, markercolor=markercolor)
+  return nothing
+end
+
+function Base.push!(pd::PlotData, xyz::Array{Float64,1}; markercolor = :red)
   pd.groupcounter += 1
   push!(pd.group,pd.groupcounter)
   push!(pd.marker,:circle)
@@ -96,9 +101,9 @@ function Base.push!(pd::PlotData, nodedata::NodeData, markercolor = :red)
   push!(pd.markersize, 3.0)
   push!(pd.markerstrokewidth, 0.1)
   push!(pd.linecolor, :blue)            # line color
-  push!(pd.x, nodedata.xyz[1])
-  push!(pd.y, nodedata.xyz[2])
-  push!(pd.z, nodedata.xyz[3])
+  push!(pd.x, xyz[1])
+  push!(pd.y, xyz[2])
+  push!(pd.z, xyz[3])
   return nothing
 end
 
@@ -129,23 +134,20 @@ end
 
 addplanenodes(::PlotData, ::SegmentData) = nothing
 function addplanenodes(pd::PlotData, planedata::PlaneData)
-  nodes = planedata.plane.nodes
-  for node in nodes
-    
+  for i in 1:size(node_xyz(planedata))[2]
+    push!(pd, node_xyz(planedata)[:,i], markercolor=:green)
   end
   return nothing
 end
 
 function corners(p::PlaneData)
   c = Array(Float64,(3,8))
-  c[:,1] = p.plane.corner1[1:3]
-  c[:,2] = p.plane.corner2[1:3]
-  c[:,3] = p.plane.corner3[1:3]
-  v1 = c[:,1]-c[:,2]
-  v2 = c[:,3]-c[:,2]
-  c[:,4] = v2 + c[:,1]
-  perp = cross(v1,v2)
-  thickperp = perp * (p.thick/norm(perp))
+  c[:,1] = c1(p)
+  c[:,2] = c2(p)
+  c[:,3] = c3(p)
+  c[:,4] = wxyz(p) + c1(p)
+  perp = cross(wxyz(p),lxyz(p))
+  thickperp = perp * (plane_thick(p)/norm(perp))
   c[:,5] = c[:,1] + thickperp
   c[:,6] = c[:,2] + thickperp
   c[:,7] = c[:,3] + thickperp
