@@ -141,17 +141,17 @@ function addplanenodes(pd::PlotData, planedata::PlaneData)
 end
 
 function corners(p::PlaneData)
+  htp = halfthickperp(p)
   c = Array(Float64,(3,8))
-  c[:,1] = c1(p)
-  c[:,2] = c2(p)
-  c[:,3] = c3(p)
-  c[:,4] = wxyz(p) + c1(p)
-  perp = cross(wxyz(p),lxyz(p))
-  thickperp = perp * (plane_thick(p)/norm(perp))
-  c[:,5] = c[:,1] + thickperp
-  c[:,6] = c[:,2] + thickperp
-  c[:,7] = c[:,3] + thickperp
-  c[:,8] = c[:,4] + thickperp
+  c4 = wxyz(p) + c1(p)
+  c[:,1] = c1(p) - htp
+  c[:,2] = c2(p) - htp
+  c[:,3] = c3(p) - htp
+  c[:,4] = c4 - htp
+  c[:,5] = c1(p) + htp
+  c[:,6] = c2(p) + htp
+  c[:,7] = c3(p) + htp
+  c[:,8] = c4 + htp
   return c
 end
 

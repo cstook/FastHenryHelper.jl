@@ -75,6 +75,11 @@ plane_thick(x::PlaneData) = x.thick
 plane_width(x::PlaneData) = norm(wxyz(x))
 plane_length(x::PlaneData) = norm(lxyz(x))
 node_xyz(x::PlaneData) = x.node_xyz
+# vector perpendicular to plane, length 1/2 thickness
+function halfthickperp(x::PlaneData)
+  perp = cross(wxyz(x),lxyz(x))
+  return perp * (0.5*plane_thick(x)/norm(perp))
+end
 
 type VisualizeData
   nodedataarray :: Array{NodeData,1}
@@ -194,10 +199,9 @@ function mesharray(element::PlaneData, color::Colorant, nodesize::Float32)
       Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),
       Vec3f0(length,width,height)),color
   ))
-  correction = translationmatrix(
-    Vec3f0(c...))*rxyz(lxyz(element),
-    wxyz(element)
-  )
+  correction =
+    translationmatrix(Vec3f0(c...)) *
+    rxyz(lxyz(element),wxyz(element))
   planemesh = Array(HomogenousMesh,0)
   push!(planemesh, correction * uncorrectedplanemesh) # the plane
   for i in 1:size(node_xyz(element))[2] # nodes in plane
