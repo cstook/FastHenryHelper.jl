@@ -7,3 +7,4 @@ docs/site/
 *.lnk
 scratch.jl
 temp.*
+debug.txt

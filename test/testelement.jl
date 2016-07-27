@@ -1,14 +1,6 @@
 using FastHenryHelper
 using Base.Test
 
-# compare what an element shows to string
-function testelement(e::Element, verified::ASCIIString)
-  ebuf = IOBuffer()
-  show(ebuf,e)
-  @test takebuf_string(ebuf) == verified
-end
-
-
 function testend()
   testelement(End(),".end\n")
 end
@@ -325,12 +317,125 @@ function testgroup()
   +  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00
   """
   testelement(g3,verified)
+  u = Units("in")
+  def1 = Default(sigma = 1.234)
+  n3 = Node(:abc,3,3,3)
+  n4 = Node(:def,4,4,4)
+  eq1 = Equiv([n3,n4])
+  n5 = Node(:abc,3,3,3)
+  n6 = Node(:def,4,4,4)
+  ex1 = External(n5,n6,"portname")
+  f1 = Freq(min=1,max=2,ndec=3)
+  p = FastHenryHelper.Point(x=1,y=2,z=3)
+  r = FastHenryHelper.Rect(x1=1,y1=2,z1=3,x2=4,y2=5,z2=6)
+  c = FastHenryHelper.Circle(x=1,y=2,z=3,r=4)
+  n10 = Node(10,11,12)
+  n11 = Node(13,14,15)
+  up = UniformPlane(
+  x1=1, y1=2, z1=1,
+  x2=1, y2=1, z2=1,
+  x3=2, y3=1, z3=1,
+  thick=10, seg1=11, seg2=12,
+  segwid1 = 13, segwid2 = 14,
+  sigma = 15,
+  nhinc=16, rh=17,
+  relx=18, rely=19, relz=20,
+  nodes=[n10,n11],
+  holes=[p,r,c])
+  g4 = Group([title,u,n20,n21,n3,n4,n5,n6,seg20,def1,eq1,up,ex1,f1])
+  g5 = transform(g4,rx(π/2))
+  verified =
+  """
+  * test title
+  .units in
+  N_1 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+  N_2 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+  N_3 x=3.000000000e+00 y=3.000000000e+00 z=-3.000000000e+00
+  N_4 x=4.000000000e+00 y=4.000000000e+00 z=-4.000000000e+00
+  N_5 x=3.000000000e+00 y=3.000000000e+00 z=-3.000000000e+00
+  N_6 x=4.000000000e+00 y=4.000000000e+00 z=-4.000000000e+00
+  E_7 N_1 N_2
+  +  w=5.000000000e+00 h=3.000000000e+00
+  +  sigma=1.000000000e-01
+  +  wx=0.000000000e+00 wy=-6.123233996e-17 wz=1.000000000e+00
+  .default
+  +  sigma=1.234000000e+00
+  .equiv Nabc Ndef
+  G_8
+  + x1=1.000000000e+00 y1=1.000000000e+00 z1=-2.000000000e+00
+  + x2=1.000000000e+00 y2=1.000000000e+00 z2=-1.000000000e+00
+  + x3=2.000000000e+00 y3=1.000000000e+00 z3=-1.000000000e+00
+  + thick=1.000000000e+01 seg1=11 seg2=12
+  + segwid1=1.300000000e+01
+  + segwid2=1.400000000e+01
+  + sigma=1.500000000e+01
+  + nhinc=16
+  + rh=17
+  + relx=1.800000000e+01
+  + rely=1.900000000e+01
+  + relz=2.000000000e+01
+  + N_9 (1.000000000e+01,1.200000000e+01,-1.100000000e+01)
+  + N_10 (1.300000000e+01,1.500000000e+01,-1.400000000e+01)
+  + hole point (1.000000000e+00, 3.000000000e+00, -2.000000000e+00)
+  + hole rect (1.000000000e+00, 3.000000000e+00, -2.000000000e+00, 4.000000000e+00, 6.000000000e+00, -5.000000000e+00)
+  + hole circle (1.000000000e+00, 3.000000000e+00, -2.000000000e+00, 4.000000000e+00)
+  .external Nabc Ndef portname
+  .freq fmin=1.000000000e+00 fmax=2.000000000e+00 ndec=3.000000000e+00
+  """
+  testelement(g5,verified)
+  c1 = Comment("this is a comment")
+  # Default and Freq are immutable
+  g6 = Group([title,c1,u,n20,n21,n3,n4,n5,n6,seg20,eq1,up,ex1])
+  deepcopyg6 = deepcopy(g6)
+  for i in eachindex(elements(g6))
+    @test ~(elements(deepcopyg6)[i] === elements(g6)[i])
+  end
 
-  g4 = Group([title,u,n20,n21,seg20,c,def1,eq1,up,ex1,f1,])
-  deepcopyg4 = deepcopy(g4)
-  g5 = transform(g1,rx(π/2))
-  pd = FastHenryHelper.PlotData(g4)
-  FastHenryHelper.pointsatlimits!(pd)
-
+  g7 = Group()
+  elements!(g7,[title,n20,n21,seg20])
+  terms!(g7,Dict(:a=>n20,:b=>n21))
+  g7[:c] = n20
+  @test g7[:a] === g7[:c]
+  deepcopyg7 = deepcopy(g7)
+  @test elements(deepcopyg7)[4].node1 === elements(deepcopyg7)[2]
+  @test elements(deepcopyg7)[4].node2 === elements(deepcopyg7)[3]
+  push!(g1,n20)
+  @test pop!(g1) === n20
+  unshift!(g1,n20)
+  @test shift!(g1) === n20
+  append!(g1,g2)
+  prepend!(g1,g2)
+  merge!(g1,g2,g3)
+  verified =
+  """
+  * test title
+  N_1 x=7.071067812e-01 y=-7.071067812e-01 z=0.000000000e+00
+  N_2 x=7.071067812e+00 y=-7.071067812e+00 z=0.000000000e+00
+  E_3 N_1 N_2
+  +  w=5.000000000e+00 h=3.000000000e+00
+  +  sigma=1.000000000e-01
+  +  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00
+  * test title
+  N_4 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+  N_5 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+  E_6 N_4 N_5
+  +  w=5.000000000e+00 h=3.000000000e+00
+  +  sigma=1.000000000e-01
+  * test title
+  N_1 x=7.071067812e-01 y=-7.071067812e-01 z=0.000000000e+00
+  N_2 x=7.071067812e+00 y=-7.071067812e+00 z=0.000000000e+00
+  E_3 N_1 N_2
+  +  w=5.000000000e+00 h=3.000000000e+00
+  +  sigma=1.000000000e-01
+  +  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00
+  """
+  testelement(g1,verified)
+  g7 = Group([Node(1,2,3)])
+  g8 = Group([g7])
+  g9 = Group([g8])
+  g10 = Group([g9])
+  g11 = Group([g10])
+  g12 = Group([g11])
+  testelement(g12,"N_1 x=1.000000000e+00 y=2.000000000e+00 z=3.000000000e+00\n")
 end
 testgroup()
