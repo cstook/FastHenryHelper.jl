@@ -9,12 +9,11 @@ function testelement(e::Element, verified::ASCIIString)
 end
 
 
-testend()
 function testend()
   testelement(End(),".end\n")
 end
+testend()
 
-testnode()
 function testnode()
   testelement(Node(1,1,1),
   "N_1 x=1.000000000e+00 y=1.000000000e+00 z=1.000000000e+00\n" )
@@ -30,8 +29,8 @@ function testnode()
   n1 = Node(coordinate)
   @test xyz(n1) == coordinate
 end
+testnode()
 
-testmatrices()
 function testmatrices()
   result = [1.0   0.0       0.0       0.0
          0.0   0.707107  0.707107  0.0
@@ -63,8 +62,8 @@ function testmatrices()
    0.0  0.0  0.0  1.0]
   @test_approx_eq_eps(sum(scalexyz(1.0,2.0,3.0)-result),0.0,1e-5)
 end
+testmatrices()
 
-testsigmarho()
 function testsigmarho()
   @test_throws(ArgumentError,FastHenryHelper.SigmaRho(sigma=1.0, rho=2.0))
   sr1 = FastHenryHelper.SigmaRho(sigma=1.0)
@@ -74,8 +73,8 @@ function testsigmarho()
   @test sr2.rho == 1.0
   @test isnan(sr2.sigma)
 end
+testsigmarho()
 
-testwxwywz()
 function testwxwywz()
   w1 = FastHenryHelper.WxWyWz(wx=1.0,wy=2.0,wz=3.0)
   @test w1.xyz == [1.0, 2.0, 3.0]
@@ -84,8 +83,8 @@ function testwxwywz()
   @test isnan(w2.xyz[1]) && isnan(w2.xyz[2]) && isnan(w2.xyz[3])
   @test w2.isdefault == true
 end
+testwxwywz()
 
-testwh()
 function testwh()
   @test_throws(ArgumentError,FastHenryHelper.WH(nhinc=-1))
   @test_throws(ArgumentError,FastHenryHelper.WH(nwinc=-1))
@@ -106,8 +105,8 @@ function testwh()
   @test wh2.rh == 5.0
   @test wh2.rw == 6.0
 end
+testwh()
 
-testsegmentparameters()
 function testsegmentparameters()
   sp1 = SegmentParameters(w=1.0,h=2.0,sigma=3.0,wx=4.0,wy=5.0,wz=6.0,
                           nhinc=7.0,nwinc=8.0,rh=9,rw=10)
@@ -125,7 +124,6 @@ function testsegmentparameters()
   @test FastHenryHelper.rh(sp2) == 9
   @test FastHenryHelper.rw(sp2) == 10
   @test isnan(FastHenryHelper.rho(sp2))
-
   @test FastHenryHelper.w(sp3) == 21.0
   @test FastHenryHelper.h(sp3) == 22.0
   @test FastHenryHelper.sigma(sp3) == 23.0
@@ -138,8 +136,8 @@ function testsegmentparameters()
   @test FastHenryHelper.rw(sp3) == 210
   @test isnan(FastHenryHelper.rho(sp3))
 end
+testsegmentparameters()
 
-testsegment()
 function testsegment()
   sp1 = SegmentParameters(w=1.0,h=2.0,sigma=3.0,wx=4.0,wy=5.0,wz=6.0,
                           nhinc=7.0,nwinc=8.0,rh=9,rw=10)
@@ -155,21 +153,21 @@ function testsegment()
   """
   testelement(s1,verified)
 end
+testsegment()
 
-testcomment()
 function testcomment()
   c = Comment("abcd")
   testelement(c,"* abcd\n")
 end
+testcomment()
 
-testtitle()
 function testtitle()
   c = Title("abcd")
   testelement(c,"* abcd\n")
 end
+testtitle()
 
-testdefault()
-function  testdefault()
+function testdefault()
   sp1 = SegmentParameters(w=1.0,h=2.0,sigma=3.0,wx=4.0,wy=5.0,wz=6.0,
                           nhinc=7.0,nwinc=8.0,rh=9,rw=10)
   def1 = Default(sp1)
@@ -188,3 +186,151 @@ function  testdefault()
   """
   testelement(def2,verified)
 end
+testdefault()
+
+function testequiv()
+  n3 = Node(:abc,3,3,3)
+  n4 = Node(:def,4,4,4)
+  eq1 = Equiv([n3,n4])
+  testelement(eq1,".equiv Nabc Ndef\n")
+end
+testequiv()
+
+function testexternal()
+  n3 = Node(:abc,3,3,3)
+  n4 = Node(:def,4,4,4)
+  ex1 = External(n3,n4,"portname")
+  testelement(ex1,".external Nabc Ndef portname\n")
+end
+testexternal()
+
+function testfreq()
+  @test_throws(ArgumentError,Freq())
+  @test_throws(ArgumentError,Freq(min=100,max=10))
+  @test_throws(ArgumentError,Freq(max=1000, ndec=-10))
+  f1 = Freq(min=1,max=2,ndec=3)
+  testelement(f1,".freq fmin=1.000000000e+00 fmax=2.000000000e+00 ndec=3.000000000e+00\n")
+end
+testfreq()
+
+function testunits()
+  @test_throws(ArgumentError,Units("kk"))
+  u = Units("in")
+  testelement(u,".units in\n")
+end
+testunits()
+
+function testuniformplane()
+  p = FastHenryHelper.Point(x=1,y=2,z=3)
+  testelement(p,"+ hole point (1.000000000e+00, 2.000000000e+00, 3.000000000e+00)\n")
+  r = FastHenryHelper.Rect(x1=1,y1=2,z1=3,x2=4,y2=5,z2=6)
+  testelement(r,"+ hole rect (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00, 5.000000000e+00, 6.000000000e+00)\n")
+  c = FastHenryHelper.Circle(x=1,y=2,z=3,r=4)
+  testelement(c,"+ hole circle (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00)\n")
+  @test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=4,rh=5,sigma=6,rho=7))
+  @test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=4,rh=-5,sigma=6))
+  @test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=-4,rh=5,rho=7))
+  @test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=0, nhinc=4,rh=5,sigma=6))
+  @test_throws(ArgumentError,UniformPlane(thick=1, seg1=0, seg2=3, nhinc=4,rh=5,sigma=6))
+  @test_throws(ArgumentError,UniformPlane(seg1=2, seg2=3, nhinc=4,rh=5,sigma=6))
+  n10 = Node(10,11,12)
+  n11 = Node(13,14,15)
+  up = UniformPlane(
+  x1=1, y1=2, z1=1,
+  x2=1, y2=1, z2=1,
+  x3=2, y3=1, z3=1,
+  thick=10, seg1=11, seg2=12,
+  segwid1 = 13, segwid2 = 14,
+  sigma = 15,
+  nhinc=16, rh=17,
+  relx=18, rely=19, relz=20,
+  nodes=[n10,n11],
+  holes=[p,r,c])
+  verified =
+  """
+  G_1
+  + x1=1.000000000e+00 y1=2.000000000e+00 z1=1.000000000e+00
+  + x2=1.000000000e+00 y2=1.000000000e+00 z2=1.000000000e+00
+  + x3=2.000000000e+00 y3=1.000000000e+00 z3=1.000000000e+00
+  + thick=1.000000000e+01 seg1=11 seg2=12
+  + segwid1=1.300000000e+01
+  + segwid2=1.400000000e+01
+  + sigma=1.500000000e+01
+  + nhinc=16
+  + rh=17
+  + relx=1.800000000e+01
+  + rely=1.900000000e+01
+  + relz=2.000000000e+01
+  + N_2 (1.000000000e+01,1.100000000e+01,1.200000000e+01)
+  + N_3 (1.300000000e+01,1.400000000e+01,1.500000000e+01)
+  + hole point (1.000000000e+00, 2.000000000e+00, 3.000000000e+00)
+  + hole rect (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00, 5.000000000e+00, 6.000000000e+00)
+  + hole circle (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00)
+  """
+  testelement(up,verified)
+  up2 = deepcopy(up)
+  transform!(up2,txyz(1,2,3))
+  verified =
+  """
+  G_1
+  + x1=2.000000000e+00 y1=4.000000000e+00 z1=4.000000000e+00
+  + x2=2.000000000e+00 y2=3.000000000e+00 z2=4.000000000e+00
+  + x3=3.000000000e+00 y3=3.000000000e+00 z3=4.000000000e+00
+  + thick=1.000000000e+01 seg1=11 seg2=12
+  + segwid1=1.300000000e+01
+  + segwid2=1.400000000e+01
+  + sigma=1.500000000e+01
+  + nhinc=16
+  + rh=17
+  + relx=1.800000000e+01
+  + rely=1.900000000e+01
+  + relz=2.000000000e+01
+  + N_2 (1.100000000e+01,1.300000000e+01,1.500000000e+01)
+  + N_3 (1.400000000e+01,1.600000000e+01,1.800000000e+01)
+  + hole point (2.000000000e+00, 4.000000000e+00, 6.000000000e+00)
+  + hole rect (2.000000000e+00, 4.000000000e+00, 6.000000000e+00, 5.000000000e+00, 7.000000000e+00, 9.000000000e+00)
+  + hole circle (2.000000000e+00, 4.000000000e+00, 6.000000000e+00, 4.000000000e+00)
+  """
+  testelement(up2,verified)
+end
+testuniformplane()
+
+function testgroup()
+  title = Title("test title")
+  n20 = Node(1,0,0)
+  n21 = Node(10,0,0)
+  sp20 = SegmentParameters(h=3,w=5,sigma=0.1)
+  seg20 = Segment(n20,n21,sp20)
+  g1 = Group([title,n20,n21,seg20],Dict(:a=>n20,:b=>n21))
+  g2 = transform(g1,rz(π/4))
+  g3 = Group([g1,g2],Dict(:c=>g1[:a], :d=>g1[:b], :e=>g2[:a], :f=>g2[:b]))
+  testelement(g3[:c],"N_1 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00\n")
+  testelement(g3[:d],"N_1 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00\n")
+  testelement(g3[:e],"N_1 x=7.071067812e-01 y=-7.071067812e-01 z=0.000000000e+00\n")
+  testelement(g3[:f],"N_1 x=7.071067812e+00 y=-7.071067812e+00 z=0.000000000e+00\n")
+  verified =
+  """
+  * test title
+  N_1 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+  N_2 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+  E_3 N_1 N_2
+  +  w=5.000000000e+00 h=3.000000000e+00
+  +  sigma=1.000000000e-01
+  * test title
+  N_4 x=7.071067812e-01 y=-7.071067812e-01 z=0.000000000e+00
+  N_5 x=7.071067812e+00 y=-7.071067812e+00 z=0.000000000e+00
+  E_6 N_4 N_5
+  +  w=5.000000000e+00 h=3.000000000e+00
+  +  sigma=1.000000000e-01
+  +  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00
+  """
+  testelement(g3,verified)
+
+  g4 = Group([title,u,n20,n21,seg20,c,def1,eq1,up,ex1,f1,])
+  deepcopyg4 = deepcopy(g4)
+  g5 = transform(g1,rx(π/2))
+  pd = FastHenryHelper.PlotData(g4)
+  FastHenryHelper.pointsatlimits!(pd)
+
+end
+testgroup()
