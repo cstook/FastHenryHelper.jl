@@ -1,6 +1,3 @@
-using FastHenryHelper
-using Base.Test
-
 function testend()
   testelement(End(),".end\n")
 end

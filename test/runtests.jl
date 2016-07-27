@@ -21,9 +21,9 @@ function testelementdebug(e::Element, verified::ASCIIString)
 end
 
 include("testelement.jl")
-#include("testvisualize.jl")
-#include("testplot.jl")
-#include("testgroups.jl")
-#include("testutil.jl")
+include("testvisualize.jl")
+include("testplot.jl")
+include("testgroups.jl")
+include("testutil.jl")
 
-include("old_runtests.jl")
+#include("old_runtests.jl")
