@@ -434,5 +434,8 @@ function testgroup()
   g11 = Group([g10])
   g12 = Group([g11])
   testelement(g12,"N_1 x=1.000000000e+00 y=2.000000000e+00 z=3.000000000e+00\n")
+  for element in g12
+    @test typeof(element) != Group
+  end
 end
 testgroup()
