@@ -7,6 +7,7 @@ export Units
 """
 immutable Units <: Element
   unitname :: AbstractString
+  Units() = new("") # flag for internal use only
   function Units(x)
     if ~issubset(Set([x]),Set(["km", "m", "cm", "mm", "um", "in", "mils"]))
       throw(ArgumentError("valid units are km, m, cm, mm, um, in, mils"))
