@@ -36,3 +36,93 @@ function context(c::Context, x::Union{Node,Segment,UniformPlane})
   end
 end
 context(c::Context, ::Element) = c
+
+# methods using Context
+
+const tometers = Dict("km"  =>1e3,
+                      "m"   =>1.0,
+                      "cm"  =>1e-2,
+                      "mm"  =>1e-3,
+                      "um"  =>1e-6,
+                      "in"  =>2.54e-2,
+                      "mils"=>2.54e-5,
+                      ""    =>1.0)
+
+function scaletofirstunits(x::Element, cd::Dict{Element,Context})
+  tometers[cd[x].units] / tometers[cd[x].firstunits]
+end
+
+function xyz1(node::Node, scale::Float64)
+  result = Array(Float64,4)
+  for i in 1:3
+    result[i] = node[i]*scale
+  end
+  result[4] = 1
+  return result
+end
+
+function xyz1(node::Node, cd::Dict{Element,Context})
+  scale = scaletofirstunits(node,cd)
+  xyz1(node, scale)
+end
+
+function nodes_xyz1(segment::Segment, cd::Dict{Element,Context})
+  scale = scaletofirstunits(segment,cd)
+  if haskey(cd,segment.node1)
+    node1_xyz1 = xyz1(segment.node1,cd)
+  else
+    node1_xyz1 = xyz1(segment.node1,scale)
+  end
+  if haskey(cd,segment.node2)
+    node2_xyz1 = xyz1(segment.node2,cd)
+  else
+    node2_xyz1 = xyz1(segment.node2,scale)
+  end
+  return (node1_xyz1, node2_xyz1)
+end
+
+function width_height(segment::Segment, cd::Dict{Element,Context})
+  scale = scaletofirstunits(segment,cd)
+  width = segment.wh.w * scale
+  height = segment.wh.h * scale
+  return (width, height)
+end
+
+function wxyz(segment::Segment, cd::Dict{Element,Context})
+  if segment.wxwywz.isdefault
+    (node1_xyz1, node2_xyz1) = nodes_xyz1(segment, cd)
+    v1 = node1_xyz1[1:3] - node2_xyz1[1:3]
+    v2 = [0.0, 0.0, 1.0]
+    w = cross(v1,v2)
+    if norm(w) < 1e-10  # close to 0
+      v2 = [0.0, 1.0, 0.0]
+      w = cross(v1,v2)
+    end
+    return (w/norm(w,3))
+  end
+  else
+    return segment.wxwywz.xyz
+  end
+end
+
+function corners_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
+  scale = scaletofirstunits(uniformplane,cd)
+  c1 = Array(Float64,4)
+  c2 = similar(c1)
+  c3 = cimilar(c1)
+  c1[1:3] = uniformplane.corner1[1:3] * scale
+  c2[1:3] = uniformplane.corner2[1:3] * scale
+  c3[1:3] = uniformplane.corner3[1:3] * scale
+  (c1,c2,c3)
+end
+
+function nodes_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
+  scale = scaletofirstunits(uniformplane,cd)
+  f(i) = nodes_xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in cd
+  ntuple(f, length(uniformplane.nodes))
+end
+
+function thick(uniformplane::UniformPlane, cd::Dict{Element,Context})
+  scale = scaletofirstunits(uniformplane,cd)
+  uniformplane * scale
+end
