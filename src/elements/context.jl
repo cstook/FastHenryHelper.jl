@@ -49,14 +49,12 @@ const tometers = Dict("km"  =>1e3,
                       ""    =>1.0)
 
 function scaletofirstunits(x::Element, cd::Dict{Element,Context})
-  tometers[cd[x].units] / tometers[cd[x].firstunits]
+  tometers[cd[x].units.unitname] / tometers[cd[x].firstunits.unitname]
 end
 
 function xyz1(node::Node, scale::Float64)
   result = Array(Float64,4)
-  for i in 1:3
-    result[i] = node[i]*scale
-  end
+  result[1:3] = node.xyz[1:3]*scale
   result[4] = 1
   return result
 end
@@ -83,8 +81,19 @@ end
 
 function width_height(segment::Segment, cd::Dict{Element,Context})
   scale = scaletofirstunits(segment,cd)
-  width = segment.wh.w * scale
-  height = segment.wh.h * scale
+  if isnan(segment.wh.w) || isnan(segment.wh.h)
+    scaledefault = scaletofirstunits(cd[segment].default,cd)
+  end
+  if isnan(segment.wh.w)
+    width = cd[segment].default.wh.w * scaledefault
+  else
+    width = segment.wh.w * scale
+  end
+  if isnan(segment.wh.h)
+    height = cd[segment].default.wh.h * scaledefault
+  else
+    height = segment.wh.h * scale
+  end
   return (width, height)
 end
 
@@ -99,7 +108,6 @@ function wxyz(segment::Segment, cd::Dict{Element,Context})
       w = cross(v1,v2)
     end
     return (w/norm(w,3))
-  end
   else
     return segment.wxwywz.xyz
   end
@@ -109,7 +117,7 @@ function corners_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
   scale = scaletofirstunits(uniformplane,cd)
   c1 = Array(Float64,4)
   c2 = similar(c1)
-  c3 = cimilar(c1)
+  c3 = similar(c1)
   c1[1:3] = uniformplane.corner1[1:3] * scale
   c2[1:3] = uniformplane.corner2[1:3] * scale
   c3[1:3] = uniformplane.corner3[1:3] * scale
@@ -118,11 +126,11 @@ end
 
 function nodes_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
   scale = scaletofirstunits(uniformplane,cd)
-  f(i) = nodes_xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in cd
+  f(i) = xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in cd
   ntuple(f, length(uniformplane.nodes))
 end
 
 function thick(uniformplane::UniformPlane, cd::Dict{Element,Context})
   scale = scaletofirstunits(uniformplane,cd)
-  uniformplane * scale
+  uniformplane.thick * scale
 end
