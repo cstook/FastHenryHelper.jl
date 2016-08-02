@@ -37,7 +37,7 @@ function context(c::Context, x::Union{Node,Segment,UniformPlane})
 end
 context(c::Context, ::Element) = c
 
-# methods using Context
+# methods using Context return values in the first unit of their group
 
 const tometers = Dict("km"  =>1e3,
                       "m"   =>1.0,
@@ -113,7 +113,7 @@ function wxyz(segment::Segment, cd::Dict{Element,Context})
   end
 end
 
-function corners_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
+function corners_xyz1_thick(uniformplane::UniformPlane, cd::Dict{Element,Context})
   scale = scaletofirstunits(uniformplane,cd)
   c1 = Array(Float64,4)
   c2 = similar(c1)
@@ -121,16 +121,12 @@ function corners_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
   c1[1:3] = uniformplane.corner1[1:3] * scale
   c2[1:3] = uniformplane.corner2[1:3] * scale
   c3[1:3] = uniformplane.corner3[1:3] * scale
-  (c1,c2,c3)
+  thick = uniformplane.thick * scale
+  (c1,c2,c3,thick)
 end
 
 function nodes_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
   scale = scaletofirstunits(uniformplane,cd)
   f(i) = xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in cd
   ntuple(f, length(uniformplane.nodes))
-end
-
-function thick(uniformplane::UniformPlane, cd::Dict{Element,Context})
-  scale = scaletofirstunits(uniformplane,cd)
-  uniformplane.thick * scale
 end
