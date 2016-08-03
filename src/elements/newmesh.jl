@@ -4,7 +4,7 @@ using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z,
       translationmatrix, Point3f0, Vec3f0
 using Colors: Colorant, RGBA, red, green, blue
 
-export new_mesh
+export mesh
 
 immutable ColorScheme
   segment   ::Colorant
@@ -25,17 +25,23 @@ immutable VisualizationParameters
 end
 
 function nodesize(element::Element, cd::Dict{Element,Context})
-  mindim = Inf32
+  cumulative_mindim = Inf32
   for e in element
-    update_mindim!(mindim, e, cd)
+    canidate_mindim = mindim(e, cd)
+    if canidate_mindim < cumulative_mindim
+      cumulative_mindim = canidate_mindim
+    end
   end
-  return mindim/6.0f0
+  return cumulative_mindim/6.0f0
 end
-update_mindim!(::Float32, ::Element, ::Dict{Element,Context}) = nothing
-function update_mindim!(mindim::Float32, s::Segment, cd::Dict{Element,Context})
+mindim(::Element, ::Dict{Element,Context}) = Inf32
+function mindim(s::Segment, cd::Dict{Element,Context})
   (w,h) = width_height(s,cd)
-  mindim = mindim<w ? mindim : w
-  mindim = mindim<h ? mindim : h
+  if h>w
+    return w
+  else
+    return h
+  end
 end
 
 function rxyz(lengthvector::Array{Float64,1}, widthvector::Array{Float64,1})
@@ -55,7 +61,7 @@ function nodemesh(xyz::Array{Float64,1}, size::Float32, color::Colorant)
   GLNormalMesh((HyperSphere(Point3f0(xyz[1],xyz[2],xyz[3]), size), color))
 end
 
-appendmesh!(::Array{HomogenousMesh,1},::Node,::Dict{Element,Context},
+appendmesh!(::Array{HomogenousMesh,1},::Element,::Dict{Element,Context},
             ::VisualizationParameters) = nothing
 function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      node::Node,
@@ -65,7 +71,8 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
   return nothing
 end
 
-center(a::Array{Float64,1}, b::Array{Float64,1}) = a[1:3] + (b[1:3]-a[1:3])./2
+centeroftwopoints(a::Array{Float64,1}, b::Array{Float64,1}) =
+  a[1:3] + (b[1:3]-a[1:3])./2
 
 function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      segment::Segment,
@@ -100,7 +107,7 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
   wxyz = c3[1:3]-c2[1:3]
   width = norm(wxyz)
   height = thick
-  center = center(c1,c3)
+  center = centeroftwopoints(c1,c3)
   uncorrectedplanemesh = GLNormalMesh((
     HyperRectangle(
       Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),
@@ -124,7 +131,7 @@ Returns an array of `HomogenousMesh` objects for use with `GLVisualize`.
 `mesharray` will accept any `Element` as it's argument, but only makes sense
  for `Group`'s.  Planes will not show their holes.
 """
-function new_mesharray(element::Element)
+function mesharray(element::Element)
   cd = contextdict(element)
   vp = VisualizationParameters(colorscheme, nodesize(element,cd))
   allmesh = Array(HomogenousMesh,0)
@@ -149,4 +156,4 @@ view(visualize(m), window)
 renderloop(window)
 ```
 """
-new_mesh(element::Element) = merge(new_mesharray(element))
+mesh(element::Element) = merge(mesharray(element))
