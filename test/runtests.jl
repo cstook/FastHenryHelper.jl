@@ -57,7 +57,7 @@ function groupfortests()
 end
 
 include("testmesh.jl")
-include("testvisualize.jl")
-include("testplot.jl")
+#include("testvisualize.jl")
+#include("testplot.jl")
 include("testgroups.jl")
 include("testutil.jl")
