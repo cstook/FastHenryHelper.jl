@@ -4,7 +4,7 @@ using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z,
       translationmatrix, Point3f0, Vec3f0
 using Colors: Colorant, RGBA, red, green, blue
 
-# export newmesh
+export new_mesh
 
 immutable ColorScheme
   segment   ::Colorant
@@ -20,7 +20,7 @@ const colorscheme = ColorScheme(
 )
 
 immutable VisualizationParameters
-  colorscheme :: colorscheme
+  colorscheme :: ColorScheme
   nodesize :: Float32
 end
 
@@ -55,7 +55,9 @@ function nodemesh(xyz::Array{Float64,1}, size::Float32, color::Colorant)
   GLNormalMesh((HyperSphere(Point3f0(xyz[1],xyz[2],xyz[3]), size), color))
 end
 
-function appendmesh!(allmesh::HomogenousMesh,
+appendmesh!(::Array{HomogenousMesh,1},::Node,::Dict{Element,Context},
+            ::VisualizationParameters) = nothing
+function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      node::Node,
                      cd::Dict{Element,Context},
                      vp::VisualizationParameters)
@@ -63,10 +65,9 @@ function appendmesh!(allmesh::HomogenousMesh,
   return nothing
 end
 
-length(a::Array{Float64,1}, b::Array{Float64,1}) = norm(b[1:3]-a[1:3])
 center(a::Array{Float64,1}, b::Array{Float64,1}) = a[1:3] + (b[1:3]-a[1:3])./2
 
-function appendmesh!(allmesh::HomogenousMesh,
+function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      segment::Segment,
                      cd::Dict{Element,Context},
                      vp::VisualizationParameters)
@@ -81,15 +82,15 @@ function appendmesh!(allmesh::HomogenousMesh,
               Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),
               Vec3f0(length,width,height)
             ),
-          color))
-   c = n1 + v1./2
+          vp.colorscheme.segment))
+   c = n1 + lengthvector./2
    correction = translationmatrix(Vec3f0(c...))*
                 rxyz(lengthvector, wxyz(segment,cd))
    push!(allmesh, correction*mesh)
-   return returnmesh
+   return nothing
 end
 
-function appendmesh!(allmesh::HomogenousMesh,
+function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      plane::UniformPlane,
                      cd::Dict{Element,Context},
                      vp::VisualizationParameters)
