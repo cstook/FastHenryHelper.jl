@@ -6,13 +6,13 @@ using Colors: Colorant, RGBA, red, green, blue
 
 export mesh
 
-immutable ColorScheme
+immutable MeshColorScheme
   segment   ::Colorant
   node      ::Colorant
   plane     ::Colorant
   planenode ::Colorant
 end
-const colorscheme = ColorScheme(
+const meshcolorscheme = MeshColorScheme(
   RGBA(0.2f0, 0.2f0, 1.0f0, 0.5f0),
   RGBA(1.0f0, 0.0f0, 0.0f0, 0.5f0),
   RGBA(0.0f0, 1.0f0, 0.0f0, 0.2f0),
@@ -20,7 +20,7 @@ const colorscheme = ColorScheme(
 )
 
 immutable VisualizationParameters
-  colorscheme :: ColorScheme
+  meshcolorscheme :: MeshColorScheme
   nodesize :: Float32
 end
 
@@ -67,7 +67,7 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      node::Node,
                      cd::Dict{Element,Context},
                      vp::VisualizationParameters)
-  push!(allmesh, nodemesh(xyz1(node,cd)[1:3], vp.nodesize, vp.colorscheme.node))
+  push!(allmesh, nodemesh(xyz1(node,cd)[1:3], vp.nodesize, vp.meshcolorscheme.node))
   return nothing
 end
 
@@ -89,7 +89,7 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
               Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),
               Vec3f0(length,width,height)
             ),
-          vp.colorscheme.segment))
+          vp.meshcolorscheme.segment))
    c = n1 + lengthvector./2
    correction = translationmatrix(Vec3f0(c...))*
                 rxyz(lengthvector, wxyz(segment,cd))
@@ -111,14 +111,14 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
   uncorrectedplanemesh = GLNormalMesh((
     HyperRectangle(
       Vec3f0(-0.5f0*length,-0.5f0*width,-0.5f0*height),
-      Vec3f0(length,width,height)),vp.colorscheme.plane
+      Vec3f0(length,width,height)),vp.meshcolorscheme.plane
   ))
   correction =
     translationmatrix(Vec3f0(center...)) *
     rxyz(lxyz,wxyz)
   push!(allmesh, correction * uncorrectedplanemesh)
   for xyz1 in nodes_xyz1(plane, cd)
-    push!(allmesh, nodemesh(xyz1[1:3],vp.nodesize, vp.colorscheme.planenode))
+    push!(allmesh, nodemesh(xyz1[1:3],vp.nodesize, vp.meshcolorscheme.planenode))
   end
   return nothing
 end
@@ -133,7 +133,7 @@ Returns an array of `HomogenousMesh` objects for use with `GLVisualize`.
 """
 function mesharray(element::Element)
   cd = contextdict(element)
-  vp = VisualizationParameters(colorscheme, nodesize(element,cd))
+  vp = VisualizationParameters(meshcolorscheme, nodesize(element,cd))
   allmesh = Array(HomogenousMesh,0)
   for e in element
     appendmesh!(allmesh,e,cd,vp)

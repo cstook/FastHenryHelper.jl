@@ -1,0 +1,6 @@
+- remove immutable title
+  - if first element in context is comment, it is the title.
+  - field in Context
+- Consistent node size with all Plots() backends.
+- transform to use context.
+- update tests for changes using context.
