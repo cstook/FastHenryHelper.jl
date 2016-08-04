@@ -130,3 +130,11 @@ function nodes_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
   f(i) = xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in cd
   ntuple(f, length(uniformplane.nodes))
 end
+
+function title(element::Element)
+  state = start(element)
+  (e,state) = next(element, state)
+  title_(e)
+end
+title_(::Element) = ""
+title_(x::Title) = x.text

@@ -32,11 +32,16 @@ immutable PlotScheme
   planenode :: PlotElementParameters
   invisiblenode :: PlotElementParameters
 end
-const plotelementparameters_node=          (:circle,:red,0.3,3.0,0.1, :blue)
-const plotelementparameters_segment=       (:none,  :red,0.3,3.0,0.1, :blue)
-const plotelementparameters_plane=         (:none,  :red,0.3,3.0,0.1, :green)
-const plotelementparameters_planenode=     (:circle,:red,0.3,3.0,0.1, :green)
-const plotelementparameters_invisiblenode= (:cross, :red,0.0,0.0,0.0, :blue)
+const plotelementparameters_node=
+  PlotElementParameters(:circle,:red,0.3,3.0,0.1, :blue)
+const plotelementparameters_segment=
+  PlotElementParameters(:none,  :red,0.3,3.0,0.1, :blue)
+const plotelementparameters_plane=
+  PlotElementParameters(:none,  :red,0.3,3.0,0.1, :green)
+const plotelementparameters_planenode=
+  PlotElementParameters(:circle,:red,0.3,3.0,0.1, :green)
+const plotelementparameters_invisiblenode=
+  PlotElementParameters(:cross, :red,0.0,0.0,0.0, :blue)
 const defaultplotscheme = PlotScheme(plotelementparameters_node,
                               plotelementparameters_segment,
                               plotelementparameters_plane,
@@ -45,8 +50,8 @@ const defaultplotscheme = PlotScheme(plotelementparameters_node,
 
 function Base.push!(pd::PlotData, xyz::Array{Float64,1})
   push!(pd.x, xyz[1])
-  push!(pd.x, xyz[2])
-  push!(pd.x, xyz[3])
+  push!(pd.y, xyz[2])
+  push!(pd.z, xyz[3])
   return nothing
 end
 
@@ -107,19 +112,19 @@ function plot(e::Element, ps::PlotScheme = defaultplotscheme)
     markerstrokewidth = transpose(pd.markerstrokewidth))
 end
 
-function plotdata(element::Element,ps::PlotScheme)
+function plotdata(element::Element,ps::PlotScheme = defaultplotscheme)
   pd = PlotData()
-  pd.title = ""  # need to fix later
+  pd.title = title(element)
   pd.groupcounter = 0
   cd = contextdict(element)
   for e in element
-    appendplotdata!(pd,e,cd)
+    appendplotdata!(pd,e,cd,ps)
   end
   return pd
 end
 
-appendplotdata!(::PlotData, ::Element, ::Dict{Element,Context}, ::PlotScheme)
-  = nothing
+appendplotdata!(::PlotData, ::Element, ::Dict{Element,Context}, ::PlotScheme) =
+  nothing
 function appendplotdata!(pd::PlotData,
                          node::Node,
                          cd::Dict{Element,Context},
@@ -154,7 +159,7 @@ function appendplotdata!(pd::PlotData,
     push!(pd,pep)
     for p in g
       push!(pd.group,pd.groupcounter)
-      push!(pd,c[:,p])
+      push!(pd,corners[:,p])
     end
   end
   return nothing
@@ -185,21 +190,21 @@ function corners(segment::Segment, cd::Dict{Element,Context})
   c[:,8] = mp4+(heightvector.*h/2)
   return c
 end
-function corners(plane::Uniformplane, cd::Dict{Element,Context})
+function corners(plane::UniformPlane, cd::Dict{Element,Context})
   (c1,c2,c3,thick) = corners_xyz1_thick(plane,cd)
   widthvector = c3[1:3] - c2[1:3]
   lengthvector = c1[1:3] - c2[1:3]
   perpvector = cross(widthvector,lengthvector)
-  halfthickperpvector = perpvector * (0.5*thick/norm(perp,3))
+  halfthickperpvector = perpvector * (0.5*thick/norm(perpvector,3))
   c = Array(Float64,(3,8))
-  c4 = widthvector + c1
-  c[:,1] = c1 - halfthickperpvector
-  c[:,2] = c2 - halfthickperpvector
-  c[:,3] = c3 - halfthickperpvector
+  c4 = widthvector + c1[1:3]
+  c[:,1] = c1[1:3] - halfthickperpvector
+  c[:,2] = c2[1:3] - halfthickperpvector
+  c[:,3] = c3[1:3] - halfthickperpvector
   c[:,4] = c4 - halfthickperpvector
-  c[:,5] = c1 + halfthickperpvector
-  c[:,6] = c2 + halfthickperpvector
-  c[:,7] = c3 + halfthickperpvector
+  c[:,5] = c1[1:3] + halfthickperpvector
+  c[:,6] = c2[1:3] + halfthickperpvector
+  c[:,7] = c3[1:3] + halfthickperpvector
   c[:,8] = c4 + halfthickperpvector
   return c
 end

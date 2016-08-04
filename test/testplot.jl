@@ -1,5 +1,5 @@
 function testplotdata()
-  pd = FastHenryHelper.PlotData(groupfortests())
+  pd = FastHenryHelper.plotdata(groupfortests())
   @test pd.title == "Test Title"
   @test_approx_eq pd.x [0.0,0.0,0.0,0.0,0.0,0.0,0.0,NaN,NaN,NaN,NaN,NaN,NaN,NaN,
                         NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,NaN,0.0,2.54e-7,2.54e-7,
@@ -51,7 +51,7 @@ testplotdata()
 
 function testplot()
   inductor = coilcraft1010vsgroup("1010VS-111ME")
-  pd = FastHenryHelper.PlotData(inductor)
+  pd = FastHenryHelper.plotdata(inductor)
   FastHenryHelper.pointsatlimits!(pd)
 end
 testplot()

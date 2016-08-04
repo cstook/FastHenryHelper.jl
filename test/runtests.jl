@@ -58,6 +58,6 @@ end
 
 include("testmesh.jl")
 #include("testvisualize.jl")
-#include("testplot.jl")
+include("testplot.jl")
 include("testgroups.jl")
 include("testutil.jl")
