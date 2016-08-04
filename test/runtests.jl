@@ -21,7 +21,7 @@ function testelementdebug(e::Element, verified::ASCIIString)
 end
 
 include("testelement.jl")
-
+include("groupsfortest.jl")
 function groupfortests()
   sp = SegmentParameters(h=2)
   pn1 = Node(:planenode1,1,2,3)

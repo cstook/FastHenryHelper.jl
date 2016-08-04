@@ -39,7 +39,7 @@ const plotelementparameters_segment=
 const plotelementparameters_plane=
   PlotElementParameters(:none,  :red,0.3,3.0,0.1, :green)
 const plotelementparameters_planenode=
-  PlotElementParameters(:circle,:red,0.3,3.0,0.1, :green)
+  PlotElementParameters(:circle,:green,0.3,3.0,0.1, :green)
 const plotelementparameters_invisiblenode=
   PlotElementParameters(:cross, :red,0.0,0.0,0.0, :blue)
 const defaultplotscheme = PlotScheme(plotelementparameters_node,
