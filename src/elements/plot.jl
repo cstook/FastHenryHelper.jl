@@ -121,30 +121,85 @@ end
 appendplotdata!(::PlotData, ::Element, ::Dict{Element,Context}, ::PlotScheme)
   = nothing
 function appendplotdata!(pd::PlotData,
-                         element::Node,
+                         node::Node,
                          cd::Dict{Element,Context},
                          ps::PlotScheme)
+  pushmarkergroup!(pd, xyz1(node,cd), ps.node)
   return nothing
 end
 function appendplotdata!(pd::PlotData,
-                         element::Segment,
+                         segment::Segment,
                          cd::Dict{Element,Context},
                          ps::PlotScheme)
+  appendplotdata!(pd, corners(segment,cd), ps.segment)
   return nothing
 end
 function appendplotdata!(pd::PlotData,
-                         element::UniformPlane,
+                         plane::UniformPlane,
                          cd::Dict{Element,Context},
                          ps::PlotScheme)
+  appendplotdata!(pd, corners(plane,cd), ps.plane)
+  pep = ps.planenode
+  for xyz1 in nodes_xyz1(plane,cd)
+    pushmarkergroup!(pd, xyz1, pep)
+  end
   return nothing
 end
 function appendplotdata!(pd::PlotData,
                          corners::Array{Float64,2},
-                         ps::PlotScheme)
+                         pep::PlotElementParameters)
+  t = [(1,2,3,4,1,5,6,7,8,5),(2,6),(3,7),(4,8)]
+  for g in t
+    pd.groupcounter += 1
+    push!(pd,pep)
+    for p in g
+      push!(pd.group,pd.groupcounter)
+      push!(pd,c[:,p])
+    end
+  end
   return nothing
 end
 
-function corners(element::Segment, cd::Dict{Element,Context})
+function corners(segment::Segment, cd::Dict{Element,Context})
+  (w,h) = width_height(segment,cd)
+  (n1_xyz1,n2_xyz1) = nodes_xyz1(segment,cd)
+  n1_xyz = n1_xyz1[1:3]
+  n2_xyz = n2_xyz1[1:3]
+  widthvector = wxyz(segment,cd)
+  widthvector = widthvector / norm(widthvector,3)
+  mp1 = n1_xyz+(widthvector.*w/2)
+  mp2 = n1_xyz-(widthvector.*w/2)
+  mp3 = n2_xyz+(widthvector.*w/2)
+  mp4 = n2_xyz-(widthvector.*w/2)
+  lengthvector = n2_xyz-n1_xyz
+  heightvector = cross(widthvector,lengthvector)
+  heightvector = heightvector/norm(heightvector,3)
+  c = Array(Float64,(3,8))
+  c[:,1] = mp1+(heightvector.*h/2)
+  c[:,2] = mp1-(heightvector.*h/2)
+  c[:,3] = mp2-(heightvector.*h/2)
+  c[:,4] = mp2+(heightvector.*h/2)
+  c[:,5] = mp3+(heightvector.*h/2)
+  c[:,6] = mp3-(heightvector.*h/2)
+  c[:,7] = mp4-(heightvector.*h/2)
+  c[:,8] = mp4+(heightvector.*h/2)
+  return c
 end
-function corners(element::Uniformplane, cd::Dict{Element,Context})
+function corners(plane::Uniformplane, cd::Dict{Element,Context})
+  (c1,c2,c3,thick) = corners_xyz1_thick(plane,cd)
+  widthvector = c3[1:3] - c2[1:3]
+  lengthvector = c1[1:3] - c2[1:3]
+  perpvector = cross(widthvector,lengthvector)
+  halfthickperpvector = perpvector * (0.5*thick/norm(perp,3))
+  c = Array(Float64,(3,8))
+  c4 = widthvector + c1
+  c[:,1] = c1 - halfthickperpvector
+  c[:,2] = c2 - halfthickperpvector
+  c[:,3] = c3 - halfthickperpvector
+  c[:,4] = c4 - halfthickperpvector
+  c[:,5] = c1 + halfthickperpvector
+  c[:,6] = c2 + halfthickperpvector
+  c[:,7] = c3 + halfthickperpvector
+  c[:,8] = c4 + halfthickperpvector
+  return c
 end

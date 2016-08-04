@@ -12,7 +12,7 @@ immutable MeshColorScheme
   plane     ::Colorant
   planenode ::Colorant
 end
-const meshcolorscheme = MeshColorScheme(
+const defaultmeshcolorscheme = MeshColorScheme(
   RGBA(0.2f0, 0.2f0, 1.0f0, 0.5f0),
   RGBA(1.0f0, 0.0f0, 0.0f0, 0.5f0),
   RGBA(0.0f0, 1.0f0, 0.0f0, 0.2f0),
@@ -131,9 +131,9 @@ Returns an array of `HomogenousMesh` objects for use with `GLVisualize`.
 `mesharray` will accept any `Element` as it's argument, but only makes sense
  for `Group`'s.  Planes will not show their holes.
 """
-function mesharray(element::Element)
+function mesharray(element::Element,mcs::MeshColorScheme=defaultmeshcolorscheme)
   cd = contextdict(element)
-  vp = VisualizationParameters(meshcolorscheme, nodesize(element,cd))
+  vp = VisualizationParameters(mcs, nodesize(element,cd))
   allmesh = Array(HomogenousMesh,0)
   for e in element
     appendmesh!(allmesh,e,cd,vp)
