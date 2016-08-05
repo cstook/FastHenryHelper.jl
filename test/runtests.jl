@@ -22,9 +22,8 @@ end
 
 include("testelement.jl")
 include("groupsfortests.jl")
-
+include("testcontext.jl")
 include("testmesh.jl")
-#include("testvisualize.jl")
 include("testplot.jl")
 include("testgroups.jl")
 include("testutil.jl")

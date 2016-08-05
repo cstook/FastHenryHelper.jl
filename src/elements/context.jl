@@ -140,6 +140,9 @@ function corners_xyz1_thick(uniformplane::UniformPlane, context::Context)
   c1[1:3] = uniformplane.corner1[1:3] * scale
   c2[1:3] = uniformplane.corner2[1:3] * scale
   c3[1:3] = uniformplane.corner3[1:3] * scale
+  c1[4] = 1.0
+  c2[4] = 1.0
+  c3[4] = 1.0
   thick = uniformplane.thick * scale
   (c1,c2,c3,thick)
 end
@@ -152,8 +155,12 @@ end
 
 function title(element::Element)
   state = start(element)
-  (e,state) = next(element, state)
-  title_(e)
+  if ~done(element,state)
+    (e,state) = next(element, state)
+    return title_(e)
+  else
+    return ""
+  end
 end
 title_(::Element) = ""
 title_(x::Title) = x.text
