@@ -116,36 +116,36 @@ function plotdata(element::Element,ps::PlotScheme = defaultplotscheme)
   pd = PlotData()
   pd.title = title(element)
   pd.groupcounter = 0
-  cd = contextdict(element)
+  context = Context(element)
   for e in element
-    appendplotdata!(pd,e,cd,ps)
+    appendplotdata!(pd,e,context,ps)
   end
   return pd
 end
 
-appendplotdata!(::PlotData, ::Element, ::Dict{Element,Context}, ::PlotScheme) =
+appendplotdata!(::PlotData, ::Element, ::Context, ::PlotScheme) =
   nothing
 function appendplotdata!(pd::PlotData,
                          node::Node,
-                         cd::Dict{Element,Context},
+                         context::Context,
                          ps::PlotScheme)
-  pushmarkergroup!(pd, xyz1(node,cd), ps.node)
+  pushmarkergroup!(pd, xyz1(node,context), ps.node)
   return nothing
 end
 function appendplotdata!(pd::PlotData,
                          segment::Segment,
-                         cd::Dict{Element,Context},
+                         context::Context,
                          ps::PlotScheme)
-  appendplotdata!(pd, corners(segment,cd), ps.segment)
+  appendplotdata!(pd, corners(segment,context), ps.segment)
   return nothing
 end
 function appendplotdata!(pd::PlotData,
                          plane::UniformPlane,
-                         cd::Dict{Element,Context},
+                         context::Context,
                          ps::PlotScheme)
-  appendplotdata!(pd, corners(plane,cd), ps.plane)
+  appendplotdata!(pd, corners(plane,context), ps.plane)
   pep = ps.planenode
-  for xyz1 in nodes_xyz1(plane,cd)
+  for xyz1 in nodes_xyz1(plane,context)
     pushmarkergroup!(pd, xyz1, pep)
   end
   return nothing
@@ -165,12 +165,12 @@ function appendplotdata!(pd::PlotData,
   return nothing
 end
 
-function corners(segment::Segment, cd::Dict{Element,Context})
-  (w,h) = width_height(segment,cd)
-  (n1_xyz1,n2_xyz1) = nodes_xyz1(segment,cd)
+function corners(segment::Segment, context::Context)
+  (w,h) = width_height(segment,context)
+  (n1_xyz1,n2_xyz1) = nodes_xyz1(segment,context)
   n1_xyz = n1_xyz1[1:3]
   n2_xyz = n2_xyz1[1:3]
-  widthvector = wxyz(segment,cd)
+  widthvector = wxyz(segment,context)
   widthvector = widthvector / norm(widthvector,3)
   mp1 = n1_xyz+(widthvector.*w/2)
   mp2 = n1_xyz-(widthvector.*w/2)
@@ -190,8 +190,8 @@ function corners(segment::Segment, cd::Dict{Element,Context})
   c[:,8] = mp4+(heightvector.*h/2)
   return c
 end
-function corners(plane::UniformPlane, cd::Dict{Element,Context})
-  (c1,c2,c3,thick) = corners_xyz1_thick(plane,cd)
+function corners(plane::UniformPlane, context::Context)
+  (c1,c2,c3,thick) = corners_xyz1_thick(plane,context)
   widthvector = c3[1:3] - c2[1:3]
   lengthvector = c1[1:3] - c2[1:3]
   perpvector = cross(widthvector,lengthvector)

@@ -24,19 +24,19 @@ immutable VisualizationParameters
   nodesize :: Float32
 end
 
-function nodesize(element::Element, cd::Dict{Element,Context})
+function nodesize(element::Element, context::Context)
   cumulative_mindim = Inf32
   for e in element
-    canidate_mindim = mindim(e, cd)
+    canidate_mindim = mindim(e, context)
     if canidate_mindim < cumulative_mindim
       cumulative_mindim = canidate_mindim
     end
   end
   return cumulative_mindim/6.0f0
 end
-mindim(::Element, ::Dict{Element,Context}) = Inf32
-function mindim(s::Segment, cd::Dict{Element,Context})
-  (w,h) = width_height(s,cd)
+mindim(::Element, ::Context) = Inf32
+function mindim(s::Segment, context::Context)
+  (w,h) = width_height(s,context)
   if h>w
     return w
   else
@@ -61,13 +61,13 @@ function nodemesh(xyz::Array{Float64,1}, size::Float32, color::Colorant)
   GLNormalMesh((HyperSphere(Point3f0(xyz[1],xyz[2],xyz[3]), size), color))
 end
 
-appendmesh!(::Array{HomogenousMesh,1},::Element,::Dict{Element,Context},
+appendmesh!(::Array{HomogenousMesh,1},::Element,::Context,
             ::VisualizationParameters) = nothing
 function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      node::Node,
-                     cd::Dict{Element,Context},
+                     context::Context,
                      vp::VisualizationParameters)
-  push!(allmesh, nodemesh(xyz1(node,cd)[1:3], vp.nodesize, vp.meshcolorscheme.node))
+  push!(allmesh, nodemesh(xyz1(node,context)[1:3], vp.nodesize, vp.meshcolorscheme.node))
   return nothing
 end
 
@@ -76,12 +76,12 @@ centeroftwopoints(a::Array{Float64,1}, b::Array{Float64,1}) =
 
 function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      segment::Segment,
-                     cd::Dict{Element,Context},
+                     context::Context,
                      vp::VisualizationParameters)
-   (n1_xyz1,n2_xyz1) = nodes_xyz1(segment, cd)
+   (n1_xyz1,n2_xyz1) = nodes_xyz1(segment, context)
    n1 = n1_xyz1[1:3]
    n2 = n2_xyz1[1:3]
-   (width,height) = width_height(segment, cd)
+   (width,height) = width_height(segment, context)
    lengthvector= (n2-n1)
    length = norm(lengthvector)
    mesh = GLNormalMesh((
@@ -92,16 +92,16 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
           vp.meshcolorscheme.segment))
    c = n1 + lengthvector./2
    correction = translationmatrix(Vec3f0(c...))*
-                rxyz(lengthvector, wxyz(segment,cd))
+                rxyz(lengthvector, wxyz(segment,context))
    push!(allmesh, correction*mesh)
    return nothing
 end
 
 function appendmesh!(allmesh::Array{HomogenousMesh,1},
                      plane::UniformPlane,
-                     cd::Dict{Element,Context},
+                     context::Context,
                      vp::VisualizationParameters)
-  (c1,c2,c3,thick) = corners_xyz1_thick(plane, cd)
+  (c1,c2,c3,thick) = corners_xyz1_thick(plane, context)
   lxyz = c1[1:3]-c2[1:3]
   length = norm(lxyz)
   wxyz = c3[1:3]-c2[1:3]
@@ -117,7 +117,7 @@ function appendmesh!(allmesh::Array{HomogenousMesh,1},
     translationmatrix(Vec3f0(center...)) *
     rxyz(lxyz,wxyz)
   push!(allmesh, correction * uncorrectedplanemesh)
-  for xyz1 in nodes_xyz1(plane, cd)
+  for xyz1 in nodes_xyz1(plane, context)
     push!(allmesh, nodemesh(xyz1[1:3],vp.nodesize, vp.meshcolorscheme.planenode))
   end
   return nothing
@@ -132,11 +132,11 @@ Returns an array of `HomogenousMesh` objects for use with `GLVisualize`.
  for `Group`'s.  Planes will not show their holes.
 """
 function mesharray(element::Element,mcs::MeshColorScheme=defaultmeshcolorscheme)
-  cd = contextdict(element)
-  vp = VisualizationParameters(mcs, nodesize(element,cd))
+  context = Context(element)
+  vp = VisualizationParameters(mcs, nodesize(element,context))
   allmesh = Array(HomogenousMesh,0)
   for e in element
-    appendmesh!(allmesh,e,cd,vp)
+    appendmesh!(allmesh,e,context,vp)
   end
   return allmesh
 end

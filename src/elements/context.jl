@@ -8,10 +8,10 @@ ElementContext() = ElementContext(Default(), Units("m"), 0)
 typealias ContextDict Dict{Element,ElementContext}
 
 immutable Context
-  contextdict :: ContextDict
+  dict :: ContextDict
   firstunits :: Units
 end
-context(element::Element) = Context(contextdict(element),firstunits(element))
+Context(element::Element) = Context(contextdict(element),firstunits(element))
 
 function firstunits(element::Element)
   result = Units()
@@ -28,28 +28,28 @@ firstunits_(units::Units) = units
 
 function contextdict(element::Element)
   cd = ContextDict()
-  c = ElementContext()
+  ec = ElementContext()
   for e in element
-    c = elementcontext(c,e)
-    cd[e] = c
+    ec = elementcontext(ec,e)
+    cd[e] = ec
   end
   return cd
 end
 
-function elementcontext(c::ElementContext, x::Default)
-  ElementContext(x, c.units, c.autoname)
+function elementcontext(ec::ElementContext, x::Default)
+  ElementContext(x, ec.units, ec.autoname)
 end
-function elementcontext(c::ElementContext, x::Units)
-  ElementContext(c.default, x, c.autoname, c.firstunits)
+function elementcontext(ec::ElementContext, x::Units)
+  ElementContext(ec.default, x, ec.autoname)
 end
-function elementcontext(c::ElementContext, x::Union{Node,Segment,UniformPlane})
+function elementcontext(ec::ElementContext, x::Union{Node,Segment,UniformPlane})
   if x.name == Symbol("")
-    return ElementContext(c.default, c.units, c.autoname+1 , c.firstunits)
+    return ElementContext(ec.default, ec.units, ec.autoname+1)
   else
-    return c
+    return ec
   end
 end
-elementcontext(c::ElementContext, ::Element) = c
+elementcontext(ec::ElementContext, ::Element) = ec
 
 # methods using Context return values in the first unit of their group
 
@@ -60,10 +60,11 @@ const tometers = Dict("km"  =>1e3,
                       "um"  =>1e-6,
                       "in"  =>2.54e-2,
                       "mils"=>2.54e-5,
-                      ""    =>1.0)
+                      ""    =>1.0)  # meters is default
 
-function scaletofirstunits(x::Element, cd::Dict{Element,Context})
-  tometers[cd[x].units.unitname] / tometers[cd[x].firstunits.unitname]
+function scaletofirstunits(x::Element, context::Context)
+  tometers[context.dict[x].units.unitname] /
+    tometers[context.firstunits.unitname]
 end
 
 function xyz1(node::Node, scale::Float64)
@@ -73,47 +74,47 @@ function xyz1(node::Node, scale::Float64)
   return result
 end
 
-function xyz1(node::Node, cd::Dict{Element,Context})
-  scale = scaletofirstunits(node,cd)
+function xyz1(node::Node, context::Context)
+  scale = scaletofirstunits(node,context)
   xyz1(node, scale)
 end
 
-function nodes_xyz1(segment::Segment, cd::Dict{Element,Context})
-  scale = scaletofirstunits(segment,cd)
-  if haskey(cd,segment.node1)
-    node1_xyz1 = xyz1(segment.node1,cd)
+function nodes_xyz1(segment::Segment, context::Context)
+  scale = scaletofirstunits(segment,context)
+  if haskey(context.dict,segment.node1)
+    node1_xyz1 = xyz1(segment.node1,context)
   else
     node1_xyz1 = xyz1(segment.node1,scale)
   end
-  if haskey(cd,segment.node2)
-    node2_xyz1 = xyz1(segment.node2,cd)
+  if haskey(context.dict,segment.node2)
+    node2_xyz1 = xyz1(segment.node2,context)
   else
     node2_xyz1 = xyz1(segment.node2,scale)
   end
   return (node1_xyz1, node2_xyz1)
 end
 
-function width_height(segment::Segment, cd::Dict{Element,Context})
-  scale = scaletofirstunits(segment,cd)
+function width_height(segment::Segment, context::Context)
+  scale = scaletofirstunits(segment,context)
   if isnan(segment.wh.w) || isnan(segment.wh.h)
-    scaledefault = scaletofirstunits(cd[segment].default,cd)
+    scaledefault = scaletofirstunits(context.dict[segment].default,context)
   end
   if isnan(segment.wh.w)
-    width = cd[segment].default.wh.w * scaledefault
+    width = context.dict[segment].default.wh.w * scaledefault
   else
     width = segment.wh.w * scale
   end
   if isnan(segment.wh.h)
-    height = cd[segment].default.wh.h * scaledefault
+    height = context.dict[segment].default.wh.h * scaledefault
   else
     height = segment.wh.h * scale
   end
   return (width, height)
 end
 
-function wxyz(segment::Segment, cd::Dict{Element,Context})
+function wxyz(segment::Segment, context::Context)
   if segment.wxwywz.isdefault
-    (node1_xyz1, node2_xyz1) = nodes_xyz1(segment, cd)
+    (node1_xyz1, node2_xyz1) = nodes_xyz1(segment, context)
     v1 = node1_xyz1[1:3] - node2_xyz1[1:3]
     v2 = [0.0, 0.0, 1.0]
     w = cross(v1,v2)
@@ -127,8 +128,8 @@ function wxyz(segment::Segment, cd::Dict{Element,Context})
   end
 end
 
-function corners_xyz1_thick(uniformplane::UniformPlane, cd::Dict{Element,Context})
-  scale = scaletofirstunits(uniformplane,cd)
+function corners_xyz1_thick(uniformplane::UniformPlane, context::Context)
+  scale = scaletofirstunits(uniformplane,context)
   c1 = Array(Float64,4)
   c2 = similar(c1)
   c3 = similar(c1)
@@ -139,9 +140,9 @@ function corners_xyz1_thick(uniformplane::UniformPlane, cd::Dict{Element,Context
   (c1,c2,c3,thick)
 end
 
-function nodes_xyz1(uniformplane::UniformPlane, cd::Dict{Element,Context})
-  scale = scaletofirstunits(uniformplane,cd)
-  f(i) = xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in cd
+function nodes_xyz1(uniformplane::UniformPlane, context::Context)
+  scale = scaletofirstunits(uniformplane,context)
+  f(i) = xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in context
   ntuple(f, length(uniformplane.nodes))
 end
 
