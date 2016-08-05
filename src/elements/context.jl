@@ -1,41 +1,55 @@
-export contextdict
-
-immutable Context
+immutable ElementContext
   default :: Default
   units :: Units
   autoname :: Int
+end
+ElementContext() = ElementContext(Default(), Units("m"), 0)
+
+typealias ContextDict Dict{Element,ElementContext}
+
+immutable Context
+  contextdict :: ContextDict
   firstunits :: Units
 end
-Context() = Context(Default(), Units("m"), 0, Units())
+context(element::Element) = Context(contextdict(element),firstunits(element))
+
+function firstunits(element::Element)
+  result = Units()
+  for e in element
+    if firstunits_(e) != nothing
+      result =  firstunits_(e)
+      break
+    end
+  end
+  return result
+end
+firstunits_(::Element) = nothing
+firstunits_(units::Units) = units
 
 function contextdict(element::Element)
-  cd = Dict{Element,Context}()
-  c = Context()
+  cd = ContextDict()
+  c = ElementContext()
   for e in element
-    c = context(c,e)
+    c = elementcontext(c,e)
     cd[e] = c
   end
   return cd
 end
 
-function context(c::Context, x::Default)
-  Context(x, c.units, c.autoname, c.firstunits)
+function elementcontext(c::ElementContext, x::Default)
+  ElementContext(x, c.units, c.autoname)
 end
-function context(c::Context, x::Units)
-  if c.firstunits == Units()
-    Context(c.default, x, c.autoname, x)
-  else
-    Context(c.default, x, c.autoname, c.firstunits)
-  end
+function elementcontext(c::ElementContext, x::Units)
+  ElementContext(c.default, x, c.autoname, c.firstunits)
 end
-function context(c::Context, x::Union{Node,Segment,UniformPlane})
+function elementcontext(c::ElementContext, x::Union{Node,Segment,UniformPlane})
   if x.name == Symbol("")
-    return Context(c.default, c.units, c.autoname+1 , c.firstunits)
+    return ElementContext(c.default, c.units, c.autoname+1 , c.firstunits)
   else
     return c
   end
 end
-context(c::Context, ::Element) = c
+elementcontext(c::ElementContext, ::Element) = c
 
 # methods using Context return values in the first unit of their group
 
