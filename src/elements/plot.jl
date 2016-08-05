@@ -82,7 +82,7 @@ function pushmarkergroup!(pd::PlotData,
 end
 
 # force same scale on all axis with invisible markers in corners
-function pointsatlimits!(pd::PlotData, ps::PlotScheme)
+function pointsatlimits!(pd::PlotData, ps::PlotScheme = defaultplotscheme)
   xlims = [minimum(pd.x) maximum(pd.x)]
   ylims = [minimum(pd.y) maximum(pd.y)]
   zlims = [minimum(pd.z) maximum(pd.z)]
