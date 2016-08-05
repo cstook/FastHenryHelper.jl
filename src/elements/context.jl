@@ -3,15 +3,19 @@ immutable ElementContext
   units :: Units
   autoname :: Int
 end
-ElementContext() = ElementContext(Default(), Units("m"), 0)
+ElementContext() = ElementContext(Default(), Units(), 0)
 
 typealias ContextDict Dict{Element,ElementContext}
 
 immutable Context
   dict :: ContextDict
   firstunits :: Units
+  title :: ASCIIString
 end
-Context(element::Element) = Context(contextdict(element),firstunits(element))
+Context(element::Element) = Context(
+                              contextdict(element),
+                              firstunits(element),
+                              title(element))
 
 function firstunits(element::Element)
   result = Units()

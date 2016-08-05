@@ -30,7 +30,7 @@ function groupfortests()
     ),
     s1 = Segment(n3,n4,sp)
   ])
-  (g1,(t,sp,pn1,pn2,u1,u2,u3,u4,u5,u6,u7,n1,n2,n3,n4,n5,n6,n7,d1,p1))
+  (g1,(t,sp,pn1,pn2,u1,u2,u3,u4,u5,u6,u7,n1,n2,n3,n4,n5,n6,n7,d1,p1,s1))
 end
 
 # units all "converted" to meters.  display in km.

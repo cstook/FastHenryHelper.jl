@@ -114,9 +114,9 @@ end
 
 function plotdata(element::Element,ps::PlotScheme = defaultplotscheme)
   pd = PlotData()
-  pd.title = title(element)
   pd.groupcounter = 0
   context = Context(element)
+  pd.title = context.title
   for e in element
     appendplotdata!(pd,e,context,ps)
   end
