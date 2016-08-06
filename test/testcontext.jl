@@ -53,7 +53,7 @@ function contexttest1()
   @test_approx_eq xyz1(n2,context) [0.0,0.0, 0.001  ,1.0]
   @test_approx_eq xyz1(n3,context) [0.0,0.0, 1.0e-5 ,1.0]
   @test_approx_eq xyz1(n4,context) [0.0,0.0, 1.0e-6 ,1.0]
-  @test_approx_eq xyz1(n5,context) [0.0,0.0, 1.0e-9,1.0]
+  @test_approx_eq xyz1(n5,context) [0.0,0.0, 1.0e-9 ,1.0]
   @test_approx_eq xyz1(n6,context) [0.0,0.0, 2.54e-5,1.0]
   @test_approx_eq xyz1(n7,context) [0.0,0.0, 2.54e-8,1.0]
 
