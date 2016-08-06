@@ -84,7 +84,7 @@ function Base.show(io::IO ,x::UniformPlane, context::Context)
     @printf(io,"+ relz=%.9e\n",x.relz)
   end
   for node in x.nodes
-    show(io,node, autoname=autoname, plane=true)
+    show(io,node, context, plane=true)
   end
   for hole in x.holes
     show(io,hole)
@@ -104,7 +104,7 @@ end
 function Base.show(io::IO, x::Equiv, context::Context)
   print(io,".equiv")
   for node in x.nodes
-    print(io," N",name(node))
+    print(io," N",name(node,context))
   end
   println(io)
   return nothing

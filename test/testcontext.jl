@@ -7,9 +7,9 @@ function contexttest1()
 
   context = Context(g1)
 
-  @test context.dict[t].default == Default()
-  @test context.dict[t].units == Units()
-  @test context.dict[t].autoname == 0
+  #@test context.dict[t].default == Default()
+  #@test context.dict[t].units == Units()
+  #@test context.dict[t].autoname == 0
   @test context.firstunits == Units("km")
   @test context.title == "Test Title"
 

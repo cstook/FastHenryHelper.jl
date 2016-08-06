@@ -34,28 +34,50 @@ firstunits_(units::Units) = units
 
 function contextdict(element::Element)
   cd = ContextDict()
-  ec = ElementContext()
+  previouselementcontext = ElementContext()
   for e in element
-    ec = elementcontext(ec,e)
-    cd[e] = ec
+    previouselementcontext = appendelementcontext!(cd,previouselementcontext,e)
   end
   return cd
 end
 
-function elementcontext(ec::ElementContext, x::Default)
-  ElementContext(x, ec.units, ec.autoname)
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Default)
+  newelementcontext = ElementContext(x, pec.units, pec.autoname)
+  cd[x] = newelementcontext
 end
-function elementcontext(ec::ElementContext, x::Units)
-  ElementContext(ec.default, x, ec.autoname)
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Units)
+  newelementcontext = ElementContext(pec.default, x, pec.autoname)
+  cd[x] = newelementcontext
 end
-function elementcontext(ec::ElementContext, x::NamedElements)
-  if x.name == Symbol("")
-    return ElementContext(ec.default, ec.units, ec.autoname+1)
+function appendelementcontext_!(cd::ContextDict, pec::ElementContext, x::NamedElements)
+  if ~haskey(cd,x)
+    if x.name == Symbol("")
+      newelementcontext = ElementContext(pec.default, pec.units, pec.autoname+1)
+    else
+      newelementcontext = pec
+    end
+    cd[x] = newelementcontext
+    return newelementcontext
   else
-    return ec
+    return pec
   end
 end
-elementcontext(ec::ElementContext, ::Element) = ec
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Node)
+  appendelementcontext_!(cd,pec,x)
+end
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Segment)
+  pec = appendelementcontext_!(cd,pec,x)
+  pec = appendelementcontext_!(cd,pec,x.node1)
+  appendelementcontext_!(cd,pec,x.node2)
+end
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::UniformPlane)
+  pec = appendelementcontext_!(cd,pec,x)
+  for node in x.nodes
+    pec = appendelementcontext_!(cd,pec,node)
+  end
+  pec
+end
+appendelementcontext!(::ContextDict, pec::ElementContext, ::Element) = pec
 
 # methods using Context return values in the first unit of their group
 
