@@ -8,13 +8,3 @@ export Equiv
 immutable Equiv <: Element
   nodes :: Array{Node,1}
 end
-
-function Base.show(io::IO, x::Equiv; autoname = AutoName())
-  print(io,".equiv")
-  for node in x.nodes
-    update!(autoname, node)
-    print(io," N",autoname.namedict[node])
-  end
-  println(io)
-  return nothing
-end

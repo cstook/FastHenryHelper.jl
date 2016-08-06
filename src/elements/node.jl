@@ -16,24 +16,6 @@ Node(name,x,y,z) = Node(name,[x,y,z,1.0])
 Node(x,y,z) = Node(Symbol(""),x,y,z)
 Node(;name = Symbol(""), x=0, y=0, z=0) = Node(name,x,y,z)
 
-function Base.show(io::IO, n::Node;
-                   plane = false,
-                   autoname = AutoName())
-  update!(autoname,n)
-  if plane
-    print(io,"+ ")
-  end
-  print(io, "N")
-  print(io, autoname.namedict[n], " ")
-  if plane
-    @printf(io,"(%.9e,%.9e,%.9e)",n.xyz[1],n.xyz[2],n.xyz[3])
-  else
-    @printf(io,"x=%.9e y=%.9e z=%.9e",n.xyz[1],n.xyz[2],n.xyz[3])
-  end
-  println(io)
-  return nothing
-end
-
 function transform!(n::Node, tm::Array{Float64,2})
   xyz = tm*n.xyz
   n.xyz[1:4] = xyz[1:4]

@@ -17,8 +17,3 @@ immutable Units <: Element
 end
 
 Base.(:(==))(x::Units, y::Units) = x.unitname == y.unitname
-
-function Base.show(io::IO, x::Units; autoname = nothing)
-  println(io,".units ",x.unitname)
-  return nothing
-end

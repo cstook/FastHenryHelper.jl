@@ -28,12 +28,3 @@ end
 
 Freq(min,max) = Freq(min,max,NaN)
 Freq(;min=0, max=NaN, ndec=NaN) = Freq(min,max,ndec)
-
-function Base.show(io::IO, x::Freq; autoname = nothing)
-  @printf(io,".freq fmin=%.9e fmax=%.9e",x.min,x.max)
-  if ~isnan(x.ndec)
-    @printf(io," ndec=%.9e",x.ndec)
-  end
-  println(io)
-  return nothing
-end

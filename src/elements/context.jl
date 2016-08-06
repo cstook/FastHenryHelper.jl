@@ -17,6 +17,8 @@ Context(element::Element) = Context(
                               firstunits(element),
                               title(element))
 
+typealias NamedElements Union{Node,Segment,UniformPlane}
+
 function firstunits(element::Element)
   result = Units()
   for e in element
@@ -46,7 +48,7 @@ end
 function elementcontext(ec::ElementContext, x::Units)
   ElementContext(ec.default, x, ec.autoname)
 end
-function elementcontext(ec::ElementContext, x::Union{Node,Segment,UniformPlane})
+function elementcontext(ec::ElementContext, x::NamedElements)
   if x.name == Symbol("")
     return ElementContext(ec.default, ec.units, ec.autoname+1)
   else

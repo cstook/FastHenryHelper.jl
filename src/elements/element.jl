@@ -22,7 +22,6 @@ include("uniformdiscretizedplanes.jl")
 include("comment.jl")
 include("group.jl")
 
-# context experiment
 include("context.jl")
 
 # functions for elements

@@ -204,20 +204,6 @@ Segment(n1::Node, n2::Node, sp::SegmentParameters) =
 Segment(name, n1::Node, n2::Node, sp::SegmentParameters) =
             Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
 
-function Base.show(io::IO, s::Segment; autoname = AutoName())
-  update!(autoname, s)
-  update!(autoname, s.node1)
-  update!(autoname, s.node2)
-  print(io,"E")
-  print(io, autoname.namedict[s])
-  print(io," N", autoname.namedict[s.node1])
-  println(io," N", autoname.namedict[s.node2])
-  show(io, s.wh)
-  show(io, s.sigmarho)
-  show(io, s.wxwywz)
-  return nothing
-end
-
 function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   if wxwywz.isdefault
     v1 = n2.xyz - n1.xyz
