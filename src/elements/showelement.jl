@@ -1,4 +1,4 @@
-function name(::Element, ::Context) = nothing
+name(::Element, ::Context) = nothing
 function name(x::NamedElements, context::Context)
   if x.name == Symbol("")
     nameincontext = Symbol("_"*string(context.dict[x].autoname))
