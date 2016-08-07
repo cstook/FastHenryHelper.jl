@@ -47,7 +47,6 @@ function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Default)
 end
 function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Units)
   newelementcontext = ElementContext(pec.default, x, pec.autoname)
-  cd[x] = newelementcontext
 end
 function appendelementcontext_!(cd::ContextDict, pec::ElementContext, x::NamedElements)
   if ~haskey(cd,x)
@@ -172,10 +171,44 @@ function corners_xyz1_thick(uniformplane::UniformPlane, context::Context)
 end
 
 function nodes_xyz1(uniformplane::UniformPlane, context::Context)
-  scale = scaletofirstunits(uniformplane,context)
+  if length(uniformplane.nodes)!=0
+    scale = scaletofirstunits(uniformplane,context)
+  end
   f(i) = xyz1(uniformplane.nodes[i],scale) #plane nodes should not be in context
   ntuple(f, length(uniformplane.nodes))
 end
+
+function holes_xyz1(uniformplane::UniformPlane, context::Context)
+  if length(uniformplane.holes)!=0
+    scale = scaletofirstunits(uniformplane,context)
+  end
+  holexyz1list = Array(Array{Float64,1},0)
+  for hole in uniformplane.holes
+    appendholexyz1list!(holexyz1list, hole, scale)
+  end
+  return holexyz1list
+end
+function appendholexyz1list!(holexyz1list::Array{Array{Float64,1},1},
+                             hole::Union{Point,Circle}, scale::Float64)
+  xyz1 = Array(Float64,4)
+  xyz1[1:3] = hole.xyz1 * scale
+  xyz1[4] = 1.0
+  push!(holexyz1list, xyz1)
+  return nothing
+end
+function appendholexyz1list!(holexyz1list::Array{Array{Float64,1},1},
+                             rect::Rect, scale::Float64)
+  xyz1 = Array(Float64,4)
+  xyz1[1:3] = rect.corner1 * scale
+  xyz1[4] = 1.0
+  push!(holexyz1list, xyz1)
+  xyz1[1:3] = rect.corner2 * scale
+  xyz1[4] = 1.0
+  push!(holexyz1list, xyz1)
+  return nothing
+end
+
+
 
 function title(element::Element)
   state = start(element)

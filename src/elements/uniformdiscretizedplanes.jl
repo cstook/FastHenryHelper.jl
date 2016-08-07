@@ -21,21 +21,21 @@ abstract Hole <: Element
 Keyword arguments are `x`, `y`, `z`.
 """
 immutable Point <: Hole
-  xyz  :: Array{Float64,1}
+  xyz1  :: Array{Float64,1}
 end
 Point(x,y,z) = Point([x,y,z,1])
 Point(; x=0, y=0, z=0) = Point(x,y,z)
 
 function Base.show(io::IO, x::Point)
   print(io,"+ hole point ")
-  @printf(io,"(%.9e, %.9e, %.9e)",x.xyz[1],x.xyz[2],x.xyz[3])
+  @printf(io,"(%.9e, %.9e, %.9e)",x.xyz1[1],x.xyz1[2],x.xyz1[3])
   println(io)
   return nothing
 end
 
 function transform!(x::Point, tm::Array{Float64,2})
-  xyz = tm*x.xyz
-  x.xyz[1:4] = xyz[1:4]
+  xyz1 = tm*x.xyz1
+  x.xyz1[1:4] = xyz1[1:4]
   return nothing
 end
 
@@ -82,7 +82,7 @@ end
 Keyword arguments are `x`, `y`, `z`, `r`.
 """
 immutable Circle <: Hole
-  center  :: Array{Float64,1}
+  xyz1    :: Array{Float64,1} # center
   radius  :: Float64
 end
 Circle(x,y,z,r) = Circle([x,y,z,1],r)
@@ -92,15 +92,15 @@ Circle(; x=0, y=0, z=0, r=0) =
 function Base.show(io::IO, x::Circle)
   print(io,"+ hole circle ")
   @printf(io, "(%.9e, %.9e, %.9e, %.9e)",
-          x.center[1],x.center[2],x.center[3],
+          x.xyz1[1],x.xyz1[2],x.xyz1[3],
           x.radius)
   println(io)
   return nothing
 end
 
 function transform!(x::Circle, tm::Array{Float64,2})
-  center = tm*x.center
-  x.center[1:4] = center[1:4]
+  xyz1 = tm*x.xyz1
+  x.xyz1[1:4] = xyz1[1:4]
   return nothing
 end
 
