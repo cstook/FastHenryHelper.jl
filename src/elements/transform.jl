@@ -13,8 +13,18 @@ function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
   for i in eachindex(x)
     transform!(x[i],tm)
   end
-  return nothing
 end
+function transform!(element::Element, tm::Array{Float64,2},
+                    context::Context = Context(element))
+  scale = 1.0
+  for e in element
+    if haskey(context.dict,e)
+      scale = scaletofirstunits(e,context)
+    end
+    _transform!(e,tm,scale)
+  end
+end
+_transform!(::Element, ::Array{Float64,2}, ::Float64) = nothing
 
 # for creating Groups of elements
 function transform(e::Element, transformationlist)

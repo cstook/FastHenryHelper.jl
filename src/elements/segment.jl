@@ -50,7 +50,7 @@ function Base.show(io::IO, x::WxWyWz)
   end
   return nothing
 end
-function transform!(x::WxWyWz, tm::Array{Float64,2})
+function _transform!(x::WxWyWz, tm::Array{Float64,2}, ::Float64)
   newxyz = tm[1:3,1:3]*x.xyz
   x.xyz = newxyz
   x.isdefault = false
@@ -218,7 +218,7 @@ function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   return nothing
 end
 
-function transform!(s::Segment, tm::Array{Float64,2})
-  transform!(s.wxwywz,tm)  #  assume nodes are transformed as part of a group
+function _transform!(s::Segment, tm::Array{Float64,2}, scale::Float64)
+  _transform!(s.wxwywz,tm,scale)  #  assume nodes are transformed as part of a group
   return nothing
 end

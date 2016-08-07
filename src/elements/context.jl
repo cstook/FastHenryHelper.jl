@@ -203,12 +203,9 @@ function appendholexyz1list!(holexyz1list::Array{Array{Float64,1},1},
   xyz1[4] = 1.0
   push!(holexyz1list, xyz1)
   xyz1[1:3] = rect.corner2 * scale
-  xyz1[4] = 1.0
   push!(holexyz1list, xyz1)
   return nothing
 end
-
-
 
 function title(element::Element)
   state = start(element)

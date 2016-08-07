@@ -33,9 +33,11 @@ function Base.show(io::IO, x::Point)
   return nothing
 end
 
-function transform!(x::Point, tm::Array{Float64,2})
+function _transform!(x::Point, tm::Array{Float64,2}, scale::Float64)
+  x.xyz1[1:3] *= scale
   xyz1 = tm*x.xyz1
   x.xyz1[1:4] = xyz1[1:4]
+  x.xyz1[1:3] *= 1.0/scale
   return nothing
 end
 
@@ -65,11 +67,15 @@ function Base.show(io::IO, x::Rect)
   return nothing
 end
 
-function transform!(x::Rect, tm::Array{Float64,2})
+function _transform!(x::Rect, tm::Array{Float64,2}, scale::Float64)
+  x.corner1[1:3] *= scale
+  x.corner2[1:3] *= scale
   corner1 = tm*x.corner1
   corner2 = tm*x.corner2
   x.corner1[1:4] = corner1[1:4]
   x.corner2[1:4] = corner2[1:4]
+  x.corner1[1:3] *= 1/scale
+  x.corner2[1:3] *= 1/scale
   return nothing
 end
 
@@ -98,12 +104,13 @@ function Base.show(io::IO, x::Circle)
   return nothing
 end
 
-function transform!(x::Circle, tm::Array{Float64,2})
+function _transform!(x::Circle, tm::Array{Float64,2}, scale::Float64)
+  x.xyz1[1:3] *= scale
   xyz1 = tm*x.xyz1
   x.xyz1[1:4] = xyz1[1:4]
+  x.xyz1[1:3] *= 1/scale
   return nothing
 end
-
 
 """
     UniformPlane(<keyword arguments>)
@@ -195,18 +202,24 @@ UniformPlane(;name = Symbol(""),
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
 
-function transform!(x::UniformPlane, tm::Array{Float64,2})
+function _transform!(x::UniformPlane, tm::Array{Float64,2}, scale::Float64)
+  x.corner1[1:3] *= scale
+  x.corner2[1:3] *= scale
+  x.corner3[1:3] *= scale
   corner1 = tm*x.corner1
   x.corner1[1:4] = corner1[1:4]
   corner2 = tm*x.corner2
   x.corner2[1:4] = corner2[1:4]
   corner3 = tm*x.corner3
   x.corner3[1:4] = corner3[1:4]
+  x.corner1[1:3] *= 1/scale
+  x.corner2[1:3] *= 1/scale
+  x.corner3[1:3] *= 1/scale
   for i in eachindex(x.nodes)
-    transform!(x.nodes[i],tm)
+    _transform!(x.nodes[i],tm,scale)
   end
   for i in eachindex(x.holes)
-    transform!(x.holes[i],tm)
+    _transform!(x.holes[i],tm,scale)
   end
   return nothing
 end

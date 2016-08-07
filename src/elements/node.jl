@@ -16,9 +16,11 @@ Node(name,x,y,z) = Node(name,[x,y,z,1.0])
 Node(x,y,z) = Node(Symbol(""),x,y,z)
 Node(;name = Symbol(""), x=0, y=0, z=0) = Node(name,x,y,z)
 
-function transform!(n::Node, tm::Array{Float64,2})
+function _transform!(n::Node, tm::Array{Float64,2}, scale::Float64)
+  n.xyz[1:3] *= scale
   xyz = tm*n.xyz
   n.xyz[1:4] = xyz[1:4]
+  n.xyz[1:3] *= 1/scale
   return nothing
 end
 
