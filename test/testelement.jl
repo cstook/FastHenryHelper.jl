@@ -313,7 +313,7 @@ function testgroup()
   +  sigma=1.000000000e-01
   +  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00
   """
-  testelementdebug(g3,verified)
+  testelement(g3,verified)
   u = Units("in")
   def1 = Default(sigma = 1.234)
   n3 = Node(:abc,3,3,3)

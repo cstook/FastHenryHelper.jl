@@ -67,7 +67,19 @@ end
 function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Segment)
   pec = appendelementcontext_!(cd,pec,x)
   pec = appendelementcontext_!(cd,pec,x.node1) # store default wxyz here?
-  appendelementcontext_!(cd,pec,x.node2)
+  if x.wxwywz.isdefault
+    node1_xyz1 = x.node1.xyz
+    node2_xyz1 = x.node2.xyz * -segmentnodescaleratio(x,cd)
+    v1 = node1_xyz1[1:3] - node2_xyz1[1:3]
+    v2 = [0.0, 0.0, 1.0]
+    w = cross(v1,v2)
+    if norm(w) < 1e-10  # close to 0
+      v2 = [0.0, 1.0, 0.0]
+      w = cross(v1,v2)
+    end
+    x.wxwywz.xyz[1:3] = (w/norm(w,3))
+  end
+  pec = appendelementcontext_!(cd,pec,x.node2)
 end
 function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::UniformPlane)
   pec = appendelementcontext_!(cd,pec,x)
@@ -105,7 +117,19 @@ function xyz1(node::Node, context::Context)
   scale = scaletofirstunits(node,context)
   xyz1(node, scale)
 end
-
+function segmentnodescaleratio(segment::Segment, cd::ContextDict)
+  if haskey(cd,segment.node1)
+    scale1 = tometers[cd[segment.node1].units.unitname]
+  else
+    scale1 = tometers[cd[segment].units.unitname]
+  end
+  if haskey(cd,segment.node2)
+    scale2 = tometers[cd[segment.node2].units.unitname]
+  else
+    scale2 = tometers[cd[segment].units.unitname]
+  end
+  return scale1/scale2
+end
 function nodes_xyz1(segment::Segment, context::Context)
   scale = scaletofirstunits(segment,context)
   if haskey(context.dict,segment.node1)

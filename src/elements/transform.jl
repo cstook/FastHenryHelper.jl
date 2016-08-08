@@ -39,7 +39,7 @@ function _transform!(n::Node, tm::Array{Float64,2}, context::Context)
 end
 function _transform!(s::Segment, tm::Array{Float64,2}, context::Context)
   #assumes nodes are transformed as part of a group
-  s.wxwywz.xyz[1:3] = tm[1:3,1:3]*wxyz(s,context) # need to do before nodes move
+  s.wxwywz.xyz[1:3] = tm[1:3,1:3]*s.wxwywz.xyz # need to do before nodes move
   s.wxwywz.isdefault = false
   return nothing
 end
