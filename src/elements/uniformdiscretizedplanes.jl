@@ -33,15 +33,6 @@ function Base.show(io::IO, x::Point)
   return nothing
 end
 
-function _transform!(x::Point, tm::Array{Float64,2}, scale::Float64)
-  x.xyz1[1:3] *= scale
-  xyz1 = tm*x.xyz1
-  x.xyz1[1:4] = xyz1[1:4]
-  x.xyz1[1:3] *= 1.0/scale
-  return nothing
-end
-
-
 """
     Rect(x1, y1, z1, x2, y2, z2)
     Rect(<keyword arguments>)
@@ -67,18 +58,6 @@ function Base.show(io::IO, x::Rect)
   return nothing
 end
 
-function _transform!(x::Rect, tm::Array{Float64,2}, scale::Float64)
-  x.corner1[1:3] *= scale
-  x.corner2[1:3] *= scale
-  corner1 = tm*x.corner1
-  corner2 = tm*x.corner2
-  x.corner1[1:4] = corner1[1:4]
-  x.corner2[1:4] = corner2[1:4]
-  x.corner1[1:3] *= 1/scale
-  x.corner2[1:3] *= 1/scale
-  return nothing
-end
-
 """
     Circle(x, y, z, r)
     Circle(<keyword arguments>)
@@ -101,14 +80,6 @@ function Base.show(io::IO, x::Circle)
           x.xyz1[1],x.xyz1[2],x.xyz1[3],
           x.radius)
   println(io)
-  return nothing
-end
-
-function _transform!(x::Circle, tm::Array{Float64,2}, scale::Float64)
-  x.xyz1[1:3] *= scale
-  xyz1 = tm*x.xyz1
-  x.xyz1[1:4] = xyz1[1:4]
-  x.xyz1[1:3] *= 1/scale
   return nothing
 end
 
@@ -201,25 +172,3 @@ UniformPlane(;name = Symbol(""),
   UniformPlane(name,[x1,y1,z1,1],[x2,y2,z2,1],[x3,y3,z3,1], thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
-
-function _transform!(x::UniformPlane, tm::Array{Float64,2}, scale::Float64)
-  x.corner1[1:3] *= scale
-  x.corner2[1:3] *= scale
-  x.corner3[1:3] *= scale
-  corner1 = tm*x.corner1
-  x.corner1[1:4] = corner1[1:4]
-  corner2 = tm*x.corner2
-  x.corner2[1:4] = corner2[1:4]
-  corner3 = tm*x.corner3
-  x.corner3[1:4] = corner3[1:4]
-  x.corner1[1:3] *= 1/scale
-  x.corner2[1:3] *= 1/scale
-  x.corner3[1:3] *= 1/scale
-  for i in eachindex(x.nodes)
-    _transform!(x.nodes[i],tm,scale)
-  end
-  for i in eachindex(x.holes)
-    _transform!(x.holes[i],tm,scale)
-  end
-  return nothing
-end

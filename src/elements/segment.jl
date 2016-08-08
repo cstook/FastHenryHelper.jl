@@ -50,13 +50,6 @@ function Base.show(io::IO, x::WxWyWz)
   end
   return nothing
 end
-function _transform!(x::WxWyWz, tm::Array{Float64,2}, ::Float64)
-  newxyz = tm[1:3,1:3]*x.xyz
-  x.xyz = newxyz
-  x.isdefault = false
-  return nothing
-end
-
 
 immutable WH
   w :: Float64
@@ -189,7 +182,7 @@ immutable Segment <: Element
   wxwywz    :: WxWyWz
   function Segment(n, n1::Node, n2::Node, wh::WH, sigmarho::SigmaRho, wxwywz::WxWyWz)
     new_wxwywz = deepcopy(wxwywz)
-    initialixe_wxwywz!(n1,n2,new_wxwywz)
+#    initialixe_wxwywz!(n1,n2,new_wxwywz)
     new(Symbol(n), n1, n2, wh, sigmarho, new_wxwywz)
   end
 end
@@ -204,6 +197,7 @@ Segment(n1::Node, n2::Node, sp::SegmentParameters) =
 Segment(name, n1::Node, n2::Node, sp::SegmentParameters) =
             Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
 
+#=
 function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   if wxwywz.isdefault
     v1 = n2.xyz - n1.xyz
@@ -217,8 +211,4 @@ function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
   end
   return nothing
 end
-
-function _transform!(s::Segment, tm::Array{Float64,2}, scale::Float64)
-  _transform!(s.wxwywz,tm,scale)  #  assume nodes are transformed as part of a group
-  return nothing
-end
+=#

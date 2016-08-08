@@ -210,11 +210,11 @@ end
 testunits()
 
 function testuniformplane()
-  p = FastHenryHelper.Point(x=1,y=2,z=3)
+  p = Point(x=1,y=2,z=3)
   testelement(p,"+ hole point (1.000000000e+00, 2.000000000e+00, 3.000000000e+00)\n")
-  r = FastHenryHelper.Rect(x1=1,y1=2,z1=3,x2=4,y2=5,z2=6)
+  r = Rect(x1=1,y1=2,z1=3,x2=4,y2=5,z2=6)
   testelement(r,"+ hole rect (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00, 5.000000000e+00, 6.000000000e+00)\n")
-  c = FastHenryHelper.Circle(x=1,y=2,z=3,r=4)
+  c = Circle(x=1,y=2,z=3,r=4)
   testelement(c,"+ hole circle (1.000000000e+00, 2.000000000e+00, 3.000000000e+00, 4.000000000e+00)\n")
   @test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=4,rh=5,sigma=6,rho=7))
   @test_throws(ArgumentError,UniformPlane(thick=1, seg1=2, seg2=3, nhinc=4,rh=-5,sigma=6))
@@ -313,7 +313,7 @@ function testgroup()
   +  sigma=1.000000000e-01
   +  wx=-7.071067812e-01 wy=-7.071067812e-01 wz=0.000000000e+00
   """
-  testelement(g3,verified)
+  testelementdebug(g3,verified)
   u = Units("in")
   def1 = Default(sigma = 1.234)
   n3 = Node(:abc,3,3,3)

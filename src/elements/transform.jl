@@ -16,15 +16,59 @@ function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
 end
 function transform!(element::Element, tm::Array{Float64,2},
                     context::Context = Context(element))
-  scale = 1.0
   for e in element
-    if haskey(context.dict,e)
-      scale = scaletofirstunits(e,context)
-    end
-    _transform!(e,tm,scale)
+    _transform!(e,tm,context)
   end
 end
-_transform!(::Element, ::Array{Float64,2}, ::Float64) = nothing
+function tmscaletofirstunits(tm::Array{Float64,2},
+                             element::Element,
+                             context::Context)
+  scale = scaletofirstunits(element,context)
+  invscale = 1/scale
+  scalexyz(invscale,invscale,invscale)*tm*scalexyz(scale,scale,scale)
+end
+
+_transform!(::Element, ::Array{Float64,2}, ::Context) = nothing
+function _transform!(n::Node, tm::Array{Float64,2})
+  n.xyz[1:4] = tm*n.xyz
+  return nothing
+end
+function _transform!(n::Node, tm::Array{Float64,2}, context::Context)
+  _transform!(n,tmscaletofirstunits(tm,n,context))
+  return nothing
+end
+function _transform!(s::Segment, tm::Array{Float64,2}, context::Context)
+  #assumes nodes are transformed as part of a group
+  s.wxwywz.xyz[1:3] = tm[1:3,1:3]*wxyz(s,context) # need to do before nodes move
+  s.wxwywz.isdefault = false
+  return nothing
+end
+function _transform!(x::UniformPlane, tm::Array{Float64,2}, context::Context)
+  tmscale = tmscaletofirstunits(tm,x,context)
+  x.corner1[1:4] = tmscale*x.corner1
+  x.corner2[1:4] = tmscale*x.corner2
+  x.corner3[1:4] = tmscale*x.corner3
+  for i in eachindex(x.nodes)
+    _transform!(x.nodes[i],tmscale)
+  end
+  for i in eachindex(x.holes)
+    _transform!(x.holes[i],tmscale)
+  end
+  return nothing
+end
+function _transform!(x::Point, tm::Array{Float64,2})
+  x.xyz1[1:4] = tm*x.xyz1
+  return nothing
+end
+function _transform!(x::Rect, tm::Array{Float64,2})
+  x.corner1[1:4] = tm*x.corner1
+  x.corner2[1:4] = tm*x.corner2
+  return nothing
+end
+function _transform!(x::Circle, tm::Array{Float64,2})
+  x.xyz1[1:4] = tm*x.xyz1
+  return nothing
+end
 
 # for creating Groups of elements
 function transform(e::Element, transformationlist)

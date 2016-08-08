@@ -71,15 +71,6 @@ Base.shift!(g::Group) = shift!(g.elements)
 Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
-#=
-function transform!(group::Group, tm::Array{Float64,2})
-  for i in eachindex(group.elements)
-    transform!(group.elements[i],tm)
-  end
-  return nothing
-end
-=#
-
 deepcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
 function deepcopy!(nodedict::Dict{Element,Element}, n::Node)
   newnode = Node(Symbol(""), n.xyz[1], n.xyz[2], n.xyz[3])
