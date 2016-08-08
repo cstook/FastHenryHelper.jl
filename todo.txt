@@ -2,6 +2,4 @@
   - if first element in context is comment, it is the title.
   - field in Context
 - Consistent node size with all Plots() backends.
-- transform to use context.
-- autoname to use context.
-- update tests for changes using context.
+- wxyz() should return a normalized vector perp to length vector in context

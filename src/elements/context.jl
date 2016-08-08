@@ -163,21 +163,8 @@ function width_height(segment::Segment, context::Context)
   return (width, height)
 end
 
-function wxyz(segment::Segment, context::Context)
-  if segment.wxwywz.isdefault
-    (node1_xyz1, node2_xyz1) = nodes_xyz1(segment, context)
-    v1 = node1_xyz1[1:3] - node2_xyz1[1:3]
-    v2 = [0.0, 0.0, 1.0]
-    w = cross(v1,v2)
-    if norm(w) < 1e-10  # close to 0
-      v2 = [0.0, 1.0, 0.0]
-      w = cross(v1,v2)
-    end
-    return (w/norm(w,3))
-  else
-    return segment.wxwywz.xyz
-  end
-end
+wxyz(segment::Segment, context) = segment.wxwywz.xyz
+# todo: wxyz should return a normalized vector perp to length vector in context
 
 function corners_xyz1_thick(uniformplane::UniformPlane, context::Context)
   scale = scaletofirstunits(uniformplane,context)
