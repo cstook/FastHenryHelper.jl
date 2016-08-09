@@ -199,4 +199,4 @@ function title(element::Element)
   end
 end
 title_(::Element) = ""
-title_(x::Title) = x.text
+title_(x::Comment) = x.text

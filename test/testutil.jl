@@ -20,7 +20,7 @@ function testplaneconnect()
   seg1=100, seg2=100,
   nodes = planenodes)
   g2 = Group([n5,u1,equivgroup])
-  title = Title("term with node array")
+  title = Comment("term with node array")
   u = Units("mm")
   pre = Group([title,u])
   ex = External(n1,n5)

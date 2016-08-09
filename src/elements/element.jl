@@ -9,7 +9,6 @@ no name is provided.  Groups of elements are elements.
 abstract Element
 
 # elements
-include("title.jl")
 include("node.jl")
 include("segment.jl")
 include("units.jl")

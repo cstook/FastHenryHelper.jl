@@ -133,10 +133,6 @@ function Base.show(io::IO, x::Freq, ::Context)
   return nothing
 end
 
-function Base.show(io::IO, title::Title, ::Context)
-  println(io,"* ",title.text)
-end
-
 function Base.show(io::IO, x::Units, ::Context)
   println(io,".units ",x.unitname)
   return nothing

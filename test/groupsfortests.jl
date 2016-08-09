@@ -3,7 +3,7 @@ function groupfortests()
   pn1 = Node(:planenode1,1,2,3)
   pn2 = Node(:planenode2,4,5,6)
   g1 = Group([
-    t = Title("Test Title"),
+    t = Comment("Test Title"),
     u1 = Units("km"),
     n1 = Node(0,0,1),
     u2 = Units("m"),
@@ -39,7 +39,7 @@ function groupfortests2()
   pn1 = Node(:planenode1,1/2.54e-5,2/2.54e-5,10/2.54e-5)
   pn2 = Node(:planenode2,4/2.54e-5,5/2.54e-5,10/2.54e-5)
   g1 = Group([
-        Title("Test Title"),
+        Comment("Test Title"),
         Units("km"),
         Node(0,0,1*1e-3),
         Units("m"),

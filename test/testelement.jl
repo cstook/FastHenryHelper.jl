@@ -150,12 +150,6 @@ function testcomment()
 end
 testcomment()
 
-function testtitle()
-  c = Title("abcd")
-  testelement(c,"* abcd\n")
-end
-testtitle()
-
 function testdefault()
   sp1 = SegmentParameters(w=1.0,h=2.0,sigma=3.0,wx=4.0,wy=5.0,wz=6.0,
                           nhinc=7.0,nwinc=8.0,rh=9,rw=10)
@@ -285,7 +279,7 @@ end
 testuniformplane()
 
 function testgroup()
-  title = Title("test title")
+  title = Comment("test title")
   n20 = Node(1,0,0)
   n21 = Node(10,0,0)
   sp20 = SegmentParameters(h=3,w=5,sigma=0.1)
