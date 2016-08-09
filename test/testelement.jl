@@ -138,9 +138,50 @@ function testsegment()
   E_1 N_2 N_3
   +  w=1.000000000e+00 h=2.000000000e+00 nhinc=7 nwinc=8 rh=9.000000000e+00 rw=1.000000000e+01
   +  sigma=3.000000000e+00
-  +  wx=4.000000000e+00 wy=5.000000000e+00 wz=6.000000000e+00
+  +  wx=-7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
   """
   testelement(s1,verified)
+  n3 = Node(0,0,0)
+  n4 = Node(1,0,0)
+  s2 = Segment(n3,n4,w=.5,h=.2)
+  verified =
+  """
+  E_1 N_2 N_3
+  +  w=5.000000000e-01 h=2.000000000e-01
+  """
+  testelement(s2,verified)
+  s3 = Segment(n3,n4,w=.5,h=.2,wx=0,wy=1,wz=0)
+  verified =
+  """
+  E_1 N_2 N_3
+  +  w=5.000000000e-01 h=2.000000000e-01
+  +  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+  """
+  testelement(s3,verified)
+  s4 = Segment(n3,n4,w=.5,h=.2,wx=1,wy=1,wz=0)
+  verified =
+  """
+  E_1 N_2 N_3
+  +  w=5.000000000e-01 h=2.000000000e-01
+  +  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+  """
+  testelement(s4,verified)
+  s5 = Segment(n3,n4,w=.5,h=.2,wx=0,wy=0,wz=1)
+  verified =
+  """
+  E_1 N_2 N_3
+  +  w=5.000000000e-01 h=2.000000000e-01
+  +  wx=0.000000000e+00 wy=0.000000000e+00 wz=1.000000000e+00
+  """
+  testelement(s5,verified)
+  s6 = Segment(n3,n4,w=.5,h=.2,wx=1,wy=1,wz=1)
+  verified =
+  """
+  E_1 N_2 N_3
+  +  w=5.000000000e-01 h=2.000000000e-01
+  +  wx=-0.000000000e+00 wy=7.071067812e-01 wz=7.071067812e-01
+  """
+  testelement(s6,verified)
 end
 testsegment()
 

@@ -37,7 +37,19 @@ function Base.show(io::IO, s::Segment, context::Context)
   println(io," N", name(s.node2,context))
   show(io, s.wh)
   show(io, s.sigmarho)
-  show(io, s.wxwywz)
+  show_wxwywz(io, s, context)
+  return nothing
+end
+
+function show_wxwywz(io::IO, s::Segment, context::Context)
+  if ~s.wxwywz.isdefault
+    _wxyz = wxyz(s,context)
+    print(io,"+ ")
+    @printf(io," wx=%.9e",_wxyz[1])
+    @printf(io," wy=%.9e",_wxyz[2])
+    @printf(io," wz=%.9e",_wxyz[3])
+    println(io)
+  end
   return nothing
 end
 

@@ -166,7 +166,7 @@ function transformtest1()
   E_18 N_10 N_11
   +  wx=-5.000000000e-01 wy=-8.535533906e-01 wz=1.464466094e-01
   """
-  testelement(g3,verified)
+  testelementdebug(g3,verified)
 end
 transformtest1()
 

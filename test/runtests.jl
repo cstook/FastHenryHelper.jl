@@ -11,12 +11,12 @@ end
 function testelementdebug(e::Element, verified::String)
   ebuf = IOBuffer()
   show(ebuf,e)
-  debug = open("debug.txt","w")
-  println(debug, takebuf_string(ebuf))
-  close(debug)
-  verified = open("verified.txt","w")
-  println(debug, verified)
-  close(verified)
+  debugio = open("debug.txt","w")
+  println(debugio, takebuf_string(ebuf))
+  close(debugio)
+  verifiedio = open("verified.txt","w")
+  println(verifiedio, verified)
+  close(verifiedio)
   warn("testelementdebug called")
 end
 
