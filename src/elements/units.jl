@@ -16,4 +16,4 @@ immutable Units <: Element
   end
 end
 
-Base.(:(==))(x::Units, y::Units) = x.unitname == y.unitname
+Base.:(==)(x::Units, y::Units) = x.unitname == y.unitname

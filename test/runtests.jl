@@ -2,13 +2,13 @@ using FastHenryHelper
 using Base.Test
 
 # compare what an element shows to string
-function testelement(e::Element, verified::ASCIIString)
+function testelement(e::Element, verified::String)
   ebuf = IOBuffer()
   show(ebuf,e)
   @test takebuf_string(ebuf) == verified
 end
 
-function testelementdebug(e::Element, verified::ASCIIString)
+function testelementdebug(e::Element, verified::String)
   ebuf = IOBuffer()
   show(ebuf,e)
   debug = open("debug.txt","w")

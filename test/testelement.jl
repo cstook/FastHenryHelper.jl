@@ -176,6 +176,10 @@ function testequiv()
   n4 = Node(:def,4,4,4)
   eq1 = Equiv([n3,n4])
   testelement(eq1,".equiv Nabc Ndef\n")
+  n5 = Node(5,5,5)
+  n6 = Node(6,6,6)
+  eq2 = Equiv([n5,n6])
+  testelement(eq2,".equiv N_1 N_2\n")
 end
 testequiv()
 
@@ -184,6 +188,10 @@ function testexternal()
   n4 = Node(:def,4,4,4)
   ex1 = External(n3,n4,"portname")
   testelement(ex1,".external Nabc Ndef portname\n")
+  n5 = Node(5,5,5)
+  n6 = Node(6,6,6)
+  ex2 = External(n5,n6,"portname")
+  testelement(ex2,".external N_1 N_2 portname\n")
 end
 testexternal()
 

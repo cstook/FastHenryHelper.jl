@@ -9,7 +9,7 @@ using FastHenryHelper
 
 Create a group of FastHenry elements for FastHenry to compute the loop inductance of an L shaped trace over a ground plane with the trace's return path through the plane.
 ```@example 1
-title = Title("A FastHenry example using a reference plane")
+title = Comment("A FastHenry example using a reference plane")
 u = Units("mils")
 nin = Node("in",800,800,0)
 nout = Node("out",0,200,0)
@@ -57,7 +57,7 @@ Groups may also be built with push!.
 # same example, using push!
 # same example, using push!
 example1 = Group()
-push!(example1,Title("A FastHenry example using a reference plane"))
+push!(example1,Comment("A FastHenry example using a reference plane"))
 push!(example1,Units("mils"))
 nin = Node("in",800,800,0)
 nout = Node("out",0,200,0)
@@ -128,7 +128,7 @@ end
 Create the top level group.
 ```@example 2
 fourloops = Group()
-push!(fourloops, Title("Four loops 10mm on a side offset by 10mm in z"))
+push!(fourloops, Comment("Four loops 10mm on a side offset by 10mm in z"))
 push!(fourloops, Units("mm"))
 push!(fourloops, Comment(""))
 push!(fourloops, Comment("sigma for copper, 25 filiments per segment"))
@@ -193,7 +193,7 @@ Create a function which returns a `Group` with all the elements of the FastHenry
 input file.
 ```@example 3
 function via_connection_to_plane_example(height, cu_thick)
-    t = Title("via connection to plane example")
+    t = Comment("via connection to plane example")
     u = Units("mm")
 
     # create a via with 16 segments

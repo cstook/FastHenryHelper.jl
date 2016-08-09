@@ -10,7 +10,7 @@ typealias ContextDict Dict{Element,ElementContext}
 immutable Context
   dict :: ContextDict
   firstunits :: Units
-  title :: ASCIIString
+  title :: String
 end
 Context(element::Element) = Context(
                               contextdict(element),
@@ -87,6 +87,16 @@ function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::UniformP
     pec = appendelementcontext_!(cd,pec,node)
   end
   pec
+end
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Equiv)
+  for node in x.nodes
+    pec = appendelementcontext_!(cd,pec,node)
+  end
+  pec
+end
+function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::External)
+  pec = appendelementcontext_!(cd,pec,x.node1)
+  pec = appendelementcontext_!(cd,pec,x.node2)
 end
 appendelementcontext!(::ContextDict, pec::ElementContext, ::Element) = pec
 
