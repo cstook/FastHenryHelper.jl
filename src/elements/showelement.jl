@@ -22,9 +22,9 @@ function Base.show(io::IO, n::Node, context::Context; plane = false)
   print(io, "N")
   print(io, name(n,context), " ")
   if plane
-    @printf(io,"(%.9e,%.9e,%.9e)",n.xyz[1],n.xyz[2],n.xyz[3])
+    @printf(io,"(%.9e,%.9e,%.9e)",n.xyz1[1],n.xyz1[2],n.xyz1[3])
   else
-    @printf(io,"x=%.9e y=%.9e z=%.9e",n.xyz[1],n.xyz[2],n.xyz[3])
+    @printf(io,"x=%.9e y=%.9e z=%.9e",n.xyz1[1],n.xyz1[2],n.xyz1[3])
   end
   println(io)
   return nothing

@@ -8,8 +8,13 @@ export Node, rx, ry, rz, xyz, txyz, scalexyz
 """
 immutable Node <: Element
   name :: Symbol
-  xyz  :: Array{Float64,1}
-  Node(n,xyz::Array{Float64,1}) = new(Symbol(n),xyz)
+  xyz1  :: Array{Float64,1}
+  function Node(n,xyz::Array{Float64,1})
+    xyz1 = Array(Float64,4)
+    xyz1[1:3] = xyz[1:3]
+    xyz1[4] = 1.0
+    new(Symbol(n),xyz1)
+  end
 end
 Node(xyz::Array{Float64,1}) = Node(Symbol(""),xyz)
 Node(name,x,y,z) = Node(name,[x,y,z,1.0])
@@ -21,7 +26,7 @@ Node(;name = Symbol(""), x=0, y=0, z=0) = Node(name,x,y,z)
 
 Return the coordinate on a node.
 """
-xyz(n::Node) = n.xyz[1:3]
+xyz(n::Node) = n.xyz1[1:3]
 
 """
     rx(α) = [1      0       0     0;

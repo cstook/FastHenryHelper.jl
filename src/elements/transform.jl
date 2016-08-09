@@ -30,7 +30,7 @@ end
 
 _transform!(::Element, ::Array{Float64,2}, ::Context) = nothing
 function _transform!(n::Node, tm::Array{Float64,2})
-  n.xyz[1:4] = tm*n.xyz
+  n.xyz1[1:4] = tm*n.xyz1
   return nothing
 end
 function _transform!(n::Node, tm::Array{Float64,2}, context::Context)

@@ -73,7 +73,7 @@ Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
 deepcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
 function deepcopy!(nodedict::Dict{Element,Element}, n::Node)
-  newnode = Node(Symbol(""), n.xyz[1], n.xyz[2], n.xyz[3])
+  newnode = Node(Symbol(""), n.xyz1[1], n.xyz1[2], n.xyz1[3])
   nodedict[n] = newnode
   return newnode
 end

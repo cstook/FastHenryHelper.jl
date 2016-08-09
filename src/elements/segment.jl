@@ -196,19 +196,3 @@ Segment(n1::Node, n2::Node, sp::SegmentParameters) =
             Segment(Symbol(""), n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
 Segment(name, n1::Node, n2::Node, sp::SegmentParameters) =
             Segment(name, n1, n2, sp.wh, sp.sigmarho, sp.wxwywz)
-
-#=
-function initialixe_wxwywz!(n1::Node, n2::Node, wxwywz::WxWyWz)
-  if wxwywz.isdefault
-    v1 = n2.xyz - n1.xyz
-    v2 = [0.0, 0.0, 1.0]
-    w = cross(v1,v2)
-    if norm(w) < 1e-10  # close to 0
-      v2 = [0.0, 1.0, 0.0]
-      w = cross(v1,v2)
-    end
-    wxwywz.xyz = (w/norm(w,3))
-  end
-  return nothing
-end
-=#

@@ -68,8 +68,8 @@ function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Segment)
   pec = appendelementcontext_!(cd,pec,x)
   pec = appendelementcontext_!(cd,pec,x.node1) # store default wxyz here?
   if x.wxwywz.isdefault
-    node1_xyz1 = x.node1.xyz
-    node2_xyz1 = x.node2.xyz * -segmentnodescaleratio(x,cd)
+    node1_xyz1 = x.node1.xyz1
+    node2_xyz1 = x.node2.xyz1 * -segmentnodescaleratio(x,cd)
     v1 = node1_xyz1[1:3] - node2_xyz1[1:3]
     v2 = [0.0, 0.0, 1.0]
     w = cross(v1,v2)
@@ -108,7 +108,7 @@ end
 
 function xyz1(node::Node, scale::Float64)
   result = Array(Float64,4)
-  result[1:3] = node.xyz[1:3]*scale
+  result[1:3] = node.xyz1[1:3]*scale
   result[4] = 1.0
   return result
 end
