@@ -98,6 +98,7 @@ function pointsatlimits!(pd::PlotData, ps::PlotScheme = defaultplotscheme)
                   ps.invisiblenode)
 end
 
+Base.transpose(x::Array{Symbol,1}) = reshape(x,1,length(x))
 function plot(e::Element, ps::PlotScheme = defaultplotscheme)
   pd = plotdata(e,ps)
   pointsatlimits!(pd,ps)
@@ -105,11 +106,8 @@ function plot(e::Element, ps::PlotScheme = defaultplotscheme)
     title = pd.title,
     legend = false,
     linecolor = transpose(pd.linecolor),
-    #linecolor = permutedims(pd.linecolor,[2,1]),
     marker=transpose(pd.marker),
-    #marker = permutedims(pd.marker,[2,1]),
-    markercolor = transpose(pd.markercolor), # permutedims(x, [2, 1])
-    #markercolor = permutedims(pd.markercolor,[2,1]),
+    markercolor = transpose(pd.markercolor),
     markeralpha = transpose(pd.markeralpha),
     markersize = transpose(pd.markersize),
     markerstrokewidth = transpose(pd.markerstrokewidth))
