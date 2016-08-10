@@ -184,9 +184,9 @@ function wxyz(segment::Segment, context::Context)
     (n1,n2) = nodes_xyz1(segment,context)
     lxyz = n2[1:3] - n1[1:3]
     if dot(lxyz,segment.wxwywz.xyz)>1e-9
-      warn("wx,wy,wz not perpendicular to length of segment.  They have been modified.")
       wxyz_ = cross(cross(lxyz,segment.wxwywz.xyz),lxyz)
       wxyz_ = wxyz_/norm(wxyz_)
+      warn("wx,wy,wz not perpendicular to segment length  $(segment.wxwywz.xyz) => $wxyz_")
     end
   end
   return wxyz_
