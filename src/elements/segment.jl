@@ -29,7 +29,12 @@ end
 type WxWyWz
   xyz :: Array{Float64,1}
   isdefault :: Bool
-  WxWyWz(wx, wy, wz) = new([wx,wy,wz],isnan(wx) && isnan(wy) && isnan(wz))
+  function WxWyWz(wx, wy, wz)
+    if norm([wx,wy,wz])<1e-9
+      throw(ArgumentError("norm([wx,wy,wz])<1e-9"))
+    end
+    new([wx,wy,wz],isnan(wx) && isnan(wy) && isnan(wz))
+  end
 end
 WxWyWz(;wx=NaN, wy=NaN, wz=NaN) =
   WxWyWz(wx,wy,wz)

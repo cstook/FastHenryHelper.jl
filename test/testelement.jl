@@ -182,6 +182,7 @@ function testsegment()
   +  wx=-0.000000000e+00 wy=7.071067812e-01 wz=7.071067812e-01
   """
   testelement(s6,verified)
+  @test_throws(ArgumentError,Segment(n1,n2,w=1,h=2,wx=0,wy=0,wz=0))
 end
 testsegment()
 
