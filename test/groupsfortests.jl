@@ -1,7 +1,7 @@
 function groupfortests()
   sp = SegmentParameters(h=2)
-  pn1 = Node(:planenode1,1,2,3)
-  pn2 = Node(:planenode2,4,5,6)
+  pn1 = Node(:planenode1,1,2,0)
+  pn2 = Node(:planenode2,4,5,0)
   g1 = Group([
     t = Comment("Test Title"),
     u1 = Units("km"),

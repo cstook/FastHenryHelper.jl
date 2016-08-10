@@ -72,8 +72,8 @@ function contexttest1()
   @test_approx_eq thick 2.54e-8
 
   (pn1xyz1,pn2xyz1)=nodes_xyz1(p1,context)
-  @test_approx_eq pn1xyz1 [2.54e-8,5.08e-8,7.62e-8,1.0]
-  @test_approx_eq pn2xyz1 [1.016e-7,1.27e-7,1.524e-7,1.0]
+  @test_approx_eq pn1xyz1 [2.54e-8,5.08e-8,0.0,1.0]
+  @test_approx_eq pn2xyz1 [1.016e-7,1.27e-7,0.0,1.0]
 end
 contexttest1()
 

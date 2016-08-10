@@ -144,6 +144,10 @@ immutable UniformPlane <: Element
     if ~isnan(rho) && ~isnan(sigma)
       throw(ArgumentError("Cannot specify both rho and sigma"))
     end
+    corner1 = convert(Array{Float64,1},corner1)
+    corner2 = convert(Array{Float64,1},corner2)
+    corner3 = convert(Array{Float64,1},corner3)
+    thick = Float64(thick)
     v1 = corner1 - corner2
     v2 = corner3 - corner2
     if abs(dot(v1/norm(v1), v2/norm(v2))) > 1e-9
@@ -184,11 +188,12 @@ function threepointstoabcd(c1::Array{Float64,1},
                            c2::Array{Float64,1},
                            c3::Array{Float64,1})
   n = cross(c1[1:3]-c2[1:3],c3[1:3]-c2[1:3]) # vector normal to plane
-  d = dot(n,c2[1:3]) # check polarity of d
-  return (n...,d)
+  d = dot(n,c2[1:3])
+  return (n...,-d)
 end
 
-function distance(point::Array{Float64,1},plane::Tuple{Float64,Float64,Float64,Float64})
+function distance(point::Array{Float64,1},
+                  plane::Tuple{Float64,Float64,Float64,Float64})
   (a,b,c,d) = plane
   (a*point[1] + b*point[2] + c*point[3] + d)/(sqrt(a^2+b^2+c^2))
 end
