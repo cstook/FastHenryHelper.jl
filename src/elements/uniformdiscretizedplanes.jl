@@ -149,6 +149,13 @@ immutable UniformPlane <: Element
     if abs(dot(v1/norm(v1), v2/norm(v2))) > 1e-9
       throw(ArgumentError("Corners do not form a rectangle"))
     end
+    for node in nodes
+      plane = threepointstoabcd(corner1,corner2,corner3)
+      pointtoplanedistance = distance(xyz(node),plane)
+      if abs(pointtoplanedistance)>0.5*thick
+        throw(ArgumentError("Node(s) not in plane"))
+      end
+    end
     new(Symbol(name), corner1, corner2, corner3, thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
@@ -172,3 +179,16 @@ UniformPlane(;name = Symbol(""),
   UniformPlane(name,[x1,y1,z1,1],[x2,y2,z2,1],[x3,y3,z3,1], thick, seg1, seg2,
                 segwid1, segwid2, sigma, rho, nhinc, rh, relx, rely, relz,
                 nodes, holes)
+
+function threepointstoabcd(c1::Array{Float64,1},
+                           c2::Array{Float64,1},
+                           c3::Array{Float64,1})
+  n = cross(c1[1:3]-c2[1:3],c3[1:3]-c2[1:3]) # vector normal to plane
+  d = dot(n,c2[1:3]) # check polarity of d
+  return (n...,d)
+end
+
+function distance(point::Array{Float64,1},plane::Tuple{Float64,Float64,Float64,Float64})
+  (a,b,c,d) = plane
+  (a*point[1] + b*point[2] + c*point[3] + d)/(sqrt(a^2+b^2+c^2))
+end
