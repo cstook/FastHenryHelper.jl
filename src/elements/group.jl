@@ -1,5 +1,7 @@
 export Group, terms, terms!, elements, elements!
 
+typealias TermsDict Dict{Symbol,Union{Node,Array{Node,1}}}
+
 """
     Group([elements [, terms]])
 
@@ -21,11 +23,18 @@ for user named elements.
 """
 type Group <: Element
   elements :: Array{Element,1}
-  terms :: Dict{Symbol,Union{Node,Array{Node,1}}}
+  terms :: TermsDict
+  units :: Units
 end
-Group() = Group([],Dict{Symbol,Node}())
-Group(e) = Group(e,Dict{Symbol,Union{Node,Array{Node,1}}}())
+Group() = Group([],TermsDict(),Units())
+Group(e) = Group(e,TermsDict(),Units())
+Group(e,d) = Group(e,d,Units())
 
+units(g::Group) = g.units
+function units!(g::Group, u::Units)
+  g.units = use
+  return nothing
+end
 
 elements(g::Group) = g.elements
 function elements!{T<:Element}(g::Group, e::Array{T,1})
@@ -42,7 +51,7 @@ elements, elements!
 
 
 terms(g::Group) = g.terms
-function terms!(g::Group, p::Dict{Symbol,Node})
+function terms!(g::Group, p)
   g.terms = p
   return nothing
 end

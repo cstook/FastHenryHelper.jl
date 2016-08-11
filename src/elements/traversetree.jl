@@ -1,7 +1,20 @@
 # make element an iterator which traverses element tree
-# TODO
-# might be more efficent with IObuffer instead of shifting and
-# prepending an array
+
+type TTState
+  togo :: Array{Element,1}
+  units :: Units
+end
+
+Base.start(element::Element) = TTState([e],Units())
+function Base.Start(group::Group)
+  if group.units == Units("")
+    return TTState([copy(group.element)],group.units)
+  else
+    return TTState([group.units;copy(group.element)],groupunits)
+end
+
+
+
 
 # state is an array of elements to be retruned
 Base.start(e::Element) = [e]

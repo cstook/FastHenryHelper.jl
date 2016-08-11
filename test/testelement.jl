@@ -494,3 +494,12 @@ function testgroup()
   end
 end
 testgroup()
+
+function testgroup2()
+  g1 = Group()
+  g2 = Group([Node(1,1,1)])
+  g3 = Group([a=Node(1,1,1)],Dict(:terma=>a))
+  g4 = Group([a=Node(1,1,1),b=Node(2,2,2)],Dict(:terma=>[a,b]))
+  g5 = Group([a=Node(1,1,1)],Dict(:terma=>a),Units("mm"))
+end
+testgroup2()

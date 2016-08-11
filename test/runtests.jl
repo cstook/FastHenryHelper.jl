@@ -23,6 +23,7 @@ end
 include("testelement.jl")
 include("groupsfortests.jl")
 include("testcontext.jl")
+include("testtraversetree.jl")
 include("testtransform.jl")
 include("testmesh.jl")
 include("testplot.jl")
