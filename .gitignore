@@ -5,7 +5,7 @@ site/
 docs/build/
 docs/site/
 *.lnk
-scratch.jl
+scratch?.jl
 temp.*
 debug.txt
 verified.txt

@@ -1,5 +1,10 @@
 export rectangulararray
 
+
+#
+# switch to generator expression:
+# f(i) for i in 1:n
+
 """
     rectangulararray(x[,y[,z]])
     rectangulararray(<keyword arguments>)

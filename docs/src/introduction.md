@@ -55,7 +55,7 @@ Rotate g1 π/4 around y and z azis and translate by 10 along x azis.
 ```@example intro
 transformmatrix = ry(π/4) * rz(π/4) * txyz(10,0,0)
 transform!(g1,transformmatrix)
-# note: the wx, wy, wz vector for the segment has rotated from default and all 
+# note: the wx, wy, wz vector for the segment has rotated from default and all
 # automatically generated names are unique.
 g1
 ```
