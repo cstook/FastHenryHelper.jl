@@ -173,19 +173,16 @@ function corners(segment::Segment, context::Context)
   n2_xyz = n2_xyz1[1:3]
   widthvector = wxyz(segment,context)
   normalize!(widthvector)
-  halfwidthvector = w/2 * widthvector
+  halfwidthvector = 0.5*w * widthvector
   mp1 = n1_xyz+halfwidthvector
   mp2 = n1_xyz-halfwidthvector
   mp3 = n2_xyz+halfwidthvector
   mp4 = n2_xyz-halfwidthvector
   lengthvector = n2_xyz-n1_xyz
   normalize!(lengthvector)
-  println("widthvector=",widthvector)
-  println("lengthvector=",lengthvector)
   heightvector = cross(widthvector,lengthvector)
-  println("unnormalized heightvector=",heightvector)
   normalize!(heightvector)
-  halfheightvector = h/2 * heightvector
+  halfheightvector = 0.5*h * heightvector
   c = Array(Float64,(3,8))
   c[:,1] = mp1+halfheightvector
   c[:,2] = mp1-halfheightvector
@@ -202,7 +199,8 @@ function corners(plane::UniformPlane, context::Context)
   widthvector = c3[1:3] - c2[1:3]
   lengthvector = c1[1:3] - c2[1:3]
   perpvector = cross(widthvector,lengthvector)
-  halfthickperpvector = perpvector * (0.5*thick/norm(perpvector,3))
+  normalize!(perpvector)
+  halfthickperpvector = 0.5*thick *perpvector
   c = Array(Float64,(3,8))
   c4 = widthvector + c1[1:3]
   c[:,1] = c1[1:3] - halfthickperpvector

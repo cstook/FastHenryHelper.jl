@@ -66,7 +66,8 @@ function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Node)
 end
 function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Segment)
   pec = appendelementcontext_!(cd,pec,x)
-  pec = appendelementcontext_!(cd,pec,x.node1) # store default wxyz here?
+  pec = appendelementcontext_!(cd,pec,x.node1)
+  pec = appendelementcontext_!(cd,pec,x.node2)# store default wxyz here?
   if x.wxwywz.isdefault
     node1_xyz1 = x.node1.xyz1
     node2_xyz1 = x.node2.xyz1 * segmentnodescaleratio(x,cd)
@@ -78,9 +79,9 @@ function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Segment)
       v2 = [0.0, 1.0, 0.0]
       w = cross(v1,v2)
     end
-    x.wxwywz.xyz[1:3] = (w/norm(w,3))
+    x.wxwywz.xyz[1:3] = normalize(w)
   end
-  pec = appendelementcontext_!(cd,pec,x.node2)
+  return pec
 end
 function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::UniformPlane)
   pec = appendelementcontext_!(cd,pec,x)
@@ -139,7 +140,7 @@ function segmentnodescaleratio(segment::Segment, cd::ContextDict)
   else
     scale2 = tometers[cd[segment].units.unitname]
   end
-  return scale1/scale2
+  return scale2/scale1
 end
 function nodes_xyz1(segment::Segment, context::Context)
   scale = scaletofirstunits(segment,context)
@@ -186,7 +187,7 @@ function wxyz(segment::Segment, context::Context)
     lxyz = n2[1:3] - n1[1:3]
     if dot(lxyz,segment.wxwywz.xyz)>1e-9
       wxyz_ = cross(cross(lxyz,segment.wxwywz.xyz),lxyz)
-      wxyz_ = wxyz_/norm(wxyz_)
+      normalize!(wxyz_)
       warn("wx,wy,wz not perpendicular to segment length  $(segment.wxwywz.xyz) => $wxyz_")
     end
   end

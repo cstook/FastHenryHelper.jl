@@ -152,7 +152,7 @@ m = mesh(element)
 
 using GLVisualize
 window = glscreen()
-view(visualize(m), window)
+_view(visualize(m), window)
 renderloop(window)
 ```
 """

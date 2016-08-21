@@ -34,13 +34,13 @@ onesegment2 = Group([n1=Node(1,0,0),
                     Segment(n1,n2,w=.3,h=.2)])
 plot(onesegment2);gui()
 
-onesegment3 = Group([n1=Node(0,0,1),  # plot fail if x=0 or y=0
+onesegment3 = Group([n1=Node(0,1,1),  # plot fail if x=0 or y=0
                     n2=Node(2,2,2),
                     Segment(n1,n2,w=.3,h=.2)])
 plot(onesegment3);gui()
 
 window = glscreen()
-_view(visualize(mesh(g)), window)
+_view(visualize(mesh(onesegment3)), window)
 renderloop(window)
 
 window = glscreen()
@@ -80,3 +80,20 @@ hn2 = helixnodes(1.0,0.5,6π)
 hs2 = connectnodes(hn2,SegmentParameters(w=.3,h=.2))
 helix2 = Group([hn2;hs2])
 plot(helix2);gui()
+
+
+
+
+cross([1.0,0.9,0.0],[0.9,1.0,0.0])
+
+
+
+cross([0.382683,-0.92388,0.0],[-0.292893,0.707107,0.0625])
+
+
+
+cross([0.382683,-0.92388,0.0],[-0.292893,0.707107,0.0])
+
+
+
+dot([0.382683,-0.92388,0.0],[-0.292893,0.707107,0.0625])

@@ -150,7 +150,7 @@ immutable UniformPlane <: Element
     thick = Float64(thick)
     v1 = corner1 - corner2
     v2 = corner3 - corner2
-    if abs(dot(v1/norm(v1), v2/norm(v2))) > 1e-9
+    if abs(dot(normalize(v1), normalize(v2))) > 1e-9
       throw(ArgumentError("Corners do not form a rectangle"))
     end
     for node in nodes
