@@ -69,8 +69,9 @@ function appendelementcontext!(cd::ContextDict, pec::ElementContext, x::Segment)
   pec = appendelementcontext_!(cd,pec,x.node1) # store default wxyz here?
   if x.wxwywz.isdefault
     node1_xyz1 = x.node1.xyz1
-    node2_xyz1 = x.node2.xyz1 * -segmentnodescaleratio(x,cd)
+    node2_xyz1 = x.node2.xyz1 * segmentnodescaleratio(x,cd)
     v1 = node1_xyz1[1:3] - node2_xyz1[1:3]
+    normalize!(v1)
     v2 = [0.0, 0.0, 1.0]
     w = cross(v1,v2)
     if norm(w) < 1e-10  # close to 0

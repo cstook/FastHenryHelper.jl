@@ -172,23 +172,29 @@ function corners(segment::Segment, context::Context)
   n1_xyz = n1_xyz1[1:3]
   n2_xyz = n2_xyz1[1:3]
   widthvector = wxyz(segment,context)
-  widthvector = widthvector / norm(widthvector,3)
-  mp1 = n1_xyz+(widthvector.*w/2)
-  mp2 = n1_xyz-(widthvector.*w/2)
-  mp3 = n2_xyz+(widthvector.*w/2)
-  mp4 = n2_xyz-(widthvector.*w/2)
+  normalize!(widthvector)
+  halfwidthvector = w/2 * widthvector
+  mp1 = n1_xyz+halfwidthvector
+  mp2 = n1_xyz-halfwidthvector
+  mp3 = n2_xyz+halfwidthvector
+  mp4 = n2_xyz-halfwidthvector
   lengthvector = n2_xyz-n1_xyz
+  normalize!(lengthvector)
+  println("widthvector=",widthvector)
+  println("lengthvector=",lengthvector)
   heightvector = cross(widthvector,lengthvector)
-  heightvector = heightvector/norm(heightvector,3)
+  println("unnormalized heightvector=",heightvector)
+  normalize!(heightvector)
+  halfheightvector = h/2 * heightvector
   c = Array(Float64,(3,8))
-  c[:,1] = mp1+(heightvector.*h/2)
-  c[:,2] = mp1-(heightvector.*h/2)
-  c[:,3] = mp2-(heightvector.*h/2)
-  c[:,4] = mp2+(heightvector.*h/2)
-  c[:,5] = mp3+(heightvector.*h/2)
-  c[:,6] = mp3-(heightvector.*h/2)
-  c[:,7] = mp4-(heightvector.*h/2)
-  c[:,8] = mp4+(heightvector.*h/2)
+  c[:,1] = mp1+halfheightvector
+  c[:,2] = mp1-halfheightvector
+  c[:,3] = mp2-halfheightvector
+  c[:,4] = mp2+halfheightvector
+  c[:,5] = mp3+halfheightvector
+  c[:,6] = mp3-halfheightvector
+  c[:,7] = mp4-halfheightvector
+  c[:,8] = mp4+halfheightvector
   return c
 end
 function corners(plane::UniformPlane, context::Context)

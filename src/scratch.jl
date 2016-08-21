@@ -40,12 +40,11 @@ onesegment3 = Group([n1=Node(0,0,1),  # plot fail if x=0 or y=0
 plot(onesegment3);gui()
 
 window = glscreen()
-view(visualize(mesh(g)), window)
+_view(visualize(mesh(g)), window)
 renderloop(window)
 
-m = mesh(g)
 window = glscreen()
-view(visualize(m), window)
+_view(visualize(m), window)
 renderloop(window)
 
 vd = testvd(helix)
