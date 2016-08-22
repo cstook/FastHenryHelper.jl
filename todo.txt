@@ -1,13 +1,6 @@
 - Consistent node size with all Plots() backends.
 - consider changing some symbols to strings using ascii(s) to make sure they
   are valid.  NO!!!
-- use normalize!, normalize
 - keyword arguments for Group
 - look at deepcopy_internal again
 - fix documentation
-
-
-plotting fix
-
-_view NOT view
-verify corners in plot.
