@@ -80,56 +80,65 @@ Base.shift!(g::Group) = shift!(g.elements)
 Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
-deepcopy!(::Dict{Element,Element}, e::Element) = deepcopy(e)
-function deepcopy!(nodedict::Dict{Element,Element}, n::Node)
+function deepcopy_internal(e::Element, oidd::ObjectIdDict)
+  newelement = deepcopy(e)
+  oidd[e] = newelement
+  return newelement
+end
+function deepcopy_internal(n::Node, oidd::ObjectIdDict)
   newnode = Node(Symbol(""), n.xyz1[1], n.xyz1[2], n.xyz1[3])
-  nodedict[n] = newnode
+  oidd[n] = newnode
   return newnode
 end
-function deepcopy!(nodedict::Dict{Element,Element}, seg::Segment)
-  node1 = nodedict[seg.node1]
-  node2 = nodedict[seg.node2]
-  Segment(deepcopy(seg.name),
-          node1, node2,
-          deepcopy(seg.wh),
-          deepcopy(seg.sigmarho),
-          deepcopy(seg.wxwywz))
+function deepcopy_internal(seg::Segment, oidd::ObjectIdDict)
+  node1 = oidd[seg.node1]
+  node2 = oidd[seg.node2]
+  newsegment = Segment(deepcopy(seg.name),
+    node1, node2,
+    deepcopy(seg.wh),
+    deepcopy(seg.sigmarho),
+    deepcopy(seg.wxwywz))
+  oidd[seg] = newsegment
+  return newsegment
 end
-function deepcopy!(nodedict::Dict{Element,Element}, p::UniformPlane)
+function deepcopy_internal(p::UniformPlane, oidd::ObjectIdDict)
   newnodes = similar(p.nodes)
   for i in eachindex(p.nodes)
-    deepcopy!(nodedict,p.nodes[i])
-    newnodes[i] = nodedict[p.nodes[i]]
+    deepcopy_internal(p.nodes[i],oidd)
+    newnodes[i] = oidd[p.nodes[i]]
   end
-  UniformPlane(deepcopy(p.name),
-               deepcopy(p.corner1),
-               deepcopy(p.corner2),
-               deepcopy(p.corner3),
-               p.thick,p.seg1,p.seg2,p.segwid1,p.segwid2,p.sigma,p.rho,
-               p.nhinc,p.rh,p.relx,p.rely,p.relz,
-               newnodes,
-               deepcopy(p.holes))
+  newplane = UniformPlane(deepcopy(p.name),
+    deepcopy(p.corner1),
+    deepcopy(p.corner2),
+    deepcopy(p.corner3),
+    p.thick,p.seg1,p.seg2,p.segwid1,p.segwid2,p.sigma,p.rho,
+    p.nhinc,p.rh,p.relx,p.rely,p.relz,
+    newnodes,
+    deepcopy(p.holes))
+  oidd[p] = newplane
+  return newplane
 end
 
 # need to make sure nodes in segments still === the correct node
-function Base.deepcopy(group::Group)
+function Base.deepcopy_internal(group::Group, oidd::ObjectIdDict)
   elements = similar(group.elements)
-  nodedict = Dict{Element,Element}()
-  for i in eachindex(group.elements)
-    elements[i] = deepcopy!(nodedict::Dict{Element,Element}, group.elements[i])
-  end
   newgroup = Group(elements)
+  # allow deepcopy of recursive structures.  which should never happen anyway.
+  oidd[group] = newgroup # key is object to be copied, value is copy
+  for i in eachindex(group.elements)
+    elements[i] = deepcopy_internal(group.elements[i], oidd::ObjectIdDict)
+  end
   for (key,value) in group.terms
-    newgroup.terms[key] = newvalue(nodedict,value) # nodedict[value]
+    newgroup.terms[key] = newvalue(oidd,value) # oidd[value]
   end
   return newgroup
 end
 
-newvalue(nodedict::Dict{Element,Element}, value::Node) = nodedict[value]
-function newvalue(nodedict::Dict{Element,Element}, value::Array{Node,1})
+newvalue(oidd::ObjectIdDict, value::Node) = oidd[value]
+function newvalue(oidd::ObjectIdDict, value::Array{Node,1})
   nv = similar(value)
   for i in eachindex(value)
-    nv[i] = nodedict[value[i]]
+    nv[i] = oidd[value[i]]
   end
   return nv
 end
