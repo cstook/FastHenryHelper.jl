@@ -47,3 +47,18 @@ Base.done(element::Element, state::TTState) = length(state.togo) == 0
 
 isunits(::Element) = false
 isunits(::Units) = true
+
+export recursioncheck
+recursioncheck(element::Element) = recursioncheck!(element, Set{Group}())
+recurcioncheck!(element::Element,::Set{Group}) = nothing
+function recursioncheck!(group::Group, recursioncheckset::Set{Group})
+  if group in recursioncheckset
+    throw(ErrorException("Recursion Not Allowed"))
+  end
+  union!(recursioncheckset, group)
+  for element in group.elements
+    recursioncheck!(element, recursioncheckset)
+  end
+  delete!(recursioncheckset, group)
+  return nothing
+end
