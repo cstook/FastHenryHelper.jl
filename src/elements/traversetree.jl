@@ -1,4 +1,5 @@
 # make element an iterator which traverses element tree
+# bunch of extra code for group units
 
 type TTState
   togo :: Array{Element,1}
