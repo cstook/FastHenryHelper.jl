@@ -26,7 +26,10 @@ function update!(state::TTState, state1::Group)
   update!(state, state.togo[1])
 end
 
-Base.start(element::Element) = TTState([element],Units(),false)
+function Base.start(element::Element)
+  recursioncheck(element)
+  TTState([element],Units(),false)
+end
 function Base.start(group::Group)
   if group.units == Units()
     return TTState(copy(group.elements), group.units, false)
@@ -48,17 +51,16 @@ Base.done(element::Element, state::TTState) = length(state.togo) == 0
 isunits(::Element) = false
 isunits(::Units) = true
 
-export recursioncheck
-recursioncheck(element::Element) = recursioncheck!(element, Set{Group}())
-recurcioncheck!(element::Element,::Set{Group}) = nothing
-function recursioncheck!(group::Group, recursioncheckset::Set{Group})
-  if group in recursioncheckset
+recursioncheck(element::Element) = recursioncheck!(element, Dict{Group,Group}())
+recursioncheck!(::Element,::Dict{Group,Group}) = nothing
+function recursioncheck!(group::Group, recursioncheckdict::Dict{Group,Group})
+  if haskey(recursioncheckdict,group)
     throw(ErrorException("Recursion Not Allowed"))
   end
-  union!(recursioncheckset, group)
+  recursioncheckdict[group] = group
   for element in group.elements
-    recursioncheck!(element, recursioncheckset)
+    recursioncheck!(element, recursioncheckdict)
   end
-  delete!(recursioncheckset, group)
+  delete!(recursioncheckdict, group)
   return nothing
 end
