@@ -434,7 +434,7 @@ function testgroup()
   .external Nabc Ndef portname
   .freq fmin=1.000000000e+00 fmax=2.000000000e+00 ndec=3.000000000e+00
   """
-  testelement(g5,verified)
+  testelementdebug(g5,verified)
   c1 = Comment("this is a comment")
   # Default and Freq are immutable
   g6 = Group([title,c1,u,n20,n21,n3,n4,n5,n6,seg20,eq1,up,ex1])
