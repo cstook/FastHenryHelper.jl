@@ -503,3 +503,13 @@ function testgroup2()
   g5 = Group([a=Node(1,1,1)],Dict(:terma=>a),Units("mm"))
 end
 testgroup2()
+
+function testrecursivedeepcopy()
+  g1 = Group([Node(1,1,1)])
+  e = elements(g1)
+  push!(e,Node(2,2,2))
+  push!(e,g1);
+  g2 = deepcopy(g1);
+  @test ~(g2===g1)
+end
+testrecursivedeepcopy()

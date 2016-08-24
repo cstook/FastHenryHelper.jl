@@ -126,3 +126,10 @@ function contexttest2()
   @test_approx_eq [width_height(s2,context)...] [0.7,0.8]
 end
 contexttest2()
+
+function testrecursioncheck()
+  g = Group([Node(:a,2,3,4)])
+  push!(g,g)
+  @test_throws(ErrorException,print(g))
+end
+testrecursioncheck()

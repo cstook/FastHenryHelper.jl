@@ -12,10 +12,10 @@ immutable Context
   firstunits :: Units
   title :: String
 end
-Context(element::Element) = Context(
-                              contextdict(element),
-                              firstunits(element),
-                              title(element))
+function Context(element::Element)
+  recursioncheck(element)
+  Context(contextdict(element),firstunits(element),title(element))
+end
 
 typealias NamedElements Union{Node,Segment,UniformPlane}
 
@@ -229,3 +229,17 @@ function title(element::Element)
 end
 title_(::Element) = ""
 title_(x::Comment) = x.text
+
+recursioncheck(element::Element) = recursioncheck!(element, Dict{Group,Group}())
+recursioncheck!(::Element,::Dict{Group,Group}) = nothing
+function recursioncheck!(group::Group, recursioncheckdict::Dict{Group,Group})
+  if haskey(recursioncheckdict,group)
+    throw(ErrorException("recursion not allowed"))
+  end
+  recursioncheckdict[group] = group
+  for element in group.elements
+    recursioncheck!(element, recursioncheckdict)
+  end
+  delete!(recursioncheckdict, group)
+  return nothing
+end
