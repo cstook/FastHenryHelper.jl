@@ -80,19 +80,19 @@ Base.shift!(g::Group) = shift!(g.elements)
 Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
-typealias MyObjectIdDict Dict{Element,Element}
+# typealias MyObjectIdDict ObjectIdDict #Dict{Element,Element}
 
-function deepcopy_internal(e::Element, oidd::MyObjectIdDict)
+function deepcopy_internal(e::Element, oidd::ObjectIdDict)
   newelement = deepcopy(e)
   oidd[e] = newelement
   return newelement
 end
-function deepcopy_internal(n::Node, oidd::MyObjectIdDict)
+function deepcopy_internal(n::Node, oidd::ObjectIdDict)
   newnode = Node(Symbol(""), n.xyz1[1], n.xyz1[2], n.xyz1[3])
   oidd[n] = newnode
   return newnode
 end
-function deepcopy_internal(seg::Segment, oidd::MyObjectIdDict)
+function deepcopy_internal(seg::Segment, oidd::ObjectIdDict)
   node1 = oidd[seg.node1]
   node2 = oidd[seg.node2]
   newsegment = Segment(deepcopy(seg.name),
@@ -103,7 +103,7 @@ function deepcopy_internal(seg::Segment, oidd::MyObjectIdDict)
   oidd[seg] = newsegment
   return newsegment
 end
-function deepcopy_internal(p::UniformPlane, oidd::MyObjectIdDict)
+function deepcopy_internal(p::UniformPlane, oidd::ObjectIdDict)
   newnodes = similar(p.nodes)
   for i in eachindex(p.nodes)
     deepcopy_internal(p.nodes[i],oidd)
@@ -122,7 +122,7 @@ function deepcopy_internal(p::UniformPlane, oidd::MyObjectIdDict)
 end
 
 # need to make sure nodes in segments still === the correct node
-function Base.deepcopy_internal(group::Group, oidd::MyObjectIdDict)
+function deepcopy_internal(group::Group, oidd::ObjectIdDict)
   println(length(oidd)); wait(Timer(.5))
   if haskey(oidd,group)
     return oidd[group]
@@ -140,8 +140,8 @@ function Base.deepcopy_internal(group::Group, oidd::MyObjectIdDict)
   return newgroup
 end
 
-newvalue(oidd::MyObjectIdDict, value::Node) = oidd[value]
-function newvalue(oidd::MyObjectIdDict, value::Array{Node,1})
+newvalue(oidd::ObjectIdDict, value::Node) = oidd[value]
+function newvalue(oidd::ObjectIdDict, value::Array{Node,1})
   nv = similar(value)
   for i in eachindex(value)
     nv[i] = oidd[value[i]]
