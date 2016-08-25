@@ -80,8 +80,10 @@ Base.shift!(g::Group) = shift!(g.elements)
 Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
-# typealias MyObjectIdDict ObjectIdDict #Dict{Element,Element}
 
+# If you decide to put this back, need to use Base.deepcopy_internal
+# in function declaration and call. 
+#=
 function deepcopy_internal(e::Element, oidd::ObjectIdDict)
   newelement = deepcopy(e)
   oidd[e] = newelement
@@ -148,3 +150,4 @@ function newvalue(oidd::ObjectIdDict, value::Array{Node,1})
   end
   return nv
 end
+=#
