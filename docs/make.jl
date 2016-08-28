@@ -5,15 +5,16 @@ using FastHenryHelper
 # ===========
 
 makedocs(
-    modules = FastHenryHelper,
+    modules = [FastHenryHelper],
     clean   = true,
     format = Documenter.Formats.HTML,
     sitename = "FastHenryHelper",
+    doctest = true,
     pages = [
     "Home" => "index.md",
     "Installation" => "install.md",
-    "Introduction" => "introduction.md"
-  #  "Examples" => "examples.md",
-  #  "Public API" => "public.md"
+    "Introduction" => "introduction.md",
+    "Examples" => "examples.md",
+    "Public API" => "public.md"
     ]
 )

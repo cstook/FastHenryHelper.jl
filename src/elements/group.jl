@@ -12,6 +12,7 @@ elements.
 
 - `elements`    -- Array of `Element`'s
 - `terms`       -- Dict{Symbol,Node} # connections to the Group
+- `units`       -- Units used for the Group
 
 Groups may be nested.  Automatic name generation will create a name for
 each `Element` in the `Group` and all subgroups as needed when `show` is
@@ -82,7 +83,7 @@ Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)
 
 
 # If you decide to put this back, need to use Base.deepcopy_internal
-# in function declaration and call. 
+# in function declaration and call.
 #=
 function deepcopy_internal(e::Element, oidd::ObjectIdDict)
   newelement = deepcopy(e)

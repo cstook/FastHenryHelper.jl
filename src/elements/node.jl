@@ -24,7 +24,7 @@ Node(;name = Symbol(""), x=0, y=0, z=0) = Node(name,x,y,z)
 """
     xyz(n::Node)
 
-Return the coordinate on a node.
+Return the coordinate of a node.
 """
 xyz(n::Node) = n.xyz1[1:3]
 
