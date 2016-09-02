@@ -9,7 +9,7 @@ This introduction does not attempt to explain FastHenry.  See the [FastHenry Use
 using FastHenryHelper
 using Plots; pyplot() # using pyplot() backed for plots, plotlyjs() also works.
 ```
-## Creating a Simple Group
+## Creating a simple group
 FastHenry commands are julia types which show their command.
 ```@example intro
 n1 = Node(10,0,0)
@@ -42,6 +42,8 @@ s2 = Segment(n1, n2, sp2)
 Elements can be collected into groups.  Auto-generated names are unique within the `Group` `show` is called on.  `Group`s may be transformed (rotated, translated, etc.).  `Group`s may be nested within each other.  
 ```@example intro
 g1 = Group([n1,n2,s2])
+# or use keyword argument
+g1 = Group(elements = [n1,n2,s2])
 ```
 
 Let's take a look.

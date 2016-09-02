@@ -20,8 +20,6 @@ Returns a `Group` for a Coilcraft
 - `rh`, `rw`        -- ratio in the height and width
 
 Terminals are :a and :b.
-
-note: Assumes units are mm.
 """
 function coilcraft1010vsgroup(partnumber::AbstractString; nhinc=0, nwinc=0, rh=NaN, rw=NaN)
   # Assumes units = mm !!!
@@ -42,5 +40,5 @@ function coilcraft1010vsgroup(partnumber::AbstractString; nhinc=0, nwinc=0, rh=N
   sigma = 1e-3*58.5e6 # conductivity of copper
   segments = connectnodes(nodes, SegmentParameters(w=1.7, h=0.6, sigma=sigma,
                           nhinc=nhinc, nwinc=nwinc, rh=rh, rw=rw))
-  Group([nodes;segments],Dict(:a=>b3,:b=>t3))
+  Group([nodes;segments],Dict(:a=>b3,:b=>t3),Units("mm"))
 end

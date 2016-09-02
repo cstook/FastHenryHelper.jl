@@ -1,4 +1,5 @@
-# Example 1: A simple example from the FastHenry documentation.
+# Examples
+## Example 1: A simple example from the FastHenry documentation.
 
 This example is a recreation of the example in section 1.2 of "[FastHenry User's Guide](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf)" using FastHeneryHelper.
 
@@ -21,7 +22,7 @@ example1 = Group(
       thick= 1.2,
       seg1=20, seg2=20,
       nodes=[nin = Node("in",800,800,0), nout = Node("out",0,200,0)]
-      ),
+    ),
     Default(SegmentParameters(sigma=62.1e6*2.54e-5,nwinc=8, nhinc=1)),
     n1 = Node("1",0,200,1.5),
     n2 = Node(800,200,1.5),
@@ -79,6 +80,7 @@ push!(example1,Equiv([nin,n3]))
 push!(example1,External(n1,nout))
 push!(example1,Freq(min=1e-1, max=1e9, ndec=0.05))
 push!(example1,End());
+nothing # hide
 ```
 
 Plot of `example1`
@@ -89,7 +91,7 @@ savefig("example1_plot_1.svg"); nothing # hide
 ```
 ![](example1_plot_1.svg)
 
-# Example 2: Four square loops
+## Example 2: Four square loops
 
 This example demonstrates using groups to simplify repetitive structures.
 
@@ -153,7 +155,7 @@ fourloops = Group(
 
 Plot of `fourloops`
 ```@example 2
-using Plots; pyplot()  # use plotlyjs or plotly for interactive plot
+using Plots; pyplot()  # use plotlyjs() or plotly() for interactive plot
 plot(fourloops)
 savefig("example2_fourloops.svg"); nothing # hide
 ```
@@ -167,7 +169,7 @@ end
 ```
 See the output file [fourloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
 
-# Example 3: Via connection to a plane
+## Example 3: Via connection between plane and segment
 [jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_between_two_planes.ipynb)
 
 This example demonstrates the use of `viagroup` and `planeconnect` functions.
@@ -177,7 +179,7 @@ Load the module.
 using FastHenryHelper
 ```
 
-Constants for a 63mil PCB with 1oz copper.
+Constants for a 63mil PCB with 1oz copper.  Copper thickness is made much thicker than 1oz copper to make planes more visible in the plots.
 ```@example 3
 const height = 1.6      # 63mil PCB
 const cu_sigma = 5.8e4
@@ -188,107 +190,95 @@ const cu_thick = 0.5    # exaggerate thickness
 Create a function which returns a `Group` with all the elements of the FastHenry
 input file.
 ```@example 3
-function via_connection_to_plane_example(height, cu_thick)
-    t = Comment("via connection to plane example")
-    u = Units("mm")
+function via_connection_example(height, cu_thick)
+  t = Comment("via connection to plane example")
+  u = Units("mm")
 
-    # create a via with 16 segments
-    # topequiv = false, botequiv = false will allow each segment to connect to the plane separately
-    via = viagroup(radius=2, height=height, h=cu_thick, nhinc = 1, sigma=cu_sigma, n=16, topequiv = false, botequiv = false)
+  # create a via with 16 segments
+  # botequiv = false will allow each segment
+  # to connect to the plane separately
+  via = viagroup(radius=2, height=height, h=cu_thick, nhinc = 1,
+  sigma=cu_sigma, n=16, topequiv = true, botequiv = false)
 
-    # move via into position
-    transform!(via, txyz(3.0,5.0,0.0))
+  # move via into position
+  transform!(via, txyz(3.0,5.0,0.0))
 
-    # create a line of nodes along what will be the right side of the plane
-    top_port = Array(Node,50)
-    y = 0.0
-    for i in eachindex(top_port)
-        top_port[i] = Node(10.0,y,0.0)
-        y += 0.2
-    end
-
-    # short the line of vias.  This will be one terminal of the external port.
-    top_port_equiv = Equiv(top_port)
-
-    # planeconnect retuns a deepcopy of the nodes, and a group of equiv's to
-    # connect them to the original nodes.
-    # via[:alltop] is an array of the 16 nodes around the top on the via
-    (top_plane_nodes, top_plane_nodes_equiv_group) = planeconnect(via[:alltop])
+  top_port_node = Node(10,5,0)
+  # via[:top] is a node in the center of the top of the via.  It
+  # is equiv to the ring of nodes at the top of the via segments.
+  topseg = Segment(via[:top], top_port_node, h=cu_thick, w=1.5)
 
 
-    # create a plane with 100x100 segments.
-    # nodes connect to the external port and the top of the via
-    topplane = UniformPlane(
-        x1=10.0, y1= 10.0, z1=0.0,
-        x2= 0.0, y2= 10.0, z2=0.0,
-        x3= 0.0, y3= 0.0, z3=0.0,
-        thick = cu_thick,
-        seg1=100, seg2=100,
-        sigma = cu_sigma,
-        nhinc = 5,
-        nodes = [top_plane_nodes;top_port])
+  # create a line of nodes along what will be the right side of the plane
+  bot_port = Array(Node,50)
+  y = 0.0
+  for i in eachindex(bot_port)
+    bot_port[i] = Node(10.0,y,-height)
+    y += 0.2
+  end
 
-    # repeat for the bottom plane
-    bot_port = Array(Node,50)
-    y = 0.0
-    for i in eachindex(bot_port)
-        bot_port[i] = Node(10.0,y,-height)
-        y += 0.2
-    end
-    bot_port_equiv = Equiv(bot_port)
-    (bot_plane_nodes,bot_plane_nodes_equiv_group) = planeconnect(via[:allbot])
-    botplane = UniformPlane(
-        x1= 0.0, y1= 0.0, z1=-height,
-        x2= 0.0, y2=10.0, z2=-height,
-        x3=10.0, y3=10.0, z3=-height,
-        thick = cu_thick,
-        seg1=100, seg2=100,
-        sigma = cu_sigma,
-        nhinc = 5,
-        nodes = [bot_plane_nodes;bot_port])
+  # short the line of vias.  This will be one terminal of the external port.
+  bot_port_equiv = Equiv(bot_port)
 
-    # define the external port between the two lines of nodes
-    ex = External(top_port[1],bot_port[1])
+  # planeconnect retuns a deepcopy of the nodes, and a group of equiv's to
+  # connect them to the original nodes.
+  # via[:allbot] is an array of the 16 nodes around the bottom on the via
+  (bot_plane_nodes,bot_plane_nodes_equiv_group) = planeconnect(via[:allbot])
 
-    # just want low frequency
-    f = Freq(min=0.1, max=1e9, ndec=0.05)
+  # create a plane with 100x100 segments.
+  # nodes connect to the external port and the bottom of the via
+  botplane = UniformPlane(
+    x1= 0.0, y1= 0.0, z1=-height,
+    x2= 0.0, y2=10.0, z2=-height,
+    x3=10.0, y3=10.0, z3=-height,
+    thick = cu_thick,
+    seg1=100, seg2=100,
+    sigma = cu_sigma,
+    nhinc = 5,
+    nodes = [bot_plane_nodes;bot_port]
+	)
 
-    e = End() # always need an end
+  # define the external port between the two lines of nodes
+  ex = External(top_port_node,bot_port[1])
 
-    # return a group of the elements we want for our FastHenry input file
-    Group([t; u; via;
-           topplane; top_plane_nodes_equiv_group;
-           botplane; bot_plane_nodes_equiv_group;
-           bot_port_equiv; top_port_equiv;
-           ex; f; e])
+  # just want low frequency
+  f = Freq(min=0.1, max=1e9, ndec=0.05)
+
+  e = End() # always need an end
+
+  # return a group of the element we want for our FastHenry input file
+  Group([t; u; via;
+         top_port_node; topseg;
+         botplane; bot_plane_nodes_equiv_group;
+         bot_port_equiv; top_port_node;
+         ex; f; e])
 end
-nothing # hide
 ```
 Call the function with PCB height and copper thickness.
 ```@example 3
-via_plane_example = via_connection_to_plane_example(height, cu_thick);
+example3 = via_connection_example(height, cu_thick);
 nothing # hide
 ```
 
-Plot of `via_plane_example`
+Plot of `example3`
 ```@example 3
 using Plots; pyplot()
-plot(via_plane_example)
-savefig("example3_via_plane_example.svg"); nothing # hide
+plot(example3)
+savefig("example3.svg"); nothing # hide
 ```
-![](example3_via_plane_example.svg)
+![](example3.svg)
 
 Write results to a file.
 ```@example 3
 io = open("via_to_plane.inp","w+")
-show(io,via_plane_example)
+show(io,example3)
 close(io)
 ```
 See the output file [via_to_plane.inp](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp).
 
 See the .mat file produced by FastHenry [via_to_plane.mat](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat).
 
-# Example 4: Use of rectangulararray
+## Example 4: Use of rectangulararray
 [jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example4_use_of_rectangulararray.ipynb)
 
 A 2x3 array of via's is produced using `rectangulararray` and is connected to a plane.  This example does not create a complete FastHenry file.

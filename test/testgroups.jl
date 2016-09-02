@@ -143,6 +143,7 @@ function testcoilcraft1010vsgroup()
   @test length(keys(terms(inductor))) == 2
   verified =
   """
+  .units mm
   N_1 x=3.550000000e+00 y=3.550000000e+00 z=3.250000000e-01
   N_2 x=3.550000000e+00 y=-3.550000000e+00 z=3.250000000e-01
   N_3 x=3.550000000e+00 y=-3.550000000e+00 z=2.025000000e+00
