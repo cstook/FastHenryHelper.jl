@@ -1,6 +1,4 @@
 - Consistent node size with all Plots() backends.
 - consider changing some symbols to strings using ascii(s) to make sure they
   are valid.  NO!!!
-- keyword arguments for Group
-- look at deepcopy_internal again
 - fix documentation

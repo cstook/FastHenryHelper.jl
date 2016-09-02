@@ -4,6 +4,7 @@
 site/
 docs/build/
 docs/site/
+docs/src/.ipynb_checkpoints
 *.lnk
 scratch?.jl
 temp.*

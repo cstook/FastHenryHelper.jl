@@ -3,12 +3,13 @@ export Group, terms, terms!, elements, elements!
 typealias TermsDict Dict{Symbol,Union{Node,Array{Node,1}}}
 
 """
-    Group([elements [, terms]])
+    Group([elements [, terms[, units]]])
+    Group(<keyword arguments>)
 
 `Group` objects `show` FastHenry commands of their
 elements.
 
-**Fields**
+**Keyword Arguments**
 
 - `elements`    -- Array of `Element`'s
 - `terms`       -- Dict{Symbol,Node} # connections to the Group
@@ -30,6 +31,7 @@ end
 Group() = Group([],TermsDict(),Units())
 Group(e) = Group(e,TermsDict(),Units())
 Group(e,d) = Group(e,d,Units())
+Group(;elements=[],terms=TermsDict(),units=Units())= Group(elements,terms,units)
 
 units(g::Group) = g.units
 function units!(g::Group, u::Units)

@@ -1,9 +1,9 @@
 export coilcraft1010vsgroup
 
 """
-    coilcraft1010vsgroup(partnumber, <keywork arguments>)
+    coilcraft1010vsgroup(partnumber, <keyword arguments>)
 
-Returns a `Group` for a Coilcraft 
+Returns a `Group` for a Coilcraft
 [1010VS](http://www.coilcraft.com/1010vs.cfm) series inductor.
 
 **Part Numbers**

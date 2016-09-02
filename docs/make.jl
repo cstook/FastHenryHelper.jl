@@ -18,3 +18,5 @@ makedocs(
     "Public API" => "public.md"
     ]
 )
+println("**************** DONE *********************")
+wait(Timer(5))
