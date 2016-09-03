@@ -7,10 +7,10 @@ This introduction does not attempt to explain FastHenry.  See the [FastHenry Use
 ## Loading the modules
 ```@example intro
 using FastHenryHelper
-using Plots; pyplot() # using pyplot() backed for plots, plotlyjs() also works.
+using Plots; pyplot() # using pyplot() backed for plots, plotly(), plotlyjs() also work.
 ```
 ## Creating a simple group
-FastHenry commands are julia types which show their command.
+FastHenry commands are julia types which show their command.  In FastHenryHelper these are all subtypes of the supertype `Element`.
 ```@example intro
 n1 = Node(10,0,0)
 ```
@@ -39,11 +39,10 @@ sp2 = SegmentParameters(sp1,w=5,h=2)
 s2 = Segment(n1, n2, sp2)
 ```
 
-Elements can be collected into groups.  Auto-generated names are unique within the `Group` `show` is called on.  `Group`s may be transformed (rotated, translated, etc.).  `Group`s may be nested within each other.  
+Elements can be collected into groups.  Auto-generated names are unique within the `Group` `show` is called on.  `Group`s may be transformed (rotated, translated, etc.).  `Group`s may be nested within each other (`Group` is a subtype of `Element`).  
 ```@example intro
 g1 = Group([n1,n2,s2])
-# or use keyword argument
-g1 = Group(elements = [n1,n2,s2])
+g1 = Group(elements = [n1,n2,s2]) # or use keyword argument
 ```
 
 Let's take a look.
@@ -97,13 +96,24 @@ savefig("intro_plot_3.svg"); nothing # hide
 Groups have a dictionary of terminals, nodes which are external connection points, for the group.  In this case n1 and n6 are the terminals.
 ```@example intro
 t = terms(loop)
-push!(t,:a=>n1)
-push!(t,:b=>n6)
-nothing # hide
+t[:a] = n1
+t[:b] = n6;
 ```
-The loop with terminals could have been defined on one line
+`loop` can be defined more concisely using `element` and `terms` keyword arguments and the function  `connectnodes`.
 ```@example intro
-loop = Group([n1,n2,n3,n4,n5,n6,s1,s2,s3,s4,s5],Dict(:a=>n1,:b=>n6));
+sp = SegmentParameters(h=2,w=3)
+loop = Group(
+  elements = [
+    n1 = Node(0,-1,0),
+    n2 = Node(0,-10,0),
+    n3 = Node(10,-10,0),
+    n4 = Node(10,10,0),
+    n5 = Node(0,10,0),
+    n6 = Node(0,1,0),
+    connectnodes([n1,n2,n3,n4,n5,n6],sp)...
+  ],
+  terms = Dict(:a=>n1,:b=>n6)
+)
 ```
 
 Shift loop 5 along x axis
@@ -114,10 +124,10 @@ transform!(loop,txyz(5,0,0))
 Create array of 8 loops each rotated π/4 around y axis
 ```@example intro
 tm = ry(π/4)
-loops = []
+loops = Array(Group,8)
 for i in 1:8
   transform!(loop,tm)
-  push!(loops,deepcopy(loop))
+  loops[i] = deepcopy(loop)
 end
 ```
 
@@ -133,7 +143,7 @@ savefig("intro_plot_4.svg"); nothing # hide
 ```
 ![](intro_plot_4.svg)
 
-Define a port for each loop.
+Define a port for each loop. Ports could have been defined as the loops were created. This way demonstrates the use of terminals.
 ```@example intro
 ex = []
 for loop in loops
@@ -144,14 +154,16 @@ externalgroup = Group(ex)
 
 Create top level group.
 ```@example intro
-eightloops = Group()
-push!(eightloops, Units("mm"))
-push!(eightloops, Default(SegmentParameters(sigma=62.1e6*1e-3,nwinc=7, nhinc=5)))
-append!(eightloops, loopsgroup)
-append!(eightloops, externalgroup)
-push!(eightloops, Freq(min=1e-1, max=1e9, ndec=0.05))
-push!(eightloops, End())
-nothing # hide
+eightloops = Group(
+  elements = [
+    Units("mm"),
+    Default(SegmentParameters(sigma=62.1e6*1e-3, nwinc=7, nhinc=5)),
+    loopsgroup,
+    externalgroup,
+    Freq(min=1e-1, max=1e9, ndec=0.05),
+    End()
+  ]
+);
 ```
 
 Write to file.
@@ -171,4 +183,22 @@ The FastHenry .mat output file can be parsed.
 ```@example intro
 result = parsefasthenrymat("eightloopsZc.mat")
 result.impedance
+```
+## Group units
+
+In addition to the `Units` type, units may be specified for a `Group` using the units keyword.  Group units only apply to the `elements` in the `Group`.
+```@example intro
+groupunitexample = Group(
+  elements = [
+    Units("cm"),
+    Node(1,0,0),
+    Group(
+      elements = [
+        Node(20,0,0)
+      ],
+      units = Units("mm")
+    ),
+    Node(3,0,0)
+  ]
+)
 ```
