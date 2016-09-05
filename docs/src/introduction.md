@@ -1,13 +1,17 @@
 # Introduction to FastHenryHelper
 
-This introduction does not attempt to explain FastHenry.  See the [FastHenry User's Guide](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf).
+FastHenryHelper assists creating FastHenry input files using julia.  Groups of FastHenry commands can be copied translated and rotated, keeping names unique for the copies.  This simplifies creating input files with repetitive geometries, and reuse of groups of FastHenry commands.
+
+!!! note
+
+    This introduction does not attempt to explain FastHenry.  See the [FastHenry User's Guide](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf).
 
 [jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Introduction.ipynb)
 
 ## Loading the modules
 ```@example intro
 using FastHenryHelper
-using Plots; pyplot() # using pyplot() backed for plots, plotly(), plotlyjs() also work.
+using Plots; pyplot() # using pyplot() backend for plots, plotly(), plotlyjs() also work.
 ```
 ## Creating a simple group
 FastHenry commands are julia types which show their command.  In FastHenryHelper these are all subtypes of the supertype `Element`.
@@ -22,6 +26,10 @@ A name can be specified as the first parameter.
 n2 = Node(:abcd,0,0,0)
 ```
 
+!!! note
+
+    specifying names is not recommended.  FastHenryHelper will not mutate user provided names to keep them unique when copies are made.
+
 Segments connect nodes.  Keyword parameters match the [FastHenry](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf) keywords.
 ```@example intro
 s1 = Segment(n1, n2, w=10, h=20, nwinc=5, nhinc=7)
@@ -35,7 +43,7 @@ s1 = Segment(n1, n2, sp1)
 
 A `SegmentParameters` object can be created by specifying the parameters that differ from another `SegmentParameters` object.
 ```@example intro
-sp2 = SegmentParameters(sp1,w=5,h=2)
+sp2 = SegmentParameters(sp1,w=5,h=3)
 s2 = Segment(n1, n2, sp2)
 ```
 
@@ -56,10 +64,12 @@ Rotate g1 π/4 around y and z axis and translate by 10 along x axis.
 ```@example intro
 transformmatrix = ry(π/4) * rz(π/4) * txyz(10,0,0)
 transform!(g1,transformmatrix)
-# note: the wx, wy, wz vector for the segment has rotated from default and all
-# automatically generated names are unique.
 g1
 ```
+
+!!! note
+
+    The wx, wy, wz vector for the segment has rotated from default and all automatically generated names are unique.
 
 Plot after transform.
 ```@example intro
@@ -101,7 +111,6 @@ t[:b] = n6;
 ```
 `loop` can be defined more concisely using `element` and `terms` keyword arguments and the function  `connectnodes`.
 ```@example intro
-sp = SegmentParameters(h=2,w=3)
 loop = Group(
   elements = [
     n1 = Node(0,-1,0),
@@ -110,7 +119,7 @@ loop = Group(
     n4 = Node(10,10,0),
     n5 = Node(0,10,0),
     n6 = Node(0,1,0),
-    connectnodes([n1,n2,n3,n4,n5,n6],sp)...
+    connectnodes([n1,n2,n3,n4,n5,n6], SegmentParameters(h=2,w=3))...
   ],
   terms = Dict(:a=>n1,:b=>n6)
 )
@@ -143,7 +152,7 @@ savefig("intro_plot_4.svg"); nothing # hide
 ```
 ![](intro_plot_4.svg)
 
-Define a port for each loop. Ports could have been defined as the loops were created. This way demonstrates the use of terminals.
+Define a port for each loop.
 ```@example intro
 ex = []
 for loop in loops
@@ -164,6 +173,7 @@ eightloops = Group(
     End()
   ]
 );
+nothing # hide
 ```
 
 Write to file.
@@ -173,7 +183,11 @@ open("eightloops.inp","w") do io
 end
 ```
 
-FastHenry was run with "eightloops.inp" input file.  FastHenryHelper does not call FastHenry.
+FastHenry was run with "eightloops.inp" input file.
+
+!!! note
+
+        FastHenryHelper does not call FastHenry.
 
 view [eightloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloops.inp).
 

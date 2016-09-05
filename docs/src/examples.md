@@ -13,10 +13,10 @@ Create a group of FastHenry elements for FastHenry to compute the loop inductanc
 sp = SegmentParameters(w=8,h=1)
 example1 = Group(
   elements = [
-		Comment("A FastHenry example using a reference plane"),
+    Comment("A FastHenry example using a reference plane"),
     Units("mils"),
     g = UniformPlane(
-			x1=0,    y1=0,    z1=0,
+      x1=0,    y1=0,    z1=0,
       x2=1000, y2=0,    z2=0,
       x3=1000, y3=1000, z3=0,
       thick= 1.2,
