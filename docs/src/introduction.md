@@ -1,12 +1,11 @@
 # Introduction to FastHenryHelper
+[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Introduction.ipynb)
 
 FastHenryHelper assists creating FastHenry input files using julia.  Groups of FastHenry commands can be copied translated and rotated, keeping names unique for the copies.  This simplifies creating input files with repetitive geometries, and reuse of groups of FastHenry commands.
 
 !!! note
 
     This introduction does not attempt to explain FastHenry.  See the [FastHenry User's Guide](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf).
-
-[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Introduction.ipynb)
 
 ## Loading the modules
 ```@example intro

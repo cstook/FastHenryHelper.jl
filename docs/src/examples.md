@@ -1,5 +1,6 @@
 # Examples
 ## Example 1: A simple example from the FastHenry documentation.
+[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example1_L_shaped_trace_over_ground.ipynb)
 
 This example is a recreation of the example in section 1.2 of "[FastHenry User's Guide](https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf)" using FastHeneryHelper.
 
@@ -92,6 +93,7 @@ savefig("example1_plot_1.svg"); nothing # hide
 ![](example1_plot_1.svg)
 
 ## Example 2: Four square loops
+[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example2_Four_Square_Loops.ipynb)
 
 This example demonstrates using groups to simplify repetitive structures.
 
@@ -170,7 +172,7 @@ end
 See the output file [fourloops.inp](https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp).
 
 ## Example 3: Via connection between plane and segment
-[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_between_two_planes.ipynb)
+[jupyter version](https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example3_Via_Connection_Between_Plane_And_Segment.ipynb)
 
 This example demonstrates the use of `viagroup` and `planeconnect` functions.
 

@@ -8,7 +8,7 @@ makedocs(
     modules = [FastHenryHelper],
     clean   = true,
     format = Documenter.Formats.HTML,
-    sitename = "FastHenryHelper",
+    sitename = "FastHenryHelper.jl",
     doctest = true,
     pages = [
     "Home" => "index.md",
