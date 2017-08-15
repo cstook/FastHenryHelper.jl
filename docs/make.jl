@@ -1,8 +1,6 @@
 using Documenter
 using FastHenryHelper
-
-# Build docs.
-# ===========
+wait(Timer(1)) # why do I need this?
 
 const PAGES = [
   "Home" => "index.md",
@@ -11,6 +9,7 @@ const PAGES = [
   "Examples" => "examples.md",
   "Public API" => "public.md",
 ]
+
 makedocs(
   modules = [FastHenryHelper],
   doctest   = "doctest" in ARGS,
