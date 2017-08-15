@@ -18,19 +18,21 @@ which specify the offsets along the x, y, and z axis.  Unspecified
 arguments are zero.
 """
 function rectangulararray(x=0.0,y=0.0,z=0.0)
-  function producer(x,y,z)
-    tm = txyz(0,0,0)
+  ch = Channel{Array{Float64,2}}(1)
+  tm = txyz(0,0,0)
+  @async begin
     for a in x
       tm[1,4] = a
       for b in y
         tm[2,4] = b
         for c in z
           tm[3,4] = c
-          produce(tm)
+          put!(ch,tm)
         end
       end
     end
+    close(ch)
   end
-  return Task(() -> producer(x,y,z))
+  return ch
 end
 # rectangulararray(;x=0.0, y=0.0, z=0.0) = rectangulararray(x,y,z)
