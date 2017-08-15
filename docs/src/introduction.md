@@ -132,7 +132,7 @@ transform!(loop,txyz(5,0,0))
 Create array of 8 loops each rotated π/4 around y axis
 ```@example intro
 tm = ry(π/4)
-loops = Array(Group,8)
+loops = Array{Group}(8)
 for i in 1:8
   transform!(loop,tm)
   loops[i] = deepcopy(loop)
