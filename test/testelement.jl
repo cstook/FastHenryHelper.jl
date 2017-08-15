@@ -25,31 +25,31 @@ function testmatrices()
          0.0   0.707107  0.707107  0.0
          0.0  -0.707107  0.707107  0.0
          0.0   0.0       0.0       1.0]
-  @test_approx_eq_eps(sum(rx(π/4)-result),0.0,1e-5)
+  @test sum(rx(π / 4) - result) ≈ 0.0 atol=1.0e-5
 
   result = [0.707107  0.0  -0.707107  0.0
    0.0       1.0   0.0       0.0
    0.707107  0.0   0.707107  0.0
    0.0       0.0   0.0       1.0]
-  @test_approx_eq_eps(sum(ry(π/4)-result),0.0,1e-5)
+  @test sum(ry(π / 4) - result) ≈ 0.0 atol=1.0e-5
 
   result = [0.707107  0.707107  0.0  0.0
    -0.707107  0.707107  0.0  0.0
     0.0       0.0       1.0  0.0
     0.0       0.0       0.0  1.0]
-  @test_approx_eq_eps(sum(rz(π/4)-result),0.0,1e-5)
+  @test sum(rz(π / 4) - result) ≈ 0.0 atol=1.0e-5
 
   result = [1.0  0.0  0.0  1.0
    0.0  1.0  0.0  2.0
    0.0  0.0  1.0  3.0
    0.0  0.0  0.0  1.0]
-  @test_approx_eq_eps(sum(txyz(1.0,2.0,3.0)-result),0.0,1e-5)
+  @test sum(txyz(1.0, 2.0, 3.0) - result) ≈ 0.0 atol=1.0e-5
 
   result = [ 1.0  0.0  0.0  0.0
    0.0  2.0  0.0  0.0
    0.0  0.0  3.0  0.0
    0.0  0.0  0.0  1.0]
-  @test_approx_eq_eps(sum(scalexyz(1.0,2.0,3.0)-result),0.0,1e-5)
+  @test sum(scalexyz(1.0, 2.0, 3.0) - result) ≈ 0.0 atol=1.0e-5
 end
 testmatrices()
 

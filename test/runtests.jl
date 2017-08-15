@@ -5,14 +5,14 @@ using Base.Test
 function testelement(e::Element, verified::String)
   ebuf = IOBuffer()
   show(ebuf,e)
-  @test takebuf_string(ebuf) == verified
+  @test String(take!(ebuf)) == verified
 end
 
 function testelementdebug(e::Element, verified::String)
   ebuf = IOBuffer()
   show(ebuf,e)
   debugio = open("debug.txt","w")
-  println(debugio, takebuf_string(ebuf))
+  println(debugio, String(take!(ebuf)))
   close(debugio)
   verifiedio = open("verified.txt","w")
   println(verifiedio, verified)

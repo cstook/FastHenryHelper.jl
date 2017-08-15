@@ -5,7 +5,7 @@ immutable ElementContext
 end
 ElementContext() = ElementContext(Default(), Units(), 0)
 
-typealias ContextDict Dict{Element,ElementContext}
+const ContextDict = Dict{Element,ElementContext}
 
 immutable Context
   dict :: ContextDict
@@ -17,7 +17,7 @@ function Context(element::Element)
   Context(contextdict(element),firstunits(element),title(element))
 end
 
-typealias NamedElements Union{Node,Segment,UniformPlane}
+const NamedElements = Union{Node,Segment,UniformPlane}
 
 function firstunits(element::Element)
   result = Units()
@@ -119,7 +119,7 @@ function scaletofirstunits(x::Element, context::Context)
 end
 
 function xyz1(node::Node, scale::Float64)
-  result = Array(Float64,4)
+  result = Array{Float64}(4)
   result[1:3] = node.xyz1[1:3]*scale
   result[4] = 1.0
   return result
@@ -197,7 +197,7 @@ end
 
 function corners_xyz1_thick(uniformplane::UniformPlane, context::Context)
   scale = scaletofirstunits(uniformplane,context)
-  c1 = Array(Float64,4)
+  c1 = Array{Float64}(4)
   c2 = similar(c1)
   c3 = similar(c1)
   c1[1:3] = uniformplane.corner1[1:3] * scale

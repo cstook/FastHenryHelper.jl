@@ -134,7 +134,7 @@ Returns an array of `HomogenousMesh` objects for use with `GLVisualize`.
 function mesharray(element::Element,mcs::MeshColorScheme=defaultmeshcolorscheme)
   context = Context(element)
   vp = VisualizationParameters(mcs, nodesize(element,context))
-  allmesh = Array(HomogenousMesh,0)
+  allmesh = Array{HomogenousMesh}(0)
   for e in element
     appendmesh!(allmesh,e,context,vp)
   end

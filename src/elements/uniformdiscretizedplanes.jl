@@ -10,7 +10,7 @@ Subtypes of `Hole` are holes in a plane.
 - Rect
 - Circle
 """
-abstract Hole <: Element
+abstract type Hole <: Element end
 
 """
     Point(x, y, z)

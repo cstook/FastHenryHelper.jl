@@ -183,7 +183,7 @@ function corners(segment::Segment, context::Context)
   heightvector = cross(widthvector,lengthvector)
   normalize!(heightvector)
   halfheightvector = 0.5*h * heightvector
-  c = Array(Float64,(3,8))
+  c = Array{Float64}((3,8))
   c[:,1] = mp1+halfheightvector
   c[:,2] = mp1-halfheightvector
   c[:,3] = mp2-halfheightvector
@@ -201,7 +201,7 @@ function corners(plane::UniformPlane, context::Context)
   perpvector = cross(widthvector,lengthvector)
   normalize!(perpvector)
   halfthickperpvector = 0.5*thick *perpvector
-  c = Array(Float64,(3,8))
+  c = Array{Float64}((3,8))
   c4 = widthvector + c1[1:3]
   c[:,1] = c1[1:3] - halfthickperpvector
   c[:,2] = c2[1:3] - halfthickperpvector

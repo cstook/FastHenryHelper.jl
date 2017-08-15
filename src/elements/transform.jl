@@ -78,7 +78,7 @@ function transform(e::Group, transformationlist)
   newgroup = elementarraygroup(e, transformationlist)
   newterms = terms(newgroup)
   for key in keys(terms(elements(newgroup)[1]))
-    newterms[key] = Array(Node,0)
+    newterms[key] = Array{Node}(0)
   end
   for subgroup in elements(newgroup)
     for (key,value) in terms(subgroup)

@@ -1,4 +1,4 @@
-__precompile__()
+__precompile__(false)
 
 """
 Helps creating input files for FastHenry.

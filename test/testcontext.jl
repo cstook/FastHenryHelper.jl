@@ -49,31 +49,31 @@ function contexttest1()
   @test context.dict[s1].units == Units("mils")
   @test context.dict[s1].autoname == 7
 
-  @test_approx_eq xyz1(n1,context) [0.0,0.0, 1.0    ,1.0]
-  @test_approx_eq xyz1(n2,context) [0.0,0.0, 0.001  ,1.0]
-  @test_approx_eq xyz1(n3,context) [0.0,0.0, 1.0e-5 ,1.0]
-  @test_approx_eq xyz1(n4,context) [0.0,0.0, 1.0e-6 ,1.0]
-  @test_approx_eq xyz1(n5,context) [0.0,0.0, 1.0e-9 ,1.0]
-  @test_approx_eq xyz1(n6,context) [0.0,0.0, 2.54e-5,1.0]
-  @test_approx_eq xyz1(n7,context) [0.0,0.0, 2.54e-8,1.0]
+  @test xyz1(n1, context) ≈ [0.0, 0.0, 1.0, 1.0]
+  @test xyz1(n2,context) ≈ [0.0,0.0, 0.001  ,1.0]
+  @test xyz1(n3,context) ≈ [0.0,0.0, 1.0e-5 ,1.0]
+  @test xyz1(n4,context) ≈ [0.0,0.0, 1.0e-6 ,1.0]
+  @test xyz1(n5,context) ≈ [0.0,0.0, 1.0e-9 ,1.0]
+  @test xyz1(n6,context) ≈ [0.0,0.0, 2.54e-5,1.0]
+  @test xyz1(n7,context) ≈ [0.0,0.0, 2.54e-8,1.0]
 
   (n1xyz1,n2xyz1) = nodes_xyz1(s1,context)
-  @test_approx_eq n1xyz1 [0.0,0.0,1.0e-5,1.0]
-  @test_approx_eq n2xyz1 [0.0,0.0,1.0e-6,1.0]
+  @test n1xyz1 ≈ [0.0,0.0,1.0e-5,1.0]
+  @test n2xyz1 ≈ [0.0,0.0,1.0e-6,1.0]
 
-  @test_approx_eq [width_height(s1,context)...] [3.0e-9,5.08e-8]
+  @test [width_height(s1,context)...] ≈ [3.0e-9,5.08e-8]
 
-  @test_approx_eq wxyz(s1,context) [-1.0,0.0,0.0]
+  @test wxyz(s1,context) ≈ [-1.0,0.0,0.0]
 
   (c1,c2,c3,thick) = corners_xyz1_thick(p1,context)
-  @test_approx_eq c1 [0.0,0.0,0.0,1.0]
-  @test_approx_eq c2 [2.54e-7,0.0,0.0,1.0]
-  @test_approx_eq c3 [2.54e-7,2.54e-7,0.0,1.0]
-  @test_approx_eq thick 2.54e-8
+  @test c1 ≈ [0.0,0.0,0.0,1.0]
+  @test c2 ≈ [2.54e-7,0.0,0.0,1.0]
+  @test c3 ≈ [2.54e-7,2.54e-7,0.0,1.0]
+  @test thick ≈ 2.54e-8
 
   (pn1xyz1,pn2xyz1)=nodes_xyz1(p1,context)
-  @test_approx_eq pn1xyz1 [2.54e-8,5.08e-8,0.0,1.0]
-  @test_approx_eq pn2xyz1 [1.016e-7,1.27e-7,0.0,1.0]
+  @test pn1xyz1 ≈ [2.54e-8,5.08e-8,0.0,1.0]
+  @test pn2xyz1 ≈ [1.016e-7,1.27e-7,0.0,1.0]
 end
 contexttest1()
 
@@ -93,37 +93,37 @@ function contexttest2()
   g3 = Group([mm,s1])
   context = Context(g3)
   (n1xyz1,n2xyz1) = nodes_xyz1(s1,context)
-  @test_approx_eq n1xyz1 [1.0,2.0,3.0,1.0]
-  @test_approx_eq n2xyz1 [4.0,5.0,6.0,1.0]
-  @test_approx_eq [width_height(s1,context)...] [1.0,2.0]
+  @test n1xyz1 ≈ [1.0,2.0,3.0,1.0]
+  @test n2xyz1 ≈ [4.0,5.0,6.0,1.0]
+  @test [width_height(s1,context)...] ≈ [1.0,2.0]
 
   g4 = Group([cm,n1,n2,d,mm,s2])
   context = Context(g4)
   (n1xyz1,n2xyz1) = nodes_xyz1(s2,context)
-  @test_approx_eq n1xyz1 [1.0,2.0,3.0,1.0]
-  @test_approx_eq n2xyz1 [4.0,5.0,6.0,1.0]
-  @test_approx_eq [width_height(s2,context)...] [7.0,8.0]
+  @test n1xyz1 ≈ [1.0,2.0,3.0,1.0]
+  @test n2xyz1 ≈ [4.0,5.0,6.0,1.0]
+  @test [width_height(s2,context)...] ≈ [7.0,8.0]
 
   g5 = Group([cm,n1,n2,mm,d,s2])
   context = Context(g5)
   (n1xyz1,n2xyz1) = nodes_xyz1(s2,context)
-  @test_approx_eq n1xyz1 [1.0,2.0,3.0,1.0]
-  @test_approx_eq n2xyz1 [4.0,5.0,6.0,1.0]
-  @test_approx_eq [width_height(s2,context)...] [0.7,0.8]
+  @test n1xyz1 ≈ [1.0,2.0,3.0,1.0]
+  @test n2xyz1 ≈ [4.0,5.0,6.0,1.0]
+  @test [width_height(s2,context)...] ≈ [0.7,0.8]
 
   g6 = Group([cm,n1,mm,n2,d,s2])
   context = Context(g6)
   (n1xyz1,n2xyz1) = nodes_xyz1(s2,context)
-  @test_approx_eq n1xyz1 [1.0,2.0,3.0,1.0]
-  @test_approx_eq n2xyz1 [0.4,0.5,0.6,1.0]
-  @test_approx_eq [width_height(s2,context)...] [0.7,0.8]
+  @test n1xyz1 ≈ [1.0,2.0,3.0,1.0]
+  @test n2xyz1 ≈ [0.4,0.5,0.6,1.0]
+  @test [width_height(s2,context)...] ≈ [0.7,0.8]
 
   g7 = Group([cm,mm,n1,n2,d,s2])
   context = Context(g7)
   (n1xyz1,n2xyz1) = nodes_xyz1(s2,context)
-  @test_approx_eq n1xyz1 [0.1,0.2,0.3,1.0]
-  @test_approx_eq n2xyz1 [0.4,0.5,0.6,1.0]
-  @test_approx_eq [width_height(s2,context)...] [0.7,0.8]
+  @test n1xyz1 ≈ [0.1,0.2,0.3,1.0]
+  @test n2xyz1 ≈ [0.4,0.5,0.6,1.0]
+  @test [width_height(s2,context)...] ≈ [0.7,0.8]
 end
 contexttest2()
 

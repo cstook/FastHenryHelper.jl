@@ -13,7 +13,7 @@ Returns a tuple of a `deepcopy` of the `nodes` passed and a group of `Equiv` obj
 """
 function planeconnect(nodes::Array{Node,1})
   planenodearray = deepcopy(nodes)
-  equivarray = Array(Equiv,length(nodes))
+  equivarray = Array{Equiv}(length(nodes))
   for i in eachindex(nodes)
     equivarray[i] = Equiv([nodes[i],planenodearray[i]])
   end

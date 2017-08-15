@@ -1,5 +1,5 @@
 # parsemat.jl
-# 
+#
 # parses impedance matrix output file from FastFieldSolvers
 export parsefasthenrymat
 
@@ -35,7 +35,7 @@ function parsefasthenrymat(io::IO)
     throw(ParseError("first line did not start with \"Row\""))
   end
   numberofrows = parse(Int,m.captures[1])
-  portnames = Array(AbstractString,numberofrows)
+  portnames = Array{AbstractString}(numberofrows)
   portnames[numberofrows] = m.captures[3] == nothing ? "" : m.captures[3]
   for i in numberofrows-1:-1:1
     line = readline(io)
@@ -48,7 +48,7 @@ function parsefasthenrymat(io::IO)
   end
   frequencies = 0
   buffer = IOBuffer()
-  impeadancematrix = Array(Complex{Float64},numberofrows,numberofrows)
+  impeadancematrix = Array{Complex{Float64}}(numberofrows,numberofrows)
   while ~eof(io)
     line = readline(io)
     frequencies+=1
@@ -75,8 +75,8 @@ function parsefasthenrymat(io::IO)
     end
     write(buffer,impeadancematrix)
   end
-  resultmatrix = Array(Complex{Float64},numberofrows,numberofrows,frequencies)
-  frequencymatrix = Array(Float64,frequencies)
+  resultmatrix = Array{Complex{Float64}}(numberofrows,numberofrows,frequencies)
+  frequencymatrix = Array{Float64}(frequencies)
   seekstart(buffer)
   for i in 1:frequencies
     frequency = read(buffer,Float64)

@@ -1,7 +1,6 @@
 export Group, terms, terms!, elements, elements!
 
-typealias TermsDict Dict{Symbol,Union{Node,Array{Node,1}}}
-
+const TermsDict = Dict{Symbol,Union{Node,Array{Node,1}}}
 """
     Group([elements [, terms[, units]]])
     Group(<keyword arguments>)
@@ -28,7 +27,7 @@ type Group <: Element
   terms :: TermsDict
   units :: Units
 end
-Group() = Group([],TermsDict(),Units())
+# Group() = Group([],TermsDict(),Units())
 Group(e) = Group(e,TermsDict(),Units())
 Group(e,d) = Group(e,d,Units())
 Group(;elements=[],terms=TermsDict(),units=Units())= Group(elements,terms,units)

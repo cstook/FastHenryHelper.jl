@@ -33,4 +33,4 @@ function rectangulararray(x=0.0,y=0.0,z=0.0)
   end
   return Task(() -> producer(x,y,z))
 end
-rectangulararray(;x=0.0, y=0.0, z=0.0) = rectangulararray(x,y,z)
+# rectangulararray(;x=0.0, y=0.0, z=0.0) = rectangulararray(x,y,z)
