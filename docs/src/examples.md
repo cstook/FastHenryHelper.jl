@@ -121,7 +121,7 @@ squareloop = Group(
 
 Create an array of four square loops, each one shifted 10mm on z axis.
 ```@example 2
-loops = Array(Group,4)
+loops = Array{Group}(4)
 z = [0.0, 10.0, 20.0, 30.0]
 for i in eachindex(loops)
     loops[i] = transform(squareloop, txyz(0,0,z[i]))
@@ -212,7 +212,7 @@ function via_connection_example(height, cu_thick)
 
 
   # create a line of nodes along what will be the right side of the plane
-  bot_port = Array(Node,50)
+  bot_port = Array{Node}(50)
   y = 0.0
   for i in eachindex(bot_port)
     bot_port[i] = Node(10.0,y,-height)
