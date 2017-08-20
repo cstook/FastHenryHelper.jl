@@ -17,9 +17,9 @@ a rectangular array of elements.  `x`, `y`, and `z` are iterable objects
 which specify the offsets along the x, y, and z axis.  Unspecified
 arguments are zero.
 """
-function rectangulararray(x=0.0,y=0.0,z=0.0)
-  ch = Channel{Array{Float64,2}}(1)
+function rectangulararray(x,y=0.0,z=0.0)
   tm = txyz(0,0,0)
+  ch = Channel{typeof(tm)}(1)
   @async begin
     for a in x
       tm[1,4] = a
@@ -27,7 +27,7 @@ function rectangulararray(x=0.0,y=0.0,z=0.0)
         tm[2,4] = b
         for c in z
           tm[3,4] = c
-          put!(ch,tm)
+          put!(ch,copy(tm))
         end
       end
     end
@@ -35,4 +35,4 @@ function rectangulararray(x=0.0,y=0.0,z=0.0)
   end
   return ch
 end
-# rectangulararray(;x=0.0, y=0.0, z=0.0) = rectangulararray(x,y,z)
+rectangulararray(;x=0.0, y=0.0, z=0.0) = rectangulararray(x,y,z)
