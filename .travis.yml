@@ -4,22 +4,31 @@ os:
   - linux
   - osx
 julia:
-  - release
+  - 0.7
   - nightly
 notifications:
   email: false
 git:
   depth: 99999999
 
-## uncomment the following lines to allow failures on nightly julia
-## (tests will run but not make your overall status red)
-#matrix:
-  allow_failures:
+allow_failures:
   - julia: nightly
-# uncomment the following lines to override the default test script
-#script:
-#  - if [[ -a .git/shallow ]]; then git fetch --unshallow; fi
-#  - julia -e 'Pkg.clone(pwd()); Pkg.build("FastFieldSolversHelper"); Pkg.test("FastFieldSolversHelper"; coverage=true)'
 
 after_success:
-  - julia -e 'cd(Pkg.dir("FastHenryHelper")); Pkg.add("Coverage"); using Coverage; Coveralls.submit(process_folder())'
+  - julia --project=test/coverage/ -e 'using Pkg; Pkg.instantiate()'
+  - julia --project=test/coverage/ test/coverage/coverage.jl
+
+jobs:
+  include:
+    - stage: "Documentation"
+      julia: 1.0
+      os: linux
+      script:
+        - julia --project=docs -e 'using Pkg; Pkg.instantiate()'
+        - julia --project=docs --color=yes docs/make.jl deploy
+      after_success: skip
+
+notifications:
+  email: false
+git:
+  depth: 99999999

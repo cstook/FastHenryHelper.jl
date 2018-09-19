@@ -6,7 +6,7 @@ export Units
 `Units` objects `show` a FastHenry .units command.
 """
 struct Units <: Element
-  unitname :: AbstractString
+  unitname :: String
   Units() = new("") # flag for internal use only
   function Units(x)
     if ~issubset(Set([x]),Set(["km", "m", "cm", "mm", "um", "in", "mils"]))

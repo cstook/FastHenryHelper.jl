@@ -1,6 +1,7 @@
+push!(LOAD_PATH,"..")
 using Documenter
 using FastHenryHelper
-wait(Timer(1)) # why do I need this?
+# wait(Timer(1)) # why do I need this?
 
 const PAGES = [
   "Home" => "index.md",
@@ -35,7 +36,7 @@ if "deploy" in ARGS
     branch = "gh-pages",
     latest = "master",
     osname = "linux",
-    julia  = "0.6",
+    julia  = "0.7",
     deps = nothing,
     make = nothing,
   )

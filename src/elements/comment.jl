@@ -6,5 +6,5 @@ export Comment
 `Comment` objects `show` a FastHenry comment.
 """
 struct Comment <: Element
-  text :: AbstractString
+  text :: String
 end
