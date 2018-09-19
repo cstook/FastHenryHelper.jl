@@ -20,7 +20,7 @@ abstract type Hole <: Element end
 
 Keyword arguments are `x`, `y`, `z`.
 """
-immutable Point <: Hole
+struct Point <: Hole
   xyz1  :: Array{Float64,1}
 end
 Point(x,y,z) = Point([x,y,z,1])
@@ -41,7 +41,7 @@ end
 
 Keyword arguments are `x1`, `y1`, `z1`, `x2`, `y2`, `z2`.
 """
-immutable Rect <: Hole
+struct Rect <: Hole
   corner1  :: Array{Float64,1}
   corner2  :: Array{Float64,1}
 end
@@ -66,7 +66,7 @@ end
 
 Keyword arguments are `x`, `y`, `z`, `r`.
 """
-immutable Circle <: Hole
+struct Circle <: Hole
   xyz1    :: Array{Float64,1} # center
   radius  :: Float64
 end
@@ -104,7 +104,7 @@ end
 - `nodes`             -- Array of `Node` connection points to plane
 - `holes`             -- Array of `Hole` (`Point`, `Rect`, or `Circle`)
 """
-immutable UniformPlane <: Element
+struct UniformPlane <: Element
   name :: Symbol
   corner1 :: Array{Float64,1}
   corner2 :: Array{Float64,1}

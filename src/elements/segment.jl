@@ -1,6 +1,6 @@
 export Segment, SegmentParameters
 
-immutable SigmaRho
+struct SigmaRho
   sigma :: Float64
   rho   :: Float64
   function SigmaRho(sigma,rho)
@@ -26,7 +26,7 @@ function Base.show(io::IO, x::SigmaRho)
   return nothing
 end
 
-type WxWyWz
+mutable struct WxWyWz
   xyz :: Array{Float64,1}
   isdefault :: Bool
   function WxWyWz(wx, wy, wz)
@@ -56,7 +56,7 @@ function Base.show(io::IO, x::WxWyWz)
   return nothing
 end
 
-immutable WH
+struct WH
   w :: Float64
   h :: Float64
   nhinc :: Int
@@ -126,7 +126,7 @@ Object to hold parameters for `Segment` and `Default`
 
 The second form replaces values in `parameters` with any keyword parameters present.
 """
-immutable SegmentParameters
+struct SegmentParameters
   wh        :: WH
   sigmarho  :: SigmaRho
   wxwywz    :: WxWyWz
@@ -178,7 +178,7 @@ note: When rotating segments, the vector [wx, wy, wz] will be rotated.  Default
 values will be used if not specified.  wx, wy, wz will show after `transform[!]` is
 called on a `Segment`.
 """
-immutable Segment <: Element
+struct Segment <: Element
   name      :: Symbol
   node1     :: Node
   node2     :: Node

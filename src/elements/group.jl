@@ -22,7 +22,7 @@ for user named elements.
 `getindex`, `setindex!`, and `merge!` operate on `terms`.
 `push!`, `pop!`, `unshift!`, `shift!`, `append!`, `prepend!` operate on `elements`.
 """
-type Group <: Element
+mutable struct Group <: Element
   elements :: Array{Element,1}
   terms :: TermsDict
   units :: Units
@@ -34,7 +34,7 @@ Group(;elements=[],terms=TermsDict(),units=Units())= Group(elements,terms,units)
 
 units(g::Group) = g.units
 function units!(g::Group, u::Units)
-  g.units = use
+  g.units = u
   return nothing
 end
 

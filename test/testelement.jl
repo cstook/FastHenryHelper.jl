@@ -439,7 +439,7 @@ function testgroup()
   # Default and Freq are immutable
   g6 = Group([title,c1,u,n20,n21,n3,n4,n5,n6,seg20,eq1,up,ex1])
   deepcopyg6 = deepcopy(g6)
-  for i in eachindex(elements(g6))
+  for i in (4,5,6,7,8,9,10) # only verify mutable elements
     @test ~(elements(deepcopyg6)[i] === elements(g6)[i])
   end
 

@@ -1,4 +1,4 @@
-using GLVisualize: GLNormalMesh
+using Makie: GLNormalMesh
 using GeometryTypes: HyperRectangle, HyperSphere, HomogenousMesh
 using GLAbstraction: rotationmatrix_x, rotationmatrix_y, rotationmatrix_z,
       translationmatrix, Point3f0, Vec3f0
@@ -6,7 +6,7 @@ using Colors: Colorant, RGBA, red, green, blue
 
 export mesh, mesharray
 
-immutable MeshColorScheme
+struct MeshColorScheme
   segment   ::Colorant
   node      ::Colorant
   plane     ::Colorant
@@ -19,7 +19,7 @@ const defaultmeshcolorscheme = MeshColorScheme(
   RGBA(0.0f0, 1.0f0, 0.0f0, 0.5f0)
 )
 
-immutable VisualizationParameters
+struct VisualizationParameters
   meshcolorscheme :: MeshColorScheme
   nodesize :: Float32
 end

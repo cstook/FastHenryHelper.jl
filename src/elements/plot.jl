@@ -1,7 +1,7 @@
 # produce a wireframe using Plots
 import Plots: plot
 
-type PlotData
+mutable struct PlotData
   title :: AbstractString
   x :: Array{Float64,1}
   y :: Array{Float64,1}
@@ -17,7 +17,7 @@ type PlotData
   PlotData() = new("",[],[],[],[],[],[],[],[],[],[],0)
 end
 
-immutable PlotElementParameters
+struct PlotElementParameters
   marker :: Symbol
   markercolor :: Symbol
   markeralpha :: Float64
@@ -25,7 +25,7 @@ immutable PlotElementParameters
   markerstrokewidth :: Float64
   linecolor :: Symbol
 end
-immutable PlotScheme
+struct PlotScheme
   node :: PlotElementParameters
   segment :: PlotElementParameters
   plane :: PlotElementParameters

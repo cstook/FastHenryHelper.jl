@@ -5,6 +5,6 @@ export Equiv
 
 `Equiv` objects `show` a FastHenry .equiv command
 """
-immutable Equiv <: Element
+struct Equiv <: Element
   nodes :: Array{Node,1}
 end

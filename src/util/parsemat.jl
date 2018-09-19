@@ -15,7 +15,7 @@ Result of parsing FastHenry .mat file.
 - `impedance`    -- impedance matrix at each frequency. impedance[row, col, frequency]
 
 """
-type ParseFastHenryMatResult
+mutable struct ParseFastHenryMatResult
   "array of port names, index is row number in impedance matrix"
   portnames :: Array{AbstractString,1}
   "list of frequencies at which impedance matrix is computed"

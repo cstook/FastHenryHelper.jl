@@ -1,4 +1,4 @@
-immutable ElementContext
+struct ElementContext
   default :: Default
   units :: Units
   autoname :: Int
@@ -7,7 +7,7 @@ ElementContext() = ElementContext(Default(), Units(), 0)
 
 const ContextDict = Dict{Element,ElementContext}
 
-immutable Context
+struct Context
   dict :: ContextDict
   firstunits :: Units
   title :: String

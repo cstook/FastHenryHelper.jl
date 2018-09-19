@@ -1,5 +1,5 @@
 using FastHenryHelper
-using Base.Test
+using Test
 
 # compare what an element shows to string
 function testelement(e::Element, verified::String)

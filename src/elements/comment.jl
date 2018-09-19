@@ -5,6 +5,6 @@ export Comment
 
 `Comment` objects `show` a FastHenry comment.
 """
-immutable Comment <: Element
+struct Comment <: Element
   text :: AbstractString
 end

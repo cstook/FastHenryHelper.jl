@@ -5,5 +5,5 @@ export End
 
 `End` objects `show` a FastHenry .end command.
 """
-type End <: Element
+mutable struct End <: Element
 end

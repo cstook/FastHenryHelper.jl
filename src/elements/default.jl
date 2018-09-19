@@ -15,7 +15,7 @@ export Default
 - `nhinc`, `nwinc`  -- integer number of filaments in height and width
 - `rh`, `rw`        -- ratio in the height and width
 """
-immutable Default <: Element
+struct Default <: Element
   wh        :: WH
   sigmarho  :: SigmaRho
 end

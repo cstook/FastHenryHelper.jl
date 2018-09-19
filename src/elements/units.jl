@@ -5,7 +5,7 @@ export Units
 
 `Units` objects `show` a FastHenry .units command.
 """
-immutable Units <: Element
+struct Units <: Element
   unitname :: AbstractString
   Units() = new("") # flag for internal use only
   function Units(x)

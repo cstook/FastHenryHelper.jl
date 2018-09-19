@@ -1,7 +1,7 @@
 # make element an iterator which traverses element tree
 # bunch of extra code for group units
 
-type TTState
+mutable struct TTState
   togo :: Array{Element,1}
   units :: Units
   usingunits :: Bool

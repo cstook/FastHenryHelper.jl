@@ -8,7 +8,7 @@ export Freq
 
 Keyword arguments are `min`, `max`, `ndec`.
 """
-immutable Freq <: Element
+struct Freq <: Element
   min :: Float64
   max :: Float64
   ndec :: Float64

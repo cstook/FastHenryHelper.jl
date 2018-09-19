@@ -6,7 +6,7 @@ export Node, rx, ry, rz, xyz, txyz, scalexyz
 
 `Node` objects `show` a FastHenry node command.
 """
-immutable Node <: Element
+struct Node <: Element
   name :: Symbol
   xyz1  :: Array{Float64,1}
   function Node(n,xyz::Array{Float64,1})
