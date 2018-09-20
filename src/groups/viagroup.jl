@@ -51,7 +51,7 @@ function viagroup(radius, height, n=8,
   terminals[:top] = centertop
   terminals[:bot] = centerbot
   if n!=0
-    angle = range(0.0, 2.0*pi-(2*pi/n), n)
+    angle = range(0.0, step=2*π/n, length=n)
     x = radius .* map(cos,angle)
     y = radius .* map(sin,angle)
     wx = map(cos,angle.+(pi/2))

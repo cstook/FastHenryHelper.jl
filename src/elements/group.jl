@@ -39,7 +39,7 @@ function units!(g::Group, u::Units)
 end
 
 elements(g::Group) = g.elements
-function elements!{T<:Element}(g::Group, e::Array{T,1})
+function elements!(g::Group, e::Array{T,1}) where T<:Element
   g.elements = e
   return nothing
 end
