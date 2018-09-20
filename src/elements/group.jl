@@ -20,7 +20,7 @@ called.  Generated names start with an underscore.  Do not use these names
 for user named elements.
 
 `getindex`, `setindex!`, and `merge!` operate on `terms`.
-`push!`, `pop!`, `unshift!`, `shift!`, `append!`, `prepend!` operate on `elements`.
+`push!`, `pop!`, `pushfirst!`, `popfirst!`, `append!`, `prepend!` operate on `elements`.
 """
 mutable struct Group <: Element
   elements :: Array{Element,1}
@@ -77,7 +77,7 @@ function Base.merge!(g::Group, args...)
 end
 Base.push!(g::Group, args...) = push!(g.elements, args...)
 Base.pop!(g::Group) = pop!(g.elements)
-Base.unshift!(g::Group, args...) = unshift!(g.elements, args...)
-Base.shift!(g::Group) = shift!(g.elements)
+Base.pushfirst!(g::Group, args...) = pushfirst!(g.elements, args...)
+Base.popfirst!(g::Group) = popfirst!(g.elements)
 Base.append!(g1::Group, g2::Group) = append!(g1.elements, g2.elements)
 Base.prepend!(g1::Group, g2::Group) = prepend!(g1.elements, g2.elements)

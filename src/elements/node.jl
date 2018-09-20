@@ -10,7 +10,7 @@ struct Node <: Element
   name :: Symbol
   xyz1  :: Array{Float64,1}
   function Node(n,xyz::Array{Float64,1})
-    xyz1 = Array{Float64}(4)
+    xyz1 = Array{Float64}(undef,4)
     xyz1[1:3] = xyz[1:3]
     xyz1[4] = 1.0
     new(Symbol(n),xyz1)

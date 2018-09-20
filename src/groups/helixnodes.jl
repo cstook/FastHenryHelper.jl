@@ -9,7 +9,7 @@ Returns an array of `Node`s in a helix.
 """
 function helixnodes(radius::Float64, pitch::Float64, radians::Float64, radiansperpoint::Float64=π/4)
     numberofpoints = Int(cld(radians,radiansperpoint))+1
-    nodes = Array{Node}(numberofpoints)
+    nodes = Array{Node}(undef,numberofpoints)
     i = 0
     for angle in 0:radiansperpoint:radians
         i+=1

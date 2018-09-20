@@ -51,21 +51,21 @@ function viagroup(radius, height, n=8,
   terminals[:top] = centertop
   terminals[:bot] = centerbot
   if n!=0
-    angle = linspace(0.0, 2.0*pi-(2*pi/n), n)
+    angle = range(0.0, 2.0*pi-(2*pi/n), n)
     x = radius .* map(cos,angle)
     y = radius .* map(sin,angle)
     wx = map(cos,angle.+(pi/2))
     wy = map(sin,angle.+(pi/2))
     w = sqrt((x[1]-x[2])^2+(y[1]-y[2])^2) * 1/cos(pi/n)
-    topnodes = Array{Node}(n)
-    botnodes = Array{Node}(n)
+    topnodes = Array{Node}(undef,n)
+    botnodes = Array{Node}(undef,n)
     for i in 1:n
       topnodes[i] = Node(x[i],y[i],0.0)
       botnodes[i] = Node(x[i],y[i],-height)
     end
     eqtop = Equiv([centertop;topnodes])
     eqbot = Equiv([centerbot;botnodes])
-    segments = Array{Segment}(n)
+    segments = Array{Segment}(undef,n)
     for i in 1:n
       segments[i] = Segment(topnodes[i],botnodes[i],
         SegmentParameters(sp, w=w, wx=wx[i], wy=wy[i], wz=0.0, nwinc=1))

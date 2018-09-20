@@ -453,8 +453,8 @@ function testgroup()
   @test elements(deepcopyg7)[4].node2 === elements(deepcopyg7)[3]
   push!(g1,n20)
   @test pop!(g1) === n20
-  unshift!(g1,n20)
-  @test shift!(g1) === n20
+  pushfirst!(g1,n20)
+  @test popfirst!(g1) === n20
   append!(g1,g2)
   prepend!(g1,g2)
   merge!(g1,g2,g3)

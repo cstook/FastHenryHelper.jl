@@ -1,15 +1,15 @@
 export transform, transform!
 
-transform{T<:Number}(x::Element, tm::Array{T,2}) = _transform(x,tm)
-transform{T<:Number}(x::Group, tm::Array{T,2}) = _transform(x,tm)
-function _transform{T<:Number}(x::Element, tm::Array{T,2})
+transform(x::Element, tm::Array{T,2}) where T<:Number = _transform(x,tm)
+transform(x::Group, tm::Array{T,2}) where T<:Number = _transform(x,tm)
+function _transform(x::Element, tm::Array{T,2}) where T<:Number
   newx = deepcopy(x)
   transform!(newx,tm)
   return newx
 end
 
-transform!{T<:Number}(::Element, ::Array{T,2}) = nothing
-function transform!{T<:Element}(x::Array{T,1}, tm::Array{Float64,2})
+transform!(::Element, ::Array{T,2}) where T<:Number = nothing
+function transform!(x::Array{T,1}, tm::Array{Float64,2}) where T<:Element
   for i in eachindex(x)
     transform!(x[i],tm)
   end
@@ -78,7 +78,7 @@ function transform(e::Group, transformationlist)
   newgroup = elementarraygroup(e, transformationlist)
   newterms = terms(newgroup)
   for key in keys(terms(elements(newgroup)[1]))
-    newterms[key] = Array{Node}(0)
+    newterms[key] = Array{Node}(undef,0)
   end
   for subgroup in elements(newgroup)
     for (key,value) in terms(subgroup)
