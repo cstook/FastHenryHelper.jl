@@ -1,49 +1,35 @@
-# make element an iterator which traverses element tree
-# bunch of extra code for group units
-
 mutable struct TTState
-  togo :: Array{Element,1}
-  units :: Units
-  usingunits :: Bool
-end
-update!(state::TTState, state1::Element) = nothing
-function update!(state::TTState, state1::Group)
-  # replace group with its elements.
-  # must pass first element of state.togo as second parameter
-  # for proper dispach
-  popfirst!(state.togo)
-  if state1.units == Units() # group has no units
-    prepend!(state.togo, state1.elements)
-  else # group has units
-    if state.usingunits # caller has units
-      pushfirst!(state.togo, state.units)  # switch back to callers units
-    else # caller has no units
-      pushfirst!(state.togo, Units("m")) # switch back to default callers units
-    end
-    prepend!(state.togo, state1.elements) # group elements
-    pushfirst!(state.togo, state1.units) # switch to group units
-  end
-  update!(state, state.togo[1])
+  currentunits :: Units
 end
 
-Base.start(element::Element) = TTState([element],Units(),false)
-function Base.start(group::Group)
-  if group.units == Units()
-    return TTState(copy(group.elements), group.units, false)
-  else
-    return TTState([group.units;copy(group.elements)], group.units, true)
+global function _traverseTree(e::Element, c::Channel, ::TTState)
+  put!(c, e)
+end
+global function _traverseTree(u::Units, c::Channel, state::TTState)
+  put!(c, u)
+  state.currentunits = u
+end
+global function _traverseTree(g::Group, c::Channel, state::TTState)
+  previousunits = state.currentunits
+  if g.units != Units()
+    put!(c, g.units)
+    state.currentunits = g.units
+  end
+  for e in g.elements
+    _traverseTree(e, c, state)
+  end
+  if g.units != Units()
+    put!(c, previousunits)
+    state.currentunits = previousunits
   end
 end
-function Base.next(element::Element, state::TTState)
-  update!(state, state.togo[1]) # in case element is a group
-  returnelement = popfirst!(state.togo)
-  if isunits(returnelement)
-    state.usingunits = true
-    state.units = returnelement
-  end
-  return (returnelement, state)
+function __traverseTree(e,c)
+  _traverseTree(e,c,TTState(Units("mm")))
+  close(c)
 end
-Base.done(element::Element, state::TTState) = length(state.togo) == 0
 
-isunits(::Element) = false
-isunits(::Units) = true
+function traverseTree(e::Element)
+  c = Channel{Element}(32)
+  @async __traverseTree(e,c)
+  return c
+end

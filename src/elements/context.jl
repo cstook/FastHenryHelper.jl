@@ -21,7 +21,7 @@ const NamedElements = Union{Node,Segment,UniformPlane}
 
 function firstunits(element::Element)
   result = Units()
-  for e in element
+  for e in traverseTree(element)
     if firstunits_(e) != nothing
       result =  firstunits_(e)
       break
@@ -35,7 +35,7 @@ firstunits_(units::Units) = units
 function contextdict(element::Element)
   cd = ContextDict()
   previouselementcontext = ElementContext()
-  for e in element
+  for e in traverseTree(element)
     previouselementcontext = appendelementcontext!(cd,previouselementcontext,e)
   end
   return cd
@@ -218,14 +218,11 @@ function nodes_xyz1(uniformplane::UniformPlane, context::Context)
   ntuple(f, length(uniformplane.nodes))
 end
 
-function title(element::Element)
-  state = start(element)
-  if ~done(element,state)
-    (e,state) = next(element, state)
-    return title_(e)
-  else
-    return ""
+function title(e1::Element)
+  for e2 in traverseTree(e1)
+    return title_(e2)
   end
+  return ""
 end
 title_(::Element) = ""
 title_(x::Comment) = x.text

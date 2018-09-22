@@ -16,7 +16,7 @@ function transform!(x::Array{T,1}, tm::Array{Float64,2}) where T<:Element
 end
 function transform!(element::Element, tm::Array{Float64,2},
                     context::Context = Context(element))
-  for e in element
+  for e in traverseTree(element)
     _transform!(e,tm,context)
   end
 end

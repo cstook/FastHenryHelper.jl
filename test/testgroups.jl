@@ -75,7 +75,7 @@ function testviagroup()
   +  w=8.284271247e+00 h=3.000000000e+00 nhinc=5 nwinc=1
   +  wx=7.071067812e-01 wy=7.071067812e-01 wz=0.000000000e+00
   """
-  testelementdebug(via, verified)
+  testelement(via, verified)
   @test length(via[:alltop]) == 8
   @test length(via[:allbot]) == 8
   @test typeof(via[:top]) == Node
@@ -313,6 +313,7 @@ function testcoilcraft1010vsgroup()
   E_85 N_42 N_43
   +  w=1.700000000e+00 h=6.000000000e-01
   +  sigma=5.850000000e+04
+  .units mm
   """
   testelement(inductor, verified)
 end

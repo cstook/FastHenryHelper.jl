@@ -8,11 +8,16 @@ function name(x::NamedElements, context::Context)
   return nameincontext
 end
 
-function Base.show(io::IO, element::Element)
+function Base.show(io::IO, element::Group)
   context = Context(element)
-  for e in element
+  for e in traverseTree(element)
     show(io, e, context)
   end
+end
+
+function Base.show(io::IO, element::Element)
+  context = Context(element)
+  show(io, element, context)
 end
 
 function Base.show(io::IO, n::Node, context::Context; plane = false)

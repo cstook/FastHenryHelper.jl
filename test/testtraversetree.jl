@@ -80,7 +80,7 @@ function testgroupunits1()
   """
   .units cm
   N_1 x=4.000000000e+00 y=4.000000000e+00 z=4.000000000e+00
-  .units m
+  .units mm
   N_2 x=6.000000000e+00 y=6.000000000e+00 z=6.000000000e+00
   .units um
   N_3 x=7.000000000e+00 y=7.000000000e+00 z=7.000000000e+00
@@ -92,7 +92,7 @@ function testgroupunits1()
   N_1 x=5.000000000e+00 y=5.000000000e+00 z=5.000000000e+00
   .units cm
   N_2 x=4.000000000e+00 y=4.000000000e+00 z=4.000000000e+00
-  .units m
+  .units mm
   """
   testelement(g7, verified)
   g8 = Group([g2,g3])
@@ -100,7 +100,7 @@ function testgroupunits1()
   """
   .units cm
   N_1 x=4.000000000e+00 y=4.000000000e+00 z=4.000000000e+00
-  .units m
+  .units mm
   N_2 x=5.000000000e+00 y=5.000000000e+00 z=5.000000000e+00
   """
   testelement(g8, verified)
@@ -133,7 +133,7 @@ function testgroupunits1()
   N_1 x=1.000000000e+00 y=1.000000000e+00 z=1.000000000e+00
   .units in
   N_2 x=3.000000000e+00 y=3.000000000e+00 z=3.000000000e+00
-  .units m
+  .units mm
   N_3 x=5.000000000e+00 y=5.000000000e+00 z=5.000000000e+00
   N_4 x=6.000000000e+00 y=6.000000000e+00 z=6.000000000e+00
   .units um
@@ -151,7 +151,7 @@ function testgroupunits1()
   N_2 x=1.000000000e+00 y=1.000000000e+00 z=1.000000000e+00
   .units in
   N_3 x=3.000000000e+00 y=3.000000000e+00 z=3.000000000e+00
-  .units m
+  .units mm
   Na x=5.000000000e+00 y=5.000000000e+00 z=5.000000000e+00
   """
   testelement(g11, verified)

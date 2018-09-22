@@ -1,7 +1,7 @@
 export Units
 
 """
-    Units(unitname::AbstractString)
+    Units(unitname::String)
 
 `Units` objects `show` a FastHenry .units command.
 """
@@ -17,3 +17,4 @@ struct Units <: Element
 end
 
 Base.:(==)(x::Units, y::Units) = x.unitname == y.unitname
+# mm are default if no unit line is present.
