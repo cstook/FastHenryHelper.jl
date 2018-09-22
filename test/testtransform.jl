@@ -1,17 +1,25 @@
 function transformtest1()
   # a line of segments and a plane with nodes, holes
   # using all the units
+  n1 = Node(1,0,0)
+  n2 = Node(2,0,0)
+  n3 = Node(0.003,0,0)
+  n4 = Node(400,0,0)
+  n5 = Node(5000,0,0)
+  n6  = Node(6e6,0,0)
+  n7 = Node(7/2.54e-2,0,0)
+  n8 = Node(8/2.54e-5,0,0)
   g1 = Group([
-    n1 = Node(1,0,0),
+    n1,
     Units("m"),
-    n2 = Node(2,0,0),
+    n2,
     Units("km"),
-    n3 = Node(0.003,0,0),
+    n3,
     Units("cm"),
-    n4 = Node(400,0,0),
+    n4,
     Default(w=75, h=25),
     Units("mm"),
-    n5 = Node(5000,0,0),
+    n5,
     UniformPlane(x1=1000, y1=1000, z1=-1000,
                  x2=1000, y2=9000, z2=-1000,
                  x3=9000, y3=9000, z3=-1000,
@@ -24,11 +32,11 @@ function transformtest1()
                           Rect(5000,5000,-1000,6000,6000,-1000),
                           Circle(7000,7000,-1000,500)]),
     Units("um"),
-    n6  = Node(6e6,0,0),
+    n6,
     Units("in"),
-    n7 = Node(7/2.54e-2,0,0),
+    n7,
     Units("mils"),
-    n8 = Node(8/2.54e-5,0,0),
+    n8,
     Segment(n1,n2),
     Segment(n2,n3),
     Segment(n3,n4),
@@ -171,20 +179,27 @@ end
 transformtest1()
 
 function transformtest2()
+  n0 = Node( 0, 0, 0)
+  n1 = Node( 1, 0, 0)
+  n2 = Node(-0.1, 0, 0)
+  n3 = Node( 0, 0.001, 0)
+  n4 = Node( 0,-1.0e-6, 0)
+  n5 = Node( 0, 0, 1000)
+  n6 = Node( 0, 0,-0.1)
   g4 = Group([
     Units("mm"),
-    n0 = Node( 0, 0, 0),
-    n1 = Node( 1, 0, 0),
+    n0,
+    n1,
     Units("cm"),
-    n2 = Node(-0.1, 0, 0),
+    n2,
     Units("m"),
-    n3 = Node( 0, 0.001, 0),
+    n3,
     Units("km"),
-    n4 = Node( 0,-1.0e-6, 0),
+    n4,
     Units("um"),
-    n5 = Node( 0, 0, 1000),
+    n5,
     Units("cm"),
-    n6 = Node( 0, 0,-0.1),
+    n6,
     Units("m"),
     Default(w=0.5e-3,h=0.1e-3),
     Segment(n0,n1),
