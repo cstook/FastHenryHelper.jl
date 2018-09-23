@@ -110,14 +110,20 @@ t[:b] = n6;
 ```
 `loop` can be defined more concisely using `element` and `terms` keyword arguments and the function  `connectnodes`.
 ```@example intro
+n1 = Node(0,-1,0)
+n2 = Node(0,-10,0)
+n3 = Node(10,-10,0)
+n4 = Node(10,10,0)
+n5 = Node(0,10,0)
+n6 = Node(0,1,0)
 loop = Group(
   elements = [
-    n1 = Node(0,-1,0),
-    n2 = Node(0,-10,0),
-    n3 = Node(10,-10,0),
-    n4 = Node(10,10,0),
-    n5 = Node(0,10,0),
-    n6 = Node(0,1,0),
+    n1,
+    n2,
+    n3,
+    n4,
+    n5,
+    n6,
     connectnodes([n1,n2,n3,n4,n5,n6], SegmentParameters(h=2,w=3))...
   ],
   terms = Dict(:a=>n1,:b=>n6)
@@ -132,7 +138,7 @@ transform!(loop,txyz(5,0,0))
 Create array of 8 loops each rotated π/4 around y axis
 ```@example intro
 tm = ry(π/4)
-loops = Array{Group}(8)
+loops = Array{Group}(undef,8)
 for i in 1:8
   transform!(loop,tm)
   loops[i] = deepcopy(loop)

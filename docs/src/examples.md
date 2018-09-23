@@ -12,22 +12,26 @@ using FastHenryHelper
 Create a group of FastHenry elements for FastHenry to compute the loop inductance of an L shaped trace over a ground plane with the trace's return path through the plane.
 ```@example 1
 sp = SegmentParameters(w=8,h=1)
+nin = Node("in",800,800,0)
+nout = Node("out",0,200,0)
+n1 = Node("1",0,200,1.5)
+n2 = Node(800,200,1.5)
+n3 = Node(800,800,1.5)
 example1 = Group(
   elements = [
     Comment("A FastHenry example using a reference plane"),
     Units("mils"),
-    g = UniformPlane(
+    UniformPlane(
       x1=0,    y1=0,    z1=0,
       x2=1000, y2=0,    z2=0,
       x3=1000, y3=1000, z3=0,
       thick= 1.2,
       seg1=20, seg2=20,
-      nodes=[nin = Node("in",800,800,0), nout = Node("out",0,200,0)]
-    ),
+      nodes=[nin, nout]),
     Default(SegmentParameters(sigma=62.1e6*2.54e-5,nwinc=8, nhinc=1)),
-    n1 = Node("1",0,200,1.5),
-    n2 = Node(800,200,1.5),
-    n3 = Node(800,800,1.5),
+    n1,
+    n2,
+    n3,
     Segment(n1,n2,sp),
     Segment(n2,n3,sp),
     Equiv([nin,n3]),
@@ -104,14 +108,19 @@ using FastHenryHelper
 
 Create a group for one square loop 10mm on a side.
 ```@example 2
+n1 = Node(0,0,0)
+n2 = Node(10,0,0)
+n3 = Node(10,10,0)
+n4 = Node(0,10,0)
+n5 = Node(0,1,0) # leave a 1mm gap for the port
 squareloop = Group(
     elements=[
         Comment("loop start"),
-        n1 = Node(0,0,0),
-        n2 = Node(10,0,0),
-        n3 = Node(10,10,0),
-        n4 = Node(0,10,0),
-        n5 = Node(0,1,0), # leave a 1mm gap for the port
+        n1,
+        n2,
+        n3,
+        n4,
+        n5, # leave a 1mm gap for the port
         connectnodes([n1,n2,n3,n4,n5], SegmentParameters(h=0.5, w=1.5))...,
         Comment("loop end")
     ],
@@ -121,7 +130,7 @@ squareloop = Group(
 
 Create an array of four square loops, each one shifted 10mm on z axis.
 ```@example 2
-loops = Array{Group}(4)
+loops = Array{Group}(undef,4)
 z = [0.0, 10.0, 20.0, 30.0]
 for i in eachindex(loops)
     loops[i] = transform(squareloop, txyz(0,0,z[i]))
@@ -135,7 +144,7 @@ fourloops = Group(
         Comment("Four loops 10mm on a side offset by 10mm in z"),
         Units("mm"),
         Comment(""),
-        Comment("sigma for copper, 25 filiments per segment"),
+        Comment("sigma for copper, 25 filaments per segment"),
         Default(sigma=62.1e6*1e-3, nwinc=5, nhinc=5),
         Comment(""),
         Comment("the loops"),
@@ -212,7 +221,7 @@ function via_connection_example(height, cu_thick)
 
 
   # create a line of nodes along what will be the right side of the plane
-  bot_port = Array{Node}(50)
+  bot_port = Array{Node}(undef,50)
   y = 0.0
   for i in eachindex(bot_port)
     bot_port[i] = Node(10.0,y,-height)

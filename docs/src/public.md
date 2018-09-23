@@ -49,12 +49,6 @@ viagroup
 coilcraft1010vsgroup
 ```
 
-## for GLVisualize
-```@docs
-mesharray
-mesh
-```
-
 ## Utility
 ```@docs
 rectangulararray
