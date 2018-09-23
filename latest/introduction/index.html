@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Introduction · FastHenryHelper.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>FastHenryHelper.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../install/">Installation</a></li><li class="current"><a class="toctext" href>Introduction</a><ul class="internal"><li><a class="toctext" href="#Loading-the-modules-1">Loading the modules</a></li><li><a class="toctext" href="#Creating-a-simple-group-1">Creating a simple group</a></li><li><a class="toctext" href="#Creating-a-Group-with-repetitive-geometry-1">Creating a Group with repetitive geometry</a></li><li><a class="toctext" href="#Group-units-1">Group units</a></li></ul></li><li><a class="toctext" href="../examples/">Examples</a></li><li><a class="toctext" href="../public/">Public API</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Introduction</a></li></ul><a class="edit-page" href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/introduction.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Introduction</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Introduction-to-FastHenryHelper-1" href="#Introduction-to-FastHenryHelper-1">Introduction to FastHenryHelper</a></h1><p><a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Introduction.ipynb">jupyter version</a></p><p>FastHenryHelper assists creating FastHenry input files using julia.  Groups of FastHenry commands can be copied translated and rotated, keeping names unique for the copies.  This simplifies creating input files with repetitive geometries, and reuse of groups of FastHenry commands.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>This introduction does not attempt to explain FastHenry.  See the <a href="https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf">FastHenry User&#39;s Guide</a>.</p></div></div><h2><a class="nav-anchor" id="Loading-the-modules-1" href="#Loading-the-modules-1">Loading the modules</a></h2><div><pre><code class="language-julia">using FastHenryHelper
+using Plots; gr() # using gr() backend for plots, plotly(), plotlyjs() also work.</code></pre></div><h2><a class="nav-anchor" id="Creating-a-simple-group-1" href="#Creating-a-simple-group-1">Creating a simple group</a></h2><p>FastHenry commands are julia types which show their command.  In FastHenryHelper these are all subtypes of the supertype <code>Element</code>.</p><div><pre><code class="language-julia">n1 = Node(10,0,0)</code></pre><pre><code class="language-none">N_1 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00</code></pre></div><p>A name was not specified, so _1 was automatically generated. x, y, and z must always be specified.  Default coordinates are not allowed.</p><p>A name can be specified as the first parameter.</p><div><pre><code class="language-julia">n2 = Node(:abcd,0,0,0)</code></pre><pre><code class="language-none">Nabcd x=0.000000000e+00 y=0.000000000e+00 z=0.000000000e+00</code></pre></div><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>specifying names is not recommended.  FastHenryHelper will not mutate user provided names to keep them unique when copies are made.</p></div></div><p>Segments connect nodes.  Keyword parameters match the <a href="https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf">FastHenry</a> keywords.</p><div><pre><code class="language-julia">s1 = Segment(n1, n2, w=10, h=20, nwinc=5, nhinc=7)</code></pre><pre><code class="language-none">E_1 N_2 Nabcd
++  w=1.000000000e+01 h=2.000000000e+01 nhinc=7 nwinc=5</code></pre></div><p>Parameters may also be passed as a <code>SegmentParameters</code> object.</p><div><pre><code class="language-julia">sp1 = SegmentParameters(w=10, h=20, nwinc=5, nhinc=7)
+s1 = Segment(n1, n2, sp1)</code></pre><pre><code class="language-none">E_1 N_2 Nabcd
++  w=1.000000000e+01 h=2.000000000e+01 nhinc=7 nwinc=5</code></pre></div><p>A <code>SegmentParameters</code> object can be created by specifying the parameters that differ from another <code>SegmentParameters</code> object.</p><div><pre><code class="language-julia">sp2 = SegmentParameters(sp1,w=5,h=3)
+s2 = Segment(n1, n2, sp2)</code></pre><pre><code class="language-none">E_1 N_2 Nabcd
++  w=5.000000000e+00 h=3.000000000e+00 nhinc=7 nwinc=5</code></pre></div><p>Elements can be collected into groups.  Auto-generated names are unique within the <code>Group</code> <code>show</code> is called on.  <code>Group</code>s may be transformed (rotated, translated, etc.).  <code>Group</code>s may be nested within each other (<code>Group</code> is a subtype of <code>Element</code>).  </p><div><pre><code class="language-julia">g1 = Group([n1,n2,s2])
+g1 = Group(elements = [n1,n2,s2]) # or use keyword argument</code></pre><pre><code class="language-none">N_1 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+Nabcd x=0.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+E_2 N_1 Nabcd
++  w=5.000000000e+00 h=3.000000000e+00 nhinc=7 nwinc=5</code></pre></div><p>Let&#39;s take a look.</p><div><pre><code class="language-julia">plot(g1)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../intro_plot_1.svg" alt/></p><p>Rotate g1 π/4 around y and z axis and translate by 10 along x axis.</p><div><pre><code class="language-julia">transformmatrix = ry(π/4) * rz(π/4) * txyz(10,0,0)
+transform!(g1,transformmatrix)
+g1</code></pre><pre><code class="language-none">N_1 x=1.000000000e+01 y=-1.414213562e+01 z=1.000000000e+01
+Nabcd x=5.000000000e+00 y=-7.071067812e+00 z=5.000000000e+00
+E_2 N_1 Nabcd
++  w=5.000000000e+00 h=3.000000000e+00 nhinc=7 nwinc=5
++  wx=-5.000000000e-01 wy=-7.071067812e-01 wz=-5.000000000e-01</code></pre></div><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><p>The wx, wy, wz vector for the segment has rotated from default and all automatically generated names are unique.</p></div></div><p>Plot after transform.</p><div><pre><code class="language-julia">plot(g1)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../intro_plot_2.svg" alt/></p><h2><a class="nav-anchor" id="Creating-a-Group-with-repetitive-geometry-1" href="#Creating-a-Group-with-repetitive-geometry-1">Creating a Group with repetitive geometry</a></h2><p>Create a square loop in the xy plane with a gap at the origin</p><div><pre><code class="language-julia">n1 = Node(0,-1,0)
+n2 = Node(0,-10,0)
+n3 = Node(10,-10,0)
+n4 = Node(10,10,0)
+n5 = Node(0,10,0)
+n6 = Node(0,1,0)
+sp = SegmentParameters(h=2,w=3)
+s1 = Segment(n1,n2,sp)
+s2 = Segment(n2,n3,sp)
+s3 = Segment(n3,n4,sp)
+s4 = Segment(n4,n5,sp)
+s5 = Segment(n5,n6,sp)
+loop = Group([n1,n2,n3,n4,n5,n6,s1,s2,s3,s4,s5])</code></pre><pre><code class="language-none">N_1 x=0.000000000e+00 y=-1.000000000e+00 z=0.000000000e+00
+N_2 x=0.000000000e+00 y=-1.000000000e+01 z=0.000000000e+00
+N_3 x=1.000000000e+01 y=-1.000000000e+01 z=0.000000000e+00
+N_4 x=1.000000000e+01 y=1.000000000e+01 z=0.000000000e+00
+N_5 x=0.000000000e+00 y=1.000000000e+01 z=0.000000000e+00
+N_6 x=0.000000000e+00 y=1.000000000e+00 z=0.000000000e+00
+E_7 N_1 N_2
++  w=3.000000000e+00 h=2.000000000e+00
+E_8 N_2 N_3
++  w=3.000000000e+00 h=2.000000000e+00
+E_9 N_3 N_4
++  w=3.000000000e+00 h=2.000000000e+00
+E_10 N_4 N_5
++  w=3.000000000e+00 h=2.000000000e+00
+E_11 N_5 N_6
++  w=3.000000000e+00 h=2.000000000e+00</code></pre></div><p>Take a look.</p><div><pre><code class="language-julia">plot(loop)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../intro_plot_3.svg" alt/></p><p>Groups have a dictionary of terminals, nodes which are external connection points, for the group.  In this case n1 and n6 are the terminals.</p><div><pre><code class="language-julia">t = terms(loop)
+t[:a] = n1
+t[:b] = n6;</code></pre></div><p><code>loop</code> can be defined more concisely using <code>element</code> and <code>terms</code> keyword arguments and the function  <code>connectnodes</code>.</p><div><pre><code class="language-julia">n1 = Node(0,-1,0)
+n2 = Node(0,-10,0)
+n3 = Node(10,-10,0)
+n4 = Node(10,10,0)
+n5 = Node(0,10,0)
+n6 = Node(0,1,0)
+loop = Group(
+  elements = [
+    n1,
+    n2,
+    n3,
+    n4,
+    n5,
+    n6,
+    connectnodes([n1,n2,n3,n4,n5,n6], SegmentParameters(h=2,w=3))...
+  ],
+  terms = Dict(:a=&gt;n1,:b=&gt;n6)
+)</code></pre><pre><code class="language-none">N_1 x=0.000000000e+00 y=-1.000000000e+00 z=0.000000000e+00
+N_2 x=0.000000000e+00 y=-1.000000000e+01 z=0.000000000e+00
+N_3 x=1.000000000e+01 y=-1.000000000e+01 z=0.000000000e+00
+N_4 x=1.000000000e+01 y=1.000000000e+01 z=0.000000000e+00
+N_5 x=0.000000000e+00 y=1.000000000e+01 z=0.000000000e+00
+N_6 x=0.000000000e+00 y=1.000000000e+00 z=0.000000000e+00
+E_7 N_1 N_2
++  w=3.000000000e+00 h=2.000000000e+00
+E_8 N_2 N_3
++  w=3.000000000e+00 h=2.000000000e+00
+E_9 N_3 N_4
++  w=3.000000000e+00 h=2.000000000e+00
+E_10 N_4 N_5
++  w=3.000000000e+00 h=2.000000000e+00
+E_11 N_5 N_6
++  w=3.000000000e+00 h=2.000000000e+00</code></pre></div><p>Shift loop 5 along x axis</p><div><pre><code class="language-julia">transform!(loop,txyz(5,0,0))</code></pre></div><p>Create array of 8 loops each rotated π/4 around y axis</p><div><pre><code class="language-julia">tm = ry(π/4)
+loops = Array{Group}(undef,8)
+for i in 1:8
+  transform!(loop,tm)
+  loops[i] = deepcopy(loop)
+end</code></pre></div><p>Create a group of the loops.</p><div><pre><code class="language-julia">loopsgroup = Group(loops)</code></pre><pre><code class="language-none">N_1 x=3.535533906e+00 y=-1.000000000e+00 z=3.535533906e+00
+N_2 x=3.535533906e+00 y=-1.000000000e+01 z=3.535533906e+00
+N_3 x=1.060660172e+01 y=-1.000000000e+01 z=1.060660172e+01
+N_4 x=1.060660172e+01 y=1.000000000e+01 z=1.060660172e+01
+N_5 x=3.535533906e+00 y=1.000000000e+01 z=3.535533906e+00
+N_6 x=3.535533906e+00 y=1.000000000e+00 z=3.535533906e+00
+E_7 N_1 N_2
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
+E_8 N_2 N_3
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_9 N_3 N_4
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-7.071067812e-01 wy=0.000000000e+00 wz=-7.071067812e-01
+E_10 N_4 N_5
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_11 N_5 N_6
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
+N_12 x=8.873450063e-16 y=-1.000000000e+00 z=5.000000000e+00
+N_13 x=8.873450063e-16 y=-1.000000000e+01 z=5.000000000e+00
+N_14 x=2.531964301e-15 y=-1.000000000e+01 z=1.500000000e+01
+N_15 x=2.531964301e-15 y=1.000000000e+01 z=1.500000000e+01
+N_16 x=8.873450063e-16 y=1.000000000e+01 z=5.000000000e+00
+N_17 x=8.873450063e-16 y=1.000000000e+00 z=5.000000000e+00
+E_18 N_12 N_13
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=2.220446049e-16 wy=0.000000000e+00 wz=1.000000000e+00
+E_19 N_13 N_14
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_20 N_14 N_15
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-2.220446049e-16 wy=0.000000000e+00 wz=-1.000000000e+00
+E_21 N_15 N_16
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_22 N_16 N_17
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=2.220446049e-16 wy=0.000000000e+00 wz=1.000000000e+00
+N_23 x=-3.535533906e+00 y=-1.000000000e+00 z=3.535533906e+00
+N_24 x=-3.535533906e+00 y=-1.000000000e+01 z=3.535533906e+00
+N_25 x=-1.060660172e+01 y=-1.000000000e+01 z=1.060660172e+01
+N_26 x=-1.060660172e+01 y=1.000000000e+01 z=1.060660172e+01
+N_27 x=-3.535533906e+00 y=1.000000000e+01 z=3.535533906e+00
+N_28 x=-3.535533906e+00 y=1.000000000e+00 z=3.535533906e+00
+E_29 N_23 N_24
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
+E_30 N_24 N_25
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_31 N_25 N_26
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=7.071067812e-01 wy=0.000000000e+00 wz=-7.071067812e-01
+E_32 N_26 N_27
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_33 N_27 N_28
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
+N_34 x=-5.000000000e+00 y=-1.000000000e+00 z=1.779501213e-15
+N_35 x=-5.000000000e+00 y=-1.000000000e+01 z=1.779501213e-15
+N_36 x=-1.500000000e+01 y=-1.000000000e+01 z=4.710466656e-15
+N_37 x=-1.500000000e+01 y=1.000000000e+01 z=4.710466656e-15
+N_38 x=-5.000000000e+00 y=1.000000000e+01 z=1.779501213e-15
+N_39 x=-5.000000000e+00 y=1.000000000e+00 z=1.779501213e-15
+E_40 N_34 N_35
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=2.775557562e-16
+E_41 N_35 N_36
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_42 N_36 N_37
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=-2.775557562e-16
+E_43 N_37 N_38
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_44 N_38 N_39
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=2.775557562e-16
+N_45 x=-3.535533906e+00 y=-1.000000000e+00 z=-3.535533906e+00
+N_46 x=-3.535533906e+00 y=-1.000000000e+01 z=-3.535533906e+00
+N_47 x=-1.060660172e+01 y=-1.000000000e+01 z=-1.060660172e+01
+N_48 x=-1.060660172e+01 y=1.000000000e+01 z=-1.060660172e+01
+N_49 x=-3.535533906e+00 y=1.000000000e+01 z=-3.535533906e+00
+N_50 x=-3.535533906e+00 y=1.000000000e+00 z=-3.535533906e+00
+E_51 N_45 N_46
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-7.071067812e-01 wy=0.000000000e+00 wz=-7.071067812e-01
+E_52 N_46 N_47
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_53 N_47 N_48
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
+E_54 N_48 N_49
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_55 N_49 N_50
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-7.071067812e-01 wy=0.000000000e+00 wz=-7.071067812e-01
+N_56 x=-2.717578901e-15 y=-1.000000000e+00 z=-5.000000000e+00
+N_57 x=-2.717578901e-15 y=-1.000000000e+01 z=-5.000000000e+00
+N_58 x=-5.932290654e-15 y=-1.000000000e+01 z=-1.500000000e+01
+N_59 x=-5.932290654e-15 y=1.000000000e+01 z=-1.500000000e+01
+N_60 x=-2.717578901e-15 y=1.000000000e+01 z=-5.000000000e+00
+N_61 x=-2.717578901e-15 y=1.000000000e+00 z=-5.000000000e+00
+E_62 N_56 N_57
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-4.440892099e-16 wy=0.000000000e+00 wz=-1.000000000e+00
+E_63 N_57 N_58
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_64 N_58 N_59
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=4.440892099e-16 wy=0.000000000e+00 wz=1.000000000e+00
+E_65 N_59 N_60
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_66 N_60 N_61
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-4.440892099e-16 wy=0.000000000e+00 wz=-1.000000000e+00
+N_67 x=3.535533906e+00 y=-1.000000000e+00 z=-3.535533906e+00
+N_68 x=3.535533906e+00 y=-1.000000000e+01 z=-3.535533906e+00
+N_69 x=1.060660172e+01 y=-1.000000000e+01 z=-1.060660172e+01
+N_70 x=1.060660172e+01 y=1.000000000e+01 z=-1.060660172e+01
+N_71 x=3.535533906e+00 y=1.000000000e+01 z=-3.535533906e+00
+N_72 x=3.535533906e+00 y=1.000000000e+00 z=-3.535533906e+00
+E_73 N_67 N_68
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=7.071067812e-01 wy=0.000000000e+00 wz=-7.071067812e-01
+E_74 N_68 N_69
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_75 N_69 N_70
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
+E_76 N_70 N_71
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_77 N_71 N_72
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=7.071067812e-01 wy=0.000000000e+00 wz=-7.071067812e-01
+N_78 x=5.000000000e+00 y=-1.000000000e+00 z=-3.609735108e-15
+N_79 x=5.000000000e+00 y=-1.000000000e+01 z=-3.609735108e-15
+N_80 x=1.500000000e+01 y=-1.000000000e+01 z=-8.631075882e-15
+N_81 x=1.500000000e+01 y=1.000000000e+01 z=-8.631075882e-15
+N_82 x=5.000000000e+00 y=1.000000000e+01 z=-3.609735108e-15
+N_83 x=5.000000000e+00 y=1.000000000e+00 z=-3.609735108e-15
+E_84 N_78 N_79
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=-6.661338148e-16
+E_85 N_79 N_80
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_86 N_80 N_81
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=6.661338148e-16
+E_87 N_81 N_82
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_88 N_82 N_83
++  w=3.000000000e+00 h=2.000000000e+00
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=-6.661338148e-16</code></pre></div><p>Take a look.</p><div><pre><code class="language-julia">plot(loopsgroup)</code></pre><pre><code class="language-none">┌ Warning: You created n=210 groups... Is that intended?
+└ @ Plots ~/.julia/packages/Plots/EJpx2/src/args.jl:1073
+/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../intro_plot_4.svg" alt/></p><p>Define a port for each loop.</p><div><pre><code class="language-julia">ex = []
+for loop in loops
+  push!(ex, External(loop[:a],loop[:b]))  # use terminals we defined
+end
+externalgroup = Group(ex)</code></pre><pre><code class="language-none">.external N_1 N_2
+.external N_3 N_4
+.external N_5 N_6
+.external N_7 N_8
+.external N_9 N_10
+.external N_11 N_12
+.external N_13 N_14
+.external N_15 N_16</code></pre></div><p>Create top level group.</p><div><pre><code class="language-julia">eightloops = Group(
+  elements = [
+    Units(&quot;mm&quot;),
+    Default(SegmentParameters(sigma=62.1e6*1e-3, nwinc=7, nhinc=5)),
+    loopsgroup,
+    externalgroup,
+    Freq(min=1e-1, max=1e9, ndec=0.05),
+    End()
+  ]
+);</code></pre></div><p>Write to file.</p><div><pre><code class="language-julia">open(&quot;eightloops.inp&quot;,&quot;w&quot;) do io
+  print(io,eightloops)
+end</code></pre></div><p>FastHenry was run with &quot;eightloops.inp&quot; input file.</p><div class="admonition note"><div class="admonition-title">Note</div><div class="admonition-text"><pre><code class="language-none">FastHenryHelper does not call FastHenry.</code></pre></div></div><p>view <a href="https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloops.inp">eightloops.inp</a>.</p><p>view FastHenry output <a href="https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/eightloopsZc.mat">eightloopsZc.mat</a>.</p><p>The FastHenry .mat output file can be parsed.</p><div><pre><code class="language-julia">result = parsefasthenrymat(&quot;eightloopsZc.mat&quot;)
+result.impedance</code></pre><pre><code class="language-none">8×8×1 Array{Complex{Float64},3}:
+[:, :, 1] =
+ 0.000155674+1.27315e-5im  …   2.98938e-9+2.36359e-6im
+  2.98016e-9+2.36158e-6im      1.65626e-9+6.54598e-7im
+  1.68796e-9+6.48741e-7im      1.68117e-9+2.49026e-7im
+  1.66033e-9+2.4436e-7im       1.68097e-9+1.6522e-7im
+   1.6475e-9+1.59819e-7im      1.71294e-9+2.53917e-7im
+  1.66033e-9+2.4436e-7im   …   1.68499e-9+6.59077e-7im
+  1.68797e-9+6.48741e-7im       2.9723e-9+2.35745e-6im
+  2.98013e-9+2.36158e-6im     0.000155674+1.27291e-5im</code></pre></div><h2><a class="nav-anchor" id="Group-units-1" href="#Group-units-1">Group units</a></h2><p>In addition to the <code>Units</code> type, units may be specified for a <code>Group</code> using the units keyword.  Group units only apply to the <code>elements</code> in the <code>Group</code>.</p><div><pre><code class="language-julia">groupunitexample = Group(
+  elements = [
+    Units(&quot;cm&quot;),
+    Node(1,0,0),
+    Group(
+      elements = [
+        Node(20,0,0)
+      ],
+      units = Units(&quot;mm&quot;)
+    ),
+    Node(3,0,0)
+  ]
+)</code></pre><pre><code class="language-none">.units cm
+N_1 x=1.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+.units mm
+N_2 x=2.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+.units cm
+N_3 x=3.000000000e+00 y=0.000000000e+00 z=0.000000000e+00</code></pre></div><footer><hr/><a class="previous" href="../install/"><span class="direction">Previous</span><span class="title">Installation</span></a><a class="next" href="../examples/"><span class="direction">Next</span><span class="title">Examples</span></a></footer></article></body></html>

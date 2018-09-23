@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="UTF-8"/><meta name="viewport" content="width=device-width, initial-scale=1.0"/><title>Examples · FastHenryHelper.jl</title><link href="https://cdnjs.cloudflare.com/ajax/libs/normalize/4.2.0/normalize.min.css" rel="stylesheet" type="text/css"/><link href="https://fonts.googleapis.com/css?family=Lato|Roboto+Mono" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.6.3/css/font-awesome.min.css" rel="stylesheet" type="text/css"/><link href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/9.12.0/styles/default.min.css" rel="stylesheet" type="text/css"/><script>documenterBaseURL=".."</script><script src="https://cdnjs.cloudflare.com/ajax/libs/require.js/2.2.0/require.min.js" data-main="../assets/documenter.js"></script><script src="../siteinfo.js"></script><script src="../../versions.js"></script><link href="../assets/documenter.css" rel="stylesheet" type="text/css"/></head><body><nav class="toc"><h1>FastHenryHelper.jl</h1><select id="version-selector" onChange="window.location.href=this.value" style="visibility: hidden"></select><form class="search" id="search-form" action="../search/"><input id="search-query" name="q" type="text" placeholder="Search docs"/></form><ul><li><a class="toctext" href="../">Home</a></li><li><a class="toctext" href="../install/">Installation</a></li><li><a class="toctext" href="../introduction/">Introduction</a></li><li class="current"><a class="toctext" href>Examples</a><ul class="internal"><li><a class="toctext" href="#Example-1:-A-simple-example-from-the-FastHenry-documentation.-1">Example 1: A simple example from the FastHenry documentation.</a></li><li><a class="toctext" href="#Example-2:-Four-square-loops-1">Example 2: Four square loops</a></li><li><a class="toctext" href="#Example-3:-Via-connection-between-plane-and-segment-1">Example 3: Via connection between plane and segment</a></li><li><a class="toctext" href="#Example-4:-Use-of-rectangulararray-1">Example 4: Use of rectangulararray</a></li></ul></li><li><a class="toctext" href="../public/">Public API</a></li></ul></nav><article id="docs"><header><nav><ul><li><a href>Examples</a></li></ul><a class="edit-page" href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/examples.md"><span class="fa"></span> Edit on GitHub</a></nav><hr/><div id="topbar"><span>Examples</span><a class="fa fa-bars" href="#"></a></div></header><h1><a class="nav-anchor" id="Examples-1" href="#Examples-1">Examples</a></h1><h2><a class="nav-anchor" id="Example-1:-A-simple-example-from-the-FastHenry-documentation.-1" href="#Example-1:-A-simple-example-from-the-FastHenry-documentation.-1">Example 1: A simple example from the FastHenry documentation.</a></h2><p><a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example1_L_shaped_trace_over_ground.ipynb">jupyter version</a></p><p>This example is a recreation of the example in section 1.2 of &quot;<a href="https://github.com/ediloren/FastHenry2/blob/master/doc/FastHenry_User_Guide.pdf">FastHenry User&#39;s Guide</a>&quot; using FastHeneryHelper.</p><p>load the module</p><div><pre><code class="language-julia">using FastHenryHelper</code></pre></div><p>Create a group of FastHenry elements for FastHenry to compute the loop inductance of an L shaped trace over a ground plane with the trace&#39;s return path through the plane.</p><div><pre><code class="language-julia">sp = SegmentParameters(w=8,h=1)
+nin = Node(&quot;in&quot;,800,800,0)
+nout = Node(&quot;out&quot;,0,200,0)
+n1 = Node(&quot;1&quot;,0,200,1.5)
+n2 = Node(800,200,1.5)
+n3 = Node(800,800,1.5)
+example1 = Group(
+  elements = [
+    Comment(&quot;A FastHenry example using a reference plane&quot;),
+    Units(&quot;mils&quot;),
+    UniformPlane(
+      x1=0,    y1=0,    z1=0,
+      x2=1000, y2=0,    z2=0,
+      x3=1000, y3=1000, z3=0,
+      thick= 1.2,
+      seg1=20, seg2=20,
+      nodes=[nin, nout]),
+    Default(SegmentParameters(sigma=62.1e6*2.54e-5,nwinc=8, nhinc=1)),
+    n1,
+    n2,
+    n3,
+    Segment(n1,n2,sp),
+    Segment(n2,n3,sp),
+    Equiv([nin,n3]),
+    External(n1,nout),
+    Freq(min=1e-1, max=1e9, ndec=0.05),
+    End()
+    ]
+  )</code></pre><pre><code class="language-none">* A FastHenry example using a reference plane
+.units mils
+G_1
++ x1=0.000000000e+00 y1=0.000000000e+00 z1=0.000000000e+00
++ x2=1.000000000e+03 y2=0.000000000e+00 z2=0.000000000e+00
++ x3=1.000000000e+03 y3=1.000000000e+03 z3=0.000000000e+00
++ thick=1.200000000e+00 seg1=20 seg2=20
++ Nin (8.000000000e+02,8.000000000e+02,0.000000000e+00)
++ Nout (0.000000000e+00,2.000000000e+02,0.000000000e+00)
+.default
++  nhinc=1 nwinc=8
++  sigma=1.577340000e+03
+N1 x=0.000000000e+00 y=2.000000000e+02 z=1.500000000e+00
+N_2 x=8.000000000e+02 y=2.000000000e+02 z=1.500000000e+00
+N_3 x=8.000000000e+02 y=8.000000000e+02 z=1.500000000e+00
+E_4 N1 N_2
++  w=8.000000000e+00 h=1.000000000e+00
+E_5 N_2 N_3
++  w=8.000000000e+00 h=1.000000000e+00
+.equiv Nin N_3
+.external N1 Nout
+.freq fmin=1.000000000e-01 fmax=1.000000000e+09 ndec=5.000000000e-02
+.end</code></pre></div><p>Write example1 to a file.</p><div><pre><code class="language-julia">open(&quot;example1.inp&quot;,&quot;w&quot;) do io
+    show(io,example1)
+end</code></pre></div><p>Groups may be transformed.  To demonstrate, example1 is rotated 90deg around x,y,and z axis.</p><div><pre><code class="language-julia">transform!(example1,rx(0.5π)*ry(0.5π)*rz(0.5π))  # must keep plane parallel to xy, xz, or yz plane</code></pre></div><p>Write rotated example1 to a file</p><div><pre><code class="language-julia">open(&quot;example1_rotated.inp&quot;,&quot;w&quot;) do io
+    show(io,example1)
+end</code></pre></div><p>calling <code>push!</code> on a <code>Group</code> will push into the groups <code>elements</code>.</p><div><pre><code class="language-julia"># same example, using push!
+example1 = Group()
+push!(example1,Comment(&quot;A FastHenry example using a reference plane&quot;))
+push!(example1,Units(&quot;mils&quot;))
+nin = Node(&quot;in&quot;,800,800,0)
+nout = Node(&quot;out&quot;,0,200,0)
+push!(example1,UniformPlane(x1=0, y1=0, z1=0, x2=1000, y2=0, z2=0, x3=1000, y3=1000, z3=0,
+    thick= 1.2, seg1=20, seg2=20, nodes=[nin, nout]))
+push!(example1,Default(SegmentParameters(sigma=62.1e6*2.54e-5,nwinc=8, nhinc=1)))
+n1 = Node(&quot;1&quot;,0,200,1.5)
+push!(example1,n1)
+n2 = Node(800,200,1.5)
+push!(example1,n2)
+n3 = Node(800,800,1.5)
+push!(example1,n3)
+sp = SegmentParameters(w=8,h=1)
+push!(example1,Segment(n1,n2,sp))
+push!(example1,Segment(n2,n3,sp))
+push!(example1,Equiv([nin,n3]))
+push!(example1,External(n1,nout))
+push!(example1,Freq(min=1e-1, max=1e9, ndec=0.05))
+push!(example1,End());</code></pre></div><p>Plot of <code>example1</code></p><div><pre><code class="language-julia">using Plots; gr()
+plot(example1)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../example1_plot_1.svg" alt/></p><h2><a class="nav-anchor" id="Example-2:-Four-square-loops-1" href="#Example-2:-Four-square-loops-1">Example 2: Four square loops</a></h2><p><a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example2_Four_Square_Loops.ipynb">jupyter version</a></p><p>This example demonstrates using groups to simplify repetitive structures.</p><p>Load the module.</p><div><pre><code class="language-julia">using FastHenryHelper</code></pre></div><p>Create a group for one square loop 10mm on a side.</p><div><pre><code class="language-julia">n1 = Node(0,0,0)
+n2 = Node(10,0,0)
+n3 = Node(10,10,0)
+n4 = Node(0,10,0)
+n5 = Node(0,1,0) # leave a 1mm gap for the port
+squareloop = Group(
+    elements=[
+        Comment(&quot;loop start&quot;),
+        n1,
+        n2,
+        n3,
+        n4,
+        n5, # leave a 1mm gap for the port
+        connectnodes([n1,n2,n3,n4,n5], SegmentParameters(h=0.5, w=1.5))...,
+        Comment(&quot;loop end&quot;)
+    ],
+    terms = Dict(:a=&gt;n1,:b=&gt;n5) # ports will be between :a and :b
+)</code></pre><pre><code class="language-none">* loop start
+N_1 x=0.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+N_2 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+N_3 x=1.000000000e+01 y=1.000000000e+01 z=0.000000000e+00
+N_4 x=0.000000000e+00 y=1.000000000e+01 z=0.000000000e+00
+N_5 x=0.000000000e+00 y=1.000000000e+00 z=0.000000000e+00
+E_6 N_1 N_2
++  w=1.500000000e+00 h=5.000000000e-01
+E_7 N_2 N_3
++  w=1.500000000e+00 h=5.000000000e-01
+E_8 N_3 N_4
++  w=1.500000000e+00 h=5.000000000e-01
+E_9 N_4 N_5
++  w=1.500000000e+00 h=5.000000000e-01
+* loop end</code></pre></div><p>Create an array of four square loops, each one shifted 10mm on z axis.</p><div><pre><code class="language-julia">loops = Array{Group}(undef,4)
+z = [0.0, 10.0, 20.0, 30.0]
+for i in eachindex(loops)
+    loops[i] = transform(squareloop, txyz(0,0,z[i]))
+end</code></pre></div><p>Create the top level group.</p><div><pre><code class="language-julia">fourloops = Group(
+    elements=[
+        Comment(&quot;Four loops 10mm on a side offset by 10mm in z&quot;),
+        Units(&quot;mm&quot;),
+        Comment(&quot;&quot;),
+        Comment(&quot;sigma for copper, 25 filaments per segment&quot;),
+        Default(sigma=62.1e6*1e-3, nwinc=5, nhinc=5),
+        Comment(&quot;&quot;),
+        Comment(&quot;the loops&quot;),
+        loops...,
+        Comment(&quot;&quot;),
+        Comment(&quot;define three ports&quot;),
+        External(loops[3][:b],loops[4][:b],&quot;port_1&quot;),
+        External(loops[2][:a],loops[2][:b],&quot;port_2&quot;),
+        External(loops[1][:a],loops[1][:b],&quot;port_3&quot;),
+        Comment(&quot;&quot;),
+        Comment(&quot;define frequencies&quot;),
+        Freq(min=1e-1, max=1e9, ndec=0.05),
+        Comment(&quot;&quot;),
+        Comment(&quot;always need end&quot;),
+        End()
+    ]
+)</code></pre><pre><code class="language-none">* Four loops 10mm on a side offset by 10mm in z
+.units mm
+*
+* sigma for copper, 25 filaments per segment
+.default
++  nhinc=5 nwinc=5
++  sigma=6.210000000e+04
+*
+* the loops
+* loop start
+N_1 x=0.000000000e+00 y=0.000000000e+00 z=0.000000000e+00
+N_2 x=1.000000000e+01 y=0.000000000e+00 z=0.000000000e+00
+N_3 x=1.000000000e+01 y=1.000000000e+01 z=0.000000000e+00
+N_4 x=0.000000000e+00 y=1.000000000e+01 z=0.000000000e+00
+N_5 x=0.000000000e+00 y=1.000000000e+00 z=0.000000000e+00
+E_6 N_1 N_2
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_7 N_2 N_3
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+E_8 N_3 N_4
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_9 N_4 N_5
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+* loop end
+* loop start
+N_10 x=0.000000000e+00 y=0.000000000e+00 z=1.000000000e+01
+N_11 x=1.000000000e+01 y=0.000000000e+00 z=1.000000000e+01
+N_12 x=1.000000000e+01 y=1.000000000e+01 z=1.000000000e+01
+N_13 x=0.000000000e+00 y=1.000000000e+01 z=1.000000000e+01
+N_14 x=0.000000000e+00 y=1.000000000e+00 z=1.000000000e+01
+E_15 N_10 N_11
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_16 N_11 N_12
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+E_17 N_12 N_13
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_18 N_13 N_14
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+* loop end
+* loop start
+N_19 x=0.000000000e+00 y=0.000000000e+00 z=2.000000000e+01
+N_20 x=1.000000000e+01 y=0.000000000e+00 z=2.000000000e+01
+N_21 x=1.000000000e+01 y=1.000000000e+01 z=2.000000000e+01
+N_22 x=0.000000000e+00 y=1.000000000e+01 z=2.000000000e+01
+N_23 x=0.000000000e+00 y=1.000000000e+00 z=2.000000000e+01
+E_24 N_19 N_20
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_25 N_20 N_21
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+E_26 N_21 N_22
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_27 N_22 N_23
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+* loop end
+* loop start
+N_28 x=0.000000000e+00 y=0.000000000e+00 z=3.000000000e+01
+N_29 x=1.000000000e+01 y=0.000000000e+00 z=3.000000000e+01
+N_30 x=1.000000000e+01 y=1.000000000e+01 z=3.000000000e+01
+N_31 x=0.000000000e+00 y=1.000000000e+01 z=3.000000000e+01
+N_32 x=0.000000000e+00 y=1.000000000e+00 z=3.000000000e+01
+E_33 N_28 N_29
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
+E_34 N_29 N_30
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=-1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+E_35 N_30 N_31
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=0.000000000e+00 wy=-1.000000000e+00 wz=0.000000000e+00
+E_36 N_31 N_32
++  w=1.500000000e+00 h=5.000000000e-01
++  wx=1.000000000e+00 wy=0.000000000e+00 wz=0.000000000e+00
+* loop end
+*
+* define three ports
+.external N_23 N_32 port_1
+.external N_10 N_14 port_2
+.external N_1 N_5 port_3
+*
+* define frequencies
+.freq fmin=1.000000000e-01 fmax=1.000000000e+09 ndec=5.000000000e-02
+*
+* always need end
+.end</code></pre></div><p>Plot of <code>fourloops</code></p><div><pre><code class="language-julia">using Plots; gr()  # use plotlyjs() or plotly() for interactive plot
+plot(fourloops)</code></pre><pre><code class="language-none">/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../example2_fourloops.svg" alt/></p><p>Write fourloops to file.</p><div><pre><code class="language-julia">open(&quot;fourloops.inp&quot;,&quot;w&quot;) do io
+    show(io,fourloops)
+end</code></pre></div><p>See the output file <a href="https://github.com/cstook/FastHenryHelper.jl/blob/gh-pages/fourloops.inp">fourloops.inp</a>.</p><h2><a class="nav-anchor" id="Example-3:-Via-connection-between-plane-and-segment-1" href="#Example-3:-Via-connection-between-plane-and-segment-1">Example 3: Via connection between plane and segment</a></h2><p><a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example3_Via_Connection_Between_Plane_And_Segment.ipynb">jupyter version</a></p><p>This example demonstrates the use of <code>viagroup</code> and <code>planeconnect</code> functions.</p><p>Load the module.</p><div><pre><code class="language-julia">using FastHenryHelper</code></pre></div><p>Constants for a 63mil PCB with 1oz copper.  Copper thickness is made much thicker than 1oz copper to make planes more visible in the plots.</p><div><pre><code class="language-julia">const height = 1.6      # 63mil PCB
+const cu_sigma = 5.8e4
+# const cu_thick = 0.035  # 1oz copper
+const cu_thick = 0.5    # exaggerate thickness</code></pre><pre><code class="language-none">0.5</code></pre></div><p>Create a function which returns a <code>Group</code> with all the elements of the FastHenry input file.</p><div><pre><code class="language-julia">function via_connection_example(height, cu_thick)
+  t = Comment(&quot;via connection to plane example&quot;)
+  u = Units(&quot;mm&quot;)
+
+  # create a via with 16 segments
+  # botequiv = false will allow each segment
+  # to connect to the plane separately
+  via = viagroup(radius=2, height=height, h=cu_thick, nhinc = 1,
+  sigma=cu_sigma, n=16, topequiv = true, botequiv = false)
+
+  # move via into position
+  transform!(via, txyz(3.0,5.0,0.0))
+
+  top_port_node = Node(10,5,0)
+  # via[:top] is a node in the center of the top of the via.  It
+  # is equiv to the ring of nodes at the top of the via segments.
+  topseg = Segment(via[:top], top_port_node, h=cu_thick, w=1.5)
+
+
+  # create a line of nodes along what will be the right side of the plane
+  bot_port = Array{Node}(undef,50)
+  y = 0.0
+  for i in eachindex(bot_port)
+    bot_port[i] = Node(10.0,y,-height)
+    y += 0.2
+  end
+
+  # short the line of vias.  This will be one terminal of the external port.
+  bot_port_equiv = Equiv(bot_port)
+
+  # planeconnect retuns a deepcopy of the nodes, and a group of equiv&#39;s to
+  # connect them to the original nodes.
+  # via[:allbot] is an array of the 16 nodes around the bottom on the via
+  (bot_plane_nodes,bot_plane_nodes_equiv_group) = planeconnect(via[:allbot])
+
+  # create a plane with 100x100 segments.
+  # nodes connect to the external port and the bottom of the via
+  botplane = UniformPlane(
+    x1= 0.0, y1= 0.0, z1=-height,
+    x2= 0.0, y2=10.0, z2=-height,
+    x3=10.0, y3=10.0, z3=-height,
+    thick = cu_thick,
+    seg1=100, seg2=100,
+    sigma = cu_sigma,
+    nhinc = 5,
+    nodes = [bot_plane_nodes;bot_port]
+	)
+
+  # define the external port between the two lines of nodes
+  ex = External(top_port_node,bot_port[1])
+
+  # just want low frequency
+  f = Freq(min=0.1, max=1e9, ndec=0.05)
+
+  e = End() # always need an end
+
+  # return a group of the element we want for our FastHenry input file
+  Group([t; u; via;
+         top_port_node; topseg;
+         botplane; bot_plane_nodes_equiv_group;
+         bot_port_equiv; top_port_node;
+         ex; f; e])
+end</code></pre><pre><code class="language-none">via_connection_example (generic function with 1 method)</code></pre></div><p>Call the function with PCB height and copper thickness.</p><div><pre><code class="language-julia">example3 = via_connection_example(height, cu_thick);</code></pre></div><p>Plot of <code>example3</code></p><div><pre><code class="language-julia">using Plots; gr()
+plot(example3)</code></pre><pre><code class="language-none">┌ Warning: You created n=176 groups... Is that intended?
+└ @ Plots ~/.julia/packages/Plots/EJpx2/src/args.jl:1073
+/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../example3.svg" alt/></p><p>Write results to a file.</p><div><pre><code class="language-julia">io = open(&quot;via_to_plane.inp&quot;,&quot;w+&quot;)
+show(io,example3)
+close(io)</code></pre></div><p>See the output file <a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.inp">via<em>to</em>plane.inp</a>.</p><p>See the .mat file produced by FastHenry <a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/via_to_plane.mat">via<em>to</em>plane.mat</a>.</p><h2><a class="nav-anchor" id="Example-4:-Use-of-rectangulararray-1" href="#Example-4:-Use-of-rectangulararray-1">Example 4: Use of rectangulararray</a></h2><p><a href="https://github.com/cstook/FastHenryHelper.jl/blob/master/docs/src/Example4_use_of_rectangulararray.ipynb">jupyter version</a></p><p>A 2x3 array of via&#39;s is produced using <code>rectangulararray</code> and is connected to a plane.  This example does not create a complete FastHenry file.</p><p>Load the modules.</p><div><pre><code class="language-julia">using FastHenryHelper
+using Plots;gr()</code></pre></div><p>Create a single via at the origin.</p><p>Parameter <code>height</code> is the height of the via and <code>h</code> is the thickness of the copper plating (height of the vias segments).  Parameters <code>topequiv</code> and <code>botequiv</code> determine if the ring of nodes and the center node are connected with an equiv command.  The default setting <code>true</code> is used so the center node (<code>:top</code> or <code>:bot</code>) can connect to a segment.  To connect to a plane, <code>topequiv</code> and / or  <code>botequiv</code> should be set to <code>false</code> so <code>:alltop</code> and / or <code>:allbot</code> can connect to the plane.  </p><div><pre><code class="language-julia">via = viagroup(radius=5, height=7, h=3, n=8, topequiv = false, botequiv = false);</code></pre></div><p>Create a Group of six vias.</p><p>As its second parameter, <code>transform</code> can accept an iterable returning 4x4 matrices and returns a <code>Group</code> containing deepcopies of the <code>Element</code> modified by each 4x4 transformation matrix.  If the <code>Element</code> is a <code>Group</code>, the returned <code>Group</code>s terminal dictionary will have the same keys as <code>Group</code> passed as a parameter.  The values will be an array of all the <code>Node</code>s with corresponding keys.  In other words, the terminals of the returned <code>Group</code> will connect all the <code>Group</code>s in parallel.  This behavior is intended to make it easy to connect planes with arrays of vias.</p><div><pre><code class="language-julia">six_vias = transform(via,  rectangulararray([20,40,60],[10,30]));</code></pre></div><p>Create objects needed to connect to plane.</p><p><code>planeconnect</code> returns a tuple of two objects needed to connect to a plane.  In this case, <code>plane_nodes</code> is a <code>deepcopy</code> of nodes <code>six_vias[:alltop]</code> and <code>equiv_group</code> connects the corresponding nodes in <code>plane_nodes</code> and <code>six_vias[:alltop]</code>.</p><div><pre><code class="language-julia">(plane_nodes, equiv_group) = planeconnect(six_vias[:alltop]);</code></pre></div><p>Create the plane.</p><div><pre><code class="language-julia">plane = UniformPlane(
+        x1=80.0, y1= 80.0, z1=0.0,
+        x2= 0.0, y2= 80.0, z2=0.0,
+        x3= 0.0, y3= 0.0, z3=0.0,
+        thick = 1,
+        seg1=100, seg2=100,
+        nodes = plane_nodes);</code></pre></div><p>Create a <code>Group</code> with all elements.</p><div><pre><code class="language-julia">example4 = Group([six_vias;plane;equiv_group]);</code></pre></div><p>Plot of <code>example4</code></p><div><pre><code class="language-julia">plot(example4)</code></pre><pre><code class="language-none">┌ Warning: You created n=354 groups... Is that intended?
+└ @ Plots ~/.julia/packages/Plots/EJpx2/src/args.jl:1073
+/home/travis/.julia/packages/GR/joQgG/src/../deps/gr/bin/gksqt: error while loading shared libraries: libQt5Widgets.so.5: cannot open shared object file: No such file or directory
+connect: Connection refused
+GKS: can&#39;t connect to GKS socket application
+Did you start &#39;gksqt&#39;?
+
+GKS: Open failed in routine OPEN_WS
+GKS: GKS not in proper state. GKS must be either in the state WSOP or WSAC in routine ACTIVATE_WS</code></pre></div><p><img src="../example4.svg" alt/></p><footer><hr/><a class="previous" href="../introduction/"><span class="direction">Previous</span><span class="title">Introduction</span></a><a class="next" href="../public/"><span class="direction">Next</span><span class="title">Public API</span></a></footer></article></body></html>
