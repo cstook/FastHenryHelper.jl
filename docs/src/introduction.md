@@ -10,7 +10,7 @@ FastHenryHelper assists creating FastHenry input files using julia.  Groups of F
 ## Loading the modules
 ```@example intro
 using FastHenryHelper
-using Plots; pyplot() # using pyplot() backend for plots, plotly(), plotlyjs() also work.
+using Plots; gr() # using gr() backend for plots, plotly(), plotlyjs() also work.
 ```
 ## Creating a simple group
 FastHenry commands are julia types which show their command.  In FastHenryHelper these are all subtypes of the supertype `Element`.

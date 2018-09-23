@@ -90,7 +90,7 @@ nothing # hide
 
 Plot of `example1`
 ```@example 1
-using Plots; pyplot()
+using Plots; gr()
 plot(example1)
 savefig("example1_plot_1.svg"); nothing # hide
 ```
@@ -166,7 +166,7 @@ fourloops = Group(
 
 Plot of `fourloops`
 ```@example 2
-using Plots; pyplot()  # use plotlyjs() or plotly() for interactive plot
+using Plots; gr()  # use plotlyjs() or plotly() for interactive plot
 plot(fourloops)
 savefig("example2_fourloops.svg"); nothing # hide
 ```
@@ -273,7 +273,7 @@ nothing # hide
 
 Plot of `example3`
 ```@example 3
-using Plots; pyplot()
+using Plots; gr()
 plot(example3)
 savefig("example3.svg"); nothing # hide
 ```
@@ -297,7 +297,7 @@ A 2x3 array of via's is produced using `rectangulararray` and is connected to a 
 Load the modules.
 ```@example 4
 using FastHenryHelper
-using Plots;pyplot()
+using Plots;gr()
 nothing # hide
 ```
 
