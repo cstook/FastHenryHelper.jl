@@ -140,7 +140,7 @@ function testsegment()
   +  sigma=3.000000000e+00
   +  wx=-7.071067812e-01 wy=0.000000000e+00 wz=7.071067812e-01
   """
-  testelement(s1,verified)
+  @test_logs (:warn,"wx,wy,wz not perpendicular to segment length") testelement(s1,verified)
   n3 = Node(0,0,0)
   n4 = Node(1,0,0)
   s2 = Segment(n3,n4,w=.5,h=.2)
@@ -165,7 +165,7 @@ function testsegment()
   +  w=5.000000000e-01 h=2.000000000e-01
   +  wx=0.000000000e+00 wy=1.000000000e+00 wz=0.000000000e+00
   """
-  testelement(s4,verified)
+  @test_logs (:warn,"wx,wy,wz not perpendicular to segment length") testelement(s4,verified)
   s5 = Segment(n3,n4,w=.5,h=.2,wx=0,wy=0,wz=1)
   verified =
   """
@@ -181,7 +181,7 @@ function testsegment()
   +  w=5.000000000e-01 h=2.000000000e-01
   +  wx=-0.000000000e+00 wy=7.071067812e-01 wz=7.071067812e-01
   """
-  testelement(s6,verified)
+  @test_logs (:warn,"wx,wy,wz not perpendicular to segment length") testelement(s6,verified)
   @test_throws(ArgumentError,Segment(n1,n2,w=1,h=2,wx=0,wy=0,wz=0))
 end
 testsegment()

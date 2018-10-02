@@ -188,7 +188,7 @@ function wxyz(segment::Segment, context::Context)
     if dot(lxyz,segment.wxwywz.xyz)>1e-9
       wxyz_ = cross(cross(lxyz,segment.wxwywz.xyz),lxyz)
       normalize!(wxyz_)
-      @warn "wx,wy,wz not perpendicular to segment length $(segment.wxwywz.xyz) => $wxyz_"
+      @warn "wx,wy,wz not perpendicular to segment length" is=segment.wxwywz.xyz should_be=wxyz_
     end
   end
   return wxyz_
